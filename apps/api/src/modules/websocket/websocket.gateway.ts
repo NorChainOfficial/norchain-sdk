@@ -33,13 +33,13 @@ import { ConfigService } from '@nestjs/config';
   },
   namespace: '/ws',
 })
-export class WebSocketGateway
+export class NorChainWebSocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer()
   server: Server;
 
-  private readonly logger = new Logger(WebSocketGateway.name);
+  private readonly logger = new Logger(NorChainWebSocketGateway.name);
   private readonly subscriptions = new Map<string, Set<string>>(); // room -> Set<socketId>
 
   constructor(

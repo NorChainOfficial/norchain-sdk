@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import { WebSocketGateway } from '../websocket/websocket.gateway';
+import { NorChainWebSocketGateway } from '../websocket/websocket.gateway';
 
 /**
  * Supabase Service
@@ -24,7 +24,7 @@ export class SupabaseService implements OnModuleInit {
 
   constructor(
     private configService: ConfigService,
-    private websocketGateway: WebSocketGateway,
+    private websocketGateway: NorChainWebSocketGateway,
   ) {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
     const supabaseKey = this.configService.get<string>('SUPABASE_ANON_KEY');

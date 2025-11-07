@@ -64,11 +64,17 @@ import { OrdersModule } from './modules/orders/orders.module';
 
     // Rate Limiting
     ThrottlerModule.forRootAsync({
-      imports: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        ttl: Number(configService.get('THROTTLE_TTL', 60)),
-        limit: Number(configService.get('THROTTLE_LIMIT', 100)),
-      }),
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const ttl = Number(configService.get('THROTTLE_TTL', 60)) || 60;
+        const limit = Number(configService.get('THROTTLE_LIMIT', 100)) || 100;
+        return {
+          throttlers: [{
+            ttl: ttl * 1000, // Convert to milliseconds
+            limit: limit,
+          }],
+        };
+      },
       inject: [ConfigService],
     }),
 

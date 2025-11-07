@@ -41,15 +41,7 @@ export const databaseConfig = (
   ssl: configService.get('DB_SSL') ? { rejectUnauthorized: false } : false,
   migrations: ['dist/migrations/*.js'],
   migrationsRun: false,
-  cache: {
-    type: 'redis',
-    options: {
-      host: configService.get('REDIS_HOST'),
-      port: configService.get('REDIS_PORT'),
-      password: configService.get('REDIS_PASSWORD'),
-      db: configService.get('REDIS_DB'),
-    },
-    duration: 30000, // 30 seconds
-  },
+  // Disable Redis cache for now - will enable after Redis connection is verified
+  cache: false,
 });
 

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { WebSocketGateway } from '../websocket/websocket.gateway';
+import { NorChainWebSocketGateway } from '../websocket/websocket.gateway';
 import { Notification } from './entities/notification.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
@@ -31,7 +31,7 @@ export class NotificationsService {
   constructor(
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
-    private websocketGateway: WebSocketGateway,
+    private websocketGateway: NorChainWebSocketGateway,
   ) {}
 
   /**
