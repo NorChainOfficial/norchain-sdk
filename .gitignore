@@ -2,29 +2,45 @@
 node_modules/
 .pnp
 .pnp.js
+.pnp.cjs
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
 
 # Testing
 coverage/
 .nyc_output
+*.lcov
+test-results/
+playwright-report/
+playwright/.cache/
 
-# Production
+# Production Builds
 dist/
 build/
 .next/
 out/
+.vercel
+.turbo
 
-# Misc
-.DS_Store
-*.pem
+# TypeScript
+*.tsbuildinfo
+*.d.ts.map
+
+# Environment Variables
 .env
-.env.local
 .env*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+lerna-debug.log*
 
 # IDE
 .idea/
@@ -32,10 +48,228 @@ yarn-error.log*
 *.swp
 *.swo
 *~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
 # OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
 
-# Workspace
-.turbo
+# Logs
+logs/
+*.log
 
+# Runtime
+*.pid
+*.seed
+*.pid.lock
+
+# Package Manager Lock Files (keep only one)
+# Uncomment the ones you want to ignore
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Next.js
+.next/
+out/
+.vercel
+
+# NestJS
+dist/
+*.tsbuildinfo
+
+# React Native / Expo
+.expo/
+.expo-shared/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Android
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+.gradle/
+local.properties
+*.iml
+.idea/
+*.hprof
+.cxx/
+.externalNativeBuild/
+app/build/
+build/
+.gradle/
+*.keystore
+!debug.keystore
+
+# iOS
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+*.xcworkspace
+!default.xcworkspace
+project.xcworkspace
+ios/Pods/
+ios/.symlinks/
+ios/Profile
+ios/build/
+Pods/
+*.xcworkspace
+!default.xcworkspace
+*.xcuserdata
+*.xcscmblueprint
+*.xcscheme
+!default.xcscheme
+
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+*.pdb
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.swp
+*.swo
+
+# Documentation builds
+docs/.next/
+docs/out/
+docs/dist/
+
+# Storybook
+storybook-static/
+
+# Sentry
+.sentryclirc
+
+# Misc
+*.zip
+*.tar.gz
+*.rar
+.cache/
+.parcel-cache/
+
+# Monorepo specific
+.turbo/
+.turbo-cache/
+
+# Design System builds
+packages/design-system/dist/
+packages/sdk/dist/
+
+# Wallet Core Rust builds
+packages/wallet-core/core-rust/target/
+packages/wallet-core/core-rust/Cargo.lock
+
+# Mobile app builds
+apps/wallet-android/app/build/
+apps/wallet-android/build/
+apps/wallet-android/.gradle/
+apps/wallet-android/local.properties
+apps/wallet-ios/build/
+apps/wallet-ios/DerivedData/
+apps/wallet-ios/Pods/
+
+# Chrome Extension builds
+apps/wallet-chrome/chrome-extension/dist/
+apps/wallet-chrome/chrome-extension/build/
+
+# Desktop builds
+apps/wallet-desktop/desktop/target/
+apps/wallet-desktop/desktop/dist/
+
+# API builds
+apps/api/dist/
+apps/api/coverage/
+
+# Explorer builds
+apps/explorer/.next/
+apps/explorer/out/
+apps/explorer/coverage/
+
+# Landing builds
+apps/landing/.next/
+apps/landing/out/
+
+# NEX Exchange builds
+apps/nex-exchange/.next/
+apps/nex-exchange/out/
+apps/nex-exchange/coverage/
+
+# Wallet Web builds
+apps/wallet/.next/
+apps/wallet/out/
+
+# Docs builds
+apps/docs/.next/
+apps/docs/out/
+
+# Nested Git Repositories
+# Prevent nested .git directories from being tracked
+**/.git/
+**/.git
+!/.git/
+!/.git
+
+# Keep important files
+!package.json
+!package-lock.json
+!tsconfig.json
+!README.md
+!.gitignore
