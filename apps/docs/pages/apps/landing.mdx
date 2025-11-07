@@ -1,0 +1,118 @@
+# Landing Page
+
+The NorChain Landing Page is a marketing and information website built with Next.js.
+
+## Overview
+
+The Landing Page serves as the public-facing website for the NorChain ecosystem, providing information about the network, features, and community.
+
+## Features
+
+- ✅ **Hero Section** - Main introduction and CTA
+- ✅ **Network Statistics** - Real-time network stats
+- ✅ **Feature Showcase** - Key features and benefits
+- ✅ **Ecosystem Overview** - Products and services
+- ✅ **Roadmap** - Development roadmap
+- ✅ **FAQ** - Frequently asked questions
+- ✅ **Community Links** - Social media and community
+
+## Tech Stack
+
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+
+## Configuration
+
+### Environment Variables
+
+Create `apps/landing/.env.local`:
+
+```env
+# API Configuration (for network stats)
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
+
+## Running Locally
+
+```bash
+cd apps/landing
+npm install
+npm run dev
+```
+
+The app will be available at http://localhost:3010
+
+## API Integration
+
+The Landing Page connects to the Explorer API for network statistics:
+
+### Network Stats Component
+
+```typescript
+// components/NetworkStats.tsx
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+
+async function getNetworkStats() {
+  const response = await fetch(`${API_URL}/stats`);
+  return response.json();
+}
+```
+
+## Pages
+
+### Main Page
+
+- `/` - Landing page with all sections
+
+## Components
+
+### Sections
+
+- `Hero` - Hero section with main CTA
+- `ShariahCompliance` - Shariah compliance information
+- `Features` - Feature showcase
+- `EcosystemOverview` - Ecosystem products
+- `NetworkStats` - Network statistics (from API)
+- `FinancialProducts` - Financial products overview
+- `GovernanceCompliance` - Governance information
+- `CharityImpact` - Charity and impact
+- `TechnologyStack` - Technology stack
+- `Roadmap` - Development roadmap
+- `FAQ` - Frequently asked questions
+- `Community` - Community links
+- `Footer` - Footer with links
+
+### Layout Components
+
+- `Header` - Navigation header
+- `Footer` - Footer
+- `ScrollToTop` - Scroll to top button
+
+## Development
+
+### Project Structure
+
+```
+apps/landing/
+├── app/
+│   ├── page.tsx      # Main landing page
+│   └── layout.tsx    # Root layout
+├── components/       # React components
+└── public/          # Static assets
+```
+
+### Adding New Sections
+
+1. **Create component** in `components/`
+2. **Import and add** to `app/page.tsx`
+
+## Deployment
+
+See [Deployment Guide](/development/deployment) for production deployment instructions.
+
+## Related Documentation
+
+- [API Documentation](/api/overview)
+- [Development Guide](/development/setup)
+

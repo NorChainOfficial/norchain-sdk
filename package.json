@@ -1,0 +1,40 @@
+{
+  "name": "norchain-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NorChain Ecosystem Monorepo - Explorer API & NEX Exchange",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "dev": "npm run dev --workspaces --parallel",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "clean": "npm run clean --workspaces && rm -rf node_modules",
+    "check": "npm run check --workspaces",
+    "api:dev": "npm run start:dev --workspace=@norchain/api",
+    "api:build": "npm run build --workspace=@norchain/api",
+    "nex:dev": "npm run dev --workspace=@norchain/nex-exchange",
+    "nex:build": "npm run build --workspace=@norchain/nex-exchange",
+    "nex:check": "npm run check --workspace=@norchain/nex-exchange",
+    "docs:dev": "npm run dev --workspace=@norchain/docs",
+    "docs:build": "npm run build --workspace=@norchain/docs",
+    "docs:start": "npm run start --workspace=@norchain/docs",
+    "wallet:dev": "npm run dev --workspace=@norchain/wallet",
+    "wallet:build": "npm run build --workspace=@norchain/wallet",
+    "wallet:start": "npm run start --workspace=@norchain/wallet",
+    "wallet:android": "cd apps/wallet-android && ./gradlew assembleDebug",
+    "wallet:ios": "cd apps/wallet-ios && ./scripts/open-xcode.sh"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
+

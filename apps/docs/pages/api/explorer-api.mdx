@@ -1,0 +1,262 @@
+# Explorer API Reference
+
+Complete reference for the NorChain Explorer API endpoints.
+
+## Base URL
+
+```
+http://localhost:3000/api/v1
+```
+
+## Account Endpoints
+
+### Get Account Balance
+
+```bash
+GET /api/v1/account/balance?address=0x...
+```
+
+**Response:**
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": "1000000000000000000"
+}
+```
+
+### Get Transaction List
+
+```bash
+GET /api/v1/account/txlist?address=0x...&page=1&offset=20
+```
+
+### Get Token List
+
+```bash
+GET /api/v1/account/tokenlist?address=0x...
+```
+
+### Get Token Transfers
+
+```bash
+GET /api/v1/account/tokentx?address=0x...&contractaddress=0x...
+```
+
+### Multi-Address Balance
+
+```bash
+GET /api/v1/account/balancemulti?address=0x...,0x...,0x...
+```
+
+## Block Endpoints
+
+### Get Block
+
+```bash
+GET /api/v1/block/getblock?blockno=12345
+```
+
+### Get Block Reward
+
+```bash
+GET /api/v1/block/getblockreward?blockno=12345
+```
+
+### Get Block Countdown
+
+```bash
+GET /api/v1/block/getblockcountdown?blockno=12345
+```
+
+### Get Latest Block Number
+
+```bash
+GET /api/v1/block/getblocknumber
+```
+
+## Transaction Endpoints
+
+### Get Transaction Receipt Status
+
+```bash
+GET /api/v1/transaction/gettxreceiptstatus?txhash=0x...
+```
+
+### Get Transaction Status
+
+```bash
+GET /api/v1/transaction/getstatus?txhash=0x...
+```
+
+### Get Transaction Info
+
+```bash
+GET /api/v1/transaction/gettxinfo?txhash=0x...
+```
+
+## Token Endpoints
+
+### Get Token Supply
+
+```bash
+GET /api/v1/token/tokensupply?contractaddress=0x...
+```
+
+### Get Token Balance
+
+```bash
+GET /api/v1/token/tokenaccountbalance?contractaddress=0x...&address=0x...
+```
+
+### Get Token Info
+
+```bash
+GET /api/v1/token/tokeninfo?contractaddress=0x...
+```
+
+### Get Token Transfers
+
+```bash
+GET /api/v1/token/tokentx?contractaddress=0x...
+```
+
+## Contract Endpoints
+
+### Get Contract ABI
+
+```bash
+GET /api/v1/contract/getabi?address=0x...
+```
+
+### Get Source Code
+
+```bash
+GET /api/v1/contract/getsourcecode?address=0x...
+```
+
+### Verify Contract
+
+```bash
+POST /api/v1/contract/verifycontract
+Content-Type: application/json
+
+{
+  "address": "0x...",
+  "sourceCode": "...",
+  "compilerVersion": "0.8.20",
+  "optimization": true
+}
+```
+
+## Stats Endpoints
+
+### Get ETH Supply
+
+```bash
+GET /api/v1/stats/ethsupply
+```
+
+### Get ETH Price
+
+```bash
+GET /api/v1/stats/ethprice
+```
+
+### Get Chain Size
+
+```bash
+GET /api/v1/stats/chainsize
+```
+
+### Get Node Count
+
+```bash
+GET /api/v1/stats/nodecount
+```
+
+## Batch Endpoints
+
+### Batch Balances
+
+```bash
+POST /api/v1/batch/balances
+Content-Type: application/json
+
+{
+  "addresses": ["0x...", "0x...", "0x..."]
+}
+```
+
+### Batch Transaction Counts
+
+```bash
+POST /api/v1/batch/transaction-counts
+Content-Type: application/json
+
+{
+  "addresses": ["0x...", "0x...", "0x..."]
+}
+```
+
+## Analytics Endpoints
+
+### Portfolio Summary
+
+```bash
+GET /api/v1/analytics/portfolio?address=0x...
+```
+
+### Transaction Analytics
+
+```bash
+GET /api/v1/analytics/transactions?address=0x...&period=7d
+```
+
+## Health Check
+
+```bash
+GET /api/v1/health
+```
+
+**Response:**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "uptime": 3600,
+  "database": "connected",
+  "redis": "connected"
+}
+```
+
+## Error Codes
+
+| Code | Description |
+|------|-------------|
+| 400 | Bad Request |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
+| 429 | Too Many Requests |
+| 500 | Internal Server Error |
+
+## Rate Limits
+
+- **Unauthenticated**: 100 requests/minute
+- **Authenticated**: 1000 requests/minute
+
+Rate limit headers:
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+## Swagger Documentation
+
+Interactive API documentation available at:
+```
+http://localhost:3000/api-docs
+```
+

@@ -1,0 +1,105 @@
+# NorChain Documentation
+
+Welcome to the **NorChain Ecosystem** documentation. This comprehensive guide covers all aspects of the NorChain blockchain platform, including APIs, applications, and development guides.
+
+## What is NorChain?
+
+NorChain is a comprehensive blockchain ecosystem featuring:
+
+- **Blockchain Explorer** - Advanced block explorer with real-time data
+- **Explorer API** - Production-ready REST API for blockchain data
+- **Landing Page** - Marketing and information website
+- **NEX Exchange** - Decentralized exchange platform
+
+## Quick Links
+
+- [Getting Started](/getting-started) - Set up your development environment
+- [Architecture](/architecture) - Understand the system architecture
+- [API Documentation](/api/overview) - Explore API endpoints
+- [Development Guide](/development/setup) - Development workflows
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Frontend Apps                        │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
+│  │   Explorer   │  │   Landing    │  │ NEX Exchange │ │
+│  │   (Port 3002)│  │  (Port 3010) │  │  (Port 3001) │ │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘ │
+│         │                 │                  │          │
+└─────────┼─────────────────┼──────────────────┼─────────┘
+          │                 │                  │
+          └─────────────────┼──────────────────┘
+                            │
+          ┌─────────────────▼──────────────────┐
+          │      Explorer API (Port 3000)      │
+          │      - REST API                     │
+          │      - GraphQL API                  │
+          │      - WebSocket Support            │
+          └─────────────────┬──────────────────┘
+                            │
+          ┌─────────────────▼──────────────────┐
+          │      Database (PostgreSQL/Supabase) │
+          └─────────────────────────────────────┘
+```
+
+## Key Features
+
+### Explorer API
+- ✅ 50+ REST API endpoints
+- ✅ GraphQL API support
+- ✅ Real-time WebSocket updates
+- ✅ JWT & API Key authentication
+- ✅ Rate limiting & caching
+- ✅ Swagger documentation
+
+### Explorer App
+- ✅ Real-time blockchain data
+- ✅ Contract interaction
+- ✅ Transaction tracking
+- ✅ Analytics dashboard
+- ✅ Wallet integration
+
+### Landing Page
+- ✅ Marketing website
+- ✅ Network statistics
+- ✅ Community information
+
+### NEX Exchange
+- ✅ Token swapping
+- ✅ Order management
+- ✅ Portfolio tracking
+
+## Getting Started
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/nor-chain/norchain-monorepo
+   cd norchain-monorepo
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   - See [Environment Variables](/development/environment) guide
+
+4. **Start development servers**
+   ```bash
+   npm run dev
+   ```
+
+## Support
+
+- 📚 [Documentation](https://docs.norchain.org)
+- 💬 [Discord](https://discord.gg/norchain)
+- 📧 [Email](mailto:support@norchain.org)
+- 🐛 [GitHub Issues](https://github.com/nor-chain/norchain-monorepo/issues)
+
+---
+
+**Ready to build?** Check out the [Getting Started](/getting-started) guide!
+

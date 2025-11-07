@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  xaheen-explorer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xaheen-explorer-btcbr
+    restart: always
+    ports:
+      - "3002:3002"
+    environment:
+      # RPC Configuration
+      - NEXT_PUBLIC_RPC_URL=http://rpc.bitcoinbr.tech:8545
+      - NEXT_PUBLIC_CHAIN_ID=885824
+
+      # BlockScout API Backend (disabled for now)
+      - NEXT_PUBLIC_API_URL=
+
+      # Chain Configuration
+      - NEXT_PUBLIC_DENOM=BTCBR
+      - NEXT_PUBLIC_DECIMALS=18
+      - NEXT_PUBLIC_NETWORK_NAME=BTCBR Mainnet
+      - NEXT_PUBLIC_CURRENCY_SYMBOL=BTCBR
+      - NEXT_PUBLIC_TOTAL_SUPPLY=21000000000000000000000000
+
+      # Feature Flags
+      - NEXT_PUBLIC_ENABLE_FAUCET=false
+      - NEXT_PUBLIC_ENABLE_ANALYTICS=false
+
+      # Refresh Intervals
+      - NEXT_PUBLIC_BLOCK_REFRESH_INTERVAL=5000
+      - NEXT_PUBLIC_STATS_REFRESH_INTERVAL=10000
+
+      # Smart Contracts
+      - NEXT_PUBLIC_WBTCBR_ADDRESS=0xCDd022f86D85Af364982A8339257FB93b2478998
+      - NEXT_PUBLIC_FACTORY_ADDRESS=0x582A41f16b0797E6419e3903d1D9FD6Ec294b4b1
+      - NEXT_PUBLIC_ROUTER_ADDRESS=0xd4DC66EEdc199C1DDcf1c997d0E9A0Fe1802c861
+      - NEXT_PUBLIC_FLASHCOIN_ADDRESS=0x385808CfB44394a2337fb2Fa4ed4D3d1dAC9c3D4
+
+      # Explorer Settings
+      - NEXT_PUBLIC_BLOCKS_PER_PAGE=25
+      - NEXT_PUBLIC_TXS_PER_PAGE=50
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

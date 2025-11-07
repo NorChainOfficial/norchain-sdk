@@ -1,0 +1,28 @@
+# Xaheen Explorer Frontend - Development Dockerfile
+# Optimized for development with hot reload
+
+FROM node:20-alpine
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml* package-lock.json* ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 3002
+
+# Environment
+ENV NODE_ENV=development
+ENV PORT=3002
+
+# Start development server
+CMD ["pnpm", "dev"]

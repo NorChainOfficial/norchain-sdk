@@ -1,0 +1,230 @@
+# Development Setup
+
+Complete guide for setting up the NorChain development environment.
+
+## Prerequisites
+
+- **Node.js** >= 18.0.0
+- **npm** >= 9.0.0
+- **PostgreSQL** >= 14 (or Supabase account)
+- **Redis** (optional, for caching)
+- **Git**
+
+## Initial Setup
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/nor-chain/norchain-monorepo
+cd norchain-monorepo
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+This installs dependencies for all workspace packages.
+
+### 3. Environment Configuration
+
+#### Explorer API
+
+Create `apps/explorer-api/.env`:
+
+```env
+PORT=3000
+NODE_ENV=development
+DATABASE_URL=postgresql://user:password@localhost:5432/norchain
+JWT_SECRET=your-secret-key
+RPC_URL=https://rpc.norchain.org
+CHAIN_ID=65001
+```
+
+#### Explorer App
+
+Create `apps/explorer/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+#### Landing Page
+
+Create `apps/landing/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
+
+#### NEX Exchange
+
+Create `apps/nex-exchange/.env.local`:
+
+```env
+NEXT_PUBLIC_EXPLORER_API_URL=http://localhost:3000
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+## Database Setup
+
+### PostgreSQL
+
+```bash
+# Create database
+createdb norchain
+
+# Run migrations (if available)
+cd apps/explorer-api
+npm run migration:run
+```
+
+### Supabase
+
+1. Create a new Supabase project
+2. Copy the connection string to `DATABASE_URL`
+3. Run migrations if available
+
+## Running Services
+
+### Start All Services
+
+```bash
+npm run dev
+```
+
+This starts all services in parallel.
+
+### Start Individual Services
+
+```bash
+# Explorer API
+npm run explorer:dev
+
+# Explorer App
+cd apps/explorer && npm run dev
+
+# Landing Page
+cd apps/landing && npm run dev
+
+# NEX Exchange
+npm run nex:dev
+
+# Documentation
+npm run docs:dev
+```
+
+## Service Ports
+
+| Service | Port | URL |
+|---------|------|-----|
+| Explorer API | 3000 | http://localhost:3000 |
+| Explorer App | 3002 | http://localhost:3002 |
+| Landing Page | 3010 | http://localhost:3010 |
+| NEX Exchange | 3001 | http://localhost:3001 |
+| Documentation | 3011 | http://localhost:3011 |
+
+## Development Workflow
+
+### Making Changes
+
+1. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-feature
+   ```
+
+2. **Make your changes**
+   - Write code
+   - Add tests
+   - Update documentation
+
+3. **Test locally**
+   ```bash
+   npm run lint
+   npm run build
+   ```
+
+4. **Commit changes**
+   ```bash
+   git add .
+   git commit -m "feat: your feature description"
+   ```
+
+5. **Push and create PR**
+   ```bash
+   git push origin feature/your-feature
+   ```
+
+### Code Style
+
+- Use TypeScript strict mode
+- Follow ESLint rules
+- Use Prettier for formatting
+- Write tests for new features
+
+### Testing
+
+```bash
+# Run all tests
+npm run test
+
+# Run tests for specific app
+cd apps/explorer-api && npm run test
+```
+
+## Troubleshooting
+
+### Port Already in Use
+
+```bash
+# Find process using port
+lsof -i :3000
+
+# Kill process
+kill -9 <PID>
+```
+
+### Database Connection Issues
+
+1. Check PostgreSQL is running
+2. Verify connection string
+3. Check firewall settings
+
+### API Connection Issues
+
+1. Verify Explorer API is running
+2. Check environment variables
+3. Verify CORS settings
+
+## IDE Setup
+
+### VS Code
+
+Recommended extensions:
+- ESLint
+- Prettier
+- TypeScript
+- Tailwind CSS IntelliSense
+
+### Settings
+
+Create `.vscode/settings.json`:
+
+```json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
+```
+
+## Next Steps
+
+- Read [Architecture](/architecture) guide
+- Explore [API Documentation](/api/overview)
+- Check [Environment Variables](/development/environment)
+

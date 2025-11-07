@@ -1,0 +1,18 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hexagon Background -->
+  <path d="M32 4L54 16V40L32 52L10 40V16L32 4Z" fill="url(#gradient1)"/>
+
+  <!-- Neural Network Lines -->
+  <path d="M32 16L48 24M32 16L16 24M32 48L48 40M32 48L16 40" stroke="#00D9FF" stroke-width="1" opacity="0.4"/>
+
+  <!-- XH Monogram -->
+  <text x="32" y="38" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="white" text-anchor="middle">XH</text>
+
+  <!-- Gradient Definition -->
+  <defs>
+    <linearGradient id="gradient1" x1="10" y1="4" x2="54" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0066FF"/>
+      <stop offset="100%" stop-color="#00D9FF"/>
+    </linearGradient>
+  </defs>
+</svg>

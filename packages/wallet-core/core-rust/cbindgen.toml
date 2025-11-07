@@ -1,0 +1,12 @@
+language = "C"
+include_guard = "NOR_CORE_FFI_H"
+namespace = "nor_core"
+style = "both"
+cpp_compat = true
+
+[parse]
+parse_deps = false
+include = ["nor_core"]
+
+[export]
+prefix = "nor_"

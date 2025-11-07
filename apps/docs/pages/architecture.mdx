@@ -1,0 +1,223 @@
+# Architecture
+
+This document describes the architecture of the NorChain ecosystem.
+
+## Overview
+
+The NorChain monorepo follows a microservices architecture with shared infrastructure:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Frontend Layer                          │
+│                                                               │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐       │
+│  │   Explorer   │  │   Landing   │  │ NEX Exchange │       │
+│  │   (Next.js)  │  │   (Next.js)  │  │   (Next.js)  │       │
+│  │   Port 3002  │  │   Port 3010  │  │   Port 3001  │       │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘       │
+│         │                 │                  │                │
+└─────────┼─────────────────┼──────────────────┼───────────────┘
+          │                 │                  │
+          └─────────────────┼──────────────────┘
+                            │
+          ┌─────────────────▼──────────────────┐
+          │         API Layer                   │
+          │                                     │
+          │  ┌──────────────────────────────┐  │
+          │  │    Explorer API (NestJS)     │  │
+          │  │    Port 3000                 │  │
+          │  │    - REST API                │  │
+          │  │    - GraphQL API             │  │
+          │  │    - WebSocket               │  │
+          │  └──────────────┬───────────────┘  │
+          └─────────────────┼───────────────────┘
+                            │
+          ┌─────────────────▼──────────────────┐
+          │      Data Layer                      │
+          │                                     │
+          │  ┌──────────────┐  ┌─────────────┐ │
+          │  │  PostgreSQL  │  │    Redis    │ │
+          │  │  / Supabase  │  │   (Cache)   │ │
+          │  └──────────────┘  └─────────────┘ │
+          └─────────────────────────────────────┘
+                            │
+          ┌─────────────────▼──────────────────┐
+          │    Blockchain Layer                  │
+          │                                     │
+          │  ┌──────────────────────────────┐  │
+          │  │    NorChain RPC Node         │  │
+          │  │    https://rpc.norchain.org  │  │
+          │  └──────────────────────────────┘  │
+          └─────────────────────────────────────┘
+```
+
+## Components
+
+### Frontend Applications
+
+#### Explorer App (`apps/explorer`)
+- **Purpose**: Blockchain explorer interface
+- **Tech**: Next.js 14, React, TypeScript
+- **Port**: 3002
+- **Features**:
+  - Block and transaction browsing
+  - Contract interaction
+  - Account analytics
+  - Real-time updates
+
+#### Landing Page (`apps/landing`)
+- **Purpose**: Marketing and information website
+- **Tech**: Next.js 14, React, TypeScript
+- **Port**: 3010
+- **Features**:
+  - Network statistics
+  - Community information
+  - Product overview
+
+#### NEX Exchange (`apps/nex-exchange`)
+- **Purpose**: Decentralized exchange platform
+- **Tech**: Next.js 14, React, TypeScript, Wagmi
+- **Port**: 3001
+- **Features**:
+  - Token swapping
+  - Order management
+  - Portfolio tracking
+
+### Backend Services
+
+#### Explorer API (`apps/explorer-api`)
+- **Purpose**: Central API for all blockchain data
+- **Tech**: NestJS, TypeScript, PostgreSQL
+- **Port**: 3000
+- **Features**:
+  - REST API (50+ endpoints)
+  - GraphQL API
+  - WebSocket support
+  - Authentication (JWT & API Keys)
+  - Rate limiting
+  - Caching (Redis)
+
+## Data Flow
+
+### Request Flow
+
+1. **Frontend Request**
+   ```
+   Explorer App → HTTP Request → Explorer API
+   ```
+
+2. **API Processing**
+   ```
+   Explorer API → Database Query → PostgreSQL
+   Explorer API → RPC Call → Blockchain Node
+   ```
+
+3. **Response**
+   ```
+   PostgreSQL/RPC → Explorer API → JSON Response → Explorer App
+   ```
+
+### Real-time Updates
+
+```
+Blockchain Node → WebSocket → Explorer API → WebSocket → Explorer App
+```
+
+## Database Schema
+
+### Core Tables
+
+- `blocks` - Block data
+- `transactions` - Transaction data
+- `accounts` - Account information
+- `tokens` - Token metadata
+- `contracts` - Contract information
+- `events` - Contract events
+
+### Exchange Tables
+
+- `limit_orders` - Limit orders
+- `stop_loss_orders` - Stop-loss orders
+- `dca_schedules` - DCA schedules
+- `trades` - Trade history
+- `portfolio_snapshots` - Portfolio analytics
+
+## API Architecture
+
+### REST API
+
+Base URL: `http://localhost:3000/api/v1`
+
+Endpoints organized by resource:
+- `/account/*` - Account operations
+- `/block/*` - Block operations
+- `/transaction/*` - Transaction operations
+- `/token/*` - Token operations
+- `/contract/*` - Contract operations
+- `/stats/*` - Network statistics
+
+### GraphQL API
+
+Endpoint: `http://localhost:3000/graphql`
+
+Provides flexible querying with:
+- Type-safe queries
+- Real-time subscriptions
+- Batch operations
+
+## Security
+
+### Authentication
+
+- **JWT Tokens**: For user authentication
+- **API Keys**: For programmatic access
+
+### Rate Limiting
+
+- **Unauthenticated**: 100 requests/minute
+- **Authenticated**: 1000 requests/minute
+
+### CORS
+
+Configured to allow requests from:
+- Explorer App (localhost:3002)
+- Landing Page (localhost:3010)
+- NEX Exchange (localhost:3001)
+
+## Deployment
+
+### Production Architecture
+
+```
+┌─────────────────────────────────────────┐
+│         Load Balancer (Nginx)            │
+└──────────────┬──────────────────────────┘
+               │
+    ┌──────────┼──────────┐
+    │          │          │
+┌───▼───┐ ┌───▼───┐ ┌───▼───┐
+│ API 1 │ │ API 2 │ │ API 3 │
+└───┬───┘ └───┬───┘ └───┬───┘
+    │         │         │
+    └─────────┼─────────┘
+              │
+    ┌─────────▼─────────┐
+    │   PostgreSQL      │
+    │   (Primary + Replica)│
+    └────────────────────┘
+```
+
+## Scalability
+
+- **Horizontal Scaling**: API instances can be scaled independently
+- **Database**: PostgreSQL with read replicas
+- **Caching**: Redis for frequently accessed data
+- **CDN**: Static assets served via CDN
+
+## Monitoring
+
+- **Health Checks**: `/api/v1/health` endpoint
+- **Logging**: Winston logger with structured logs
+- **Metrics**: Prometheus-compatible metrics
+- **Error Tracking**: Centralized error handling
+

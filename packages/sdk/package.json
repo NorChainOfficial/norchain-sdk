@@ -1,0 +1,30 @@
+{
+  "name": "@norchain/sdk",
+  "version": "1.0.0",
+  "description": "NorChain JavaScript/TypeScript SDK for easy integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest"
+  },
+  "keywords": [
+    "norchain",
+    "blockchain",
+    "sdk",
+    "api"
+  ],
+  "author": "NorChain Team",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.0"
+  }
+}
+

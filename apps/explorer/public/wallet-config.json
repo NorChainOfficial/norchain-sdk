@@ -1,0 +1,46 @@
+{
+  "name": "Xaheen Chain Wallet Configuration",
+  "description": "Automatic configuration for Xaheen Chain tokens and networks",
+  "networks": {
+    "xaheen": {
+      "chainId": 885824,
+      "chainName": "Xaheen Chain",
+      "rpcUrls": ["https://rpc.bitcoinbr.tech"],
+      "nativeCurrency": {
+        "name": "BTCBR",
+        "symbol": "BTCBR",
+        "decimals": 18
+      },
+      "blockExplorerUrls": ["https://explorer.bitcoinbr.tech"]
+    },
+    "bsc": {
+      "chainId": 56,
+      "chainName": "Binance Smart Chain",
+      "rpcUrls": ["https://bsc-dataseed.binance.org/"],
+      "nativeCurrency": {
+        "name": "BNB",
+        "symbol": "BNB",
+        "decimals": 18
+      },
+      "blockExplorerUrls": ["https://bscscan.com"]
+    }
+  },
+  "tokens": {
+    "btcbr": {
+      "address": "0x0cF8e180350253271f4b917CcFb0aCCc4862F262",
+      "name": "BitcoinBR",
+      "symbol": "BTCBR",
+      "decimals": 18,
+      "chainId": 885824,
+      "logoURI": "https://bitcoinbr.tech/logo.png"
+    },
+    "flashcoin": {
+      "address": "0xFlashCoinAddress",
+      "name": "Flash BitcoinBR",
+      "symbol": "FBTCBR",
+      "decimals": 18,
+      "chainId": 885824,
+      "logoURI": "https://bitcoinbr.tech/flashcoin-logo.png"
+    }
+  }
+}

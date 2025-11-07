@@ -1,0 +1,29 @@
+{
+  "name": "Xaheen Chain Token List",
+  "logoURI": "https://bitcoinbr.tech/logo.png",
+  "keywords": ["xaheen", "btcbr", "bitcoinbr", "defi"],
+  "timestamp": "2025-10-22T00:00:00+00:00",
+  "tokens": [
+    {
+      "chainId": 885824,
+      "address": "0x0cF8e180350253271f4b917CcFb0aCCc4862F262",
+      "name": "BitcoinBR",
+      "symbol": "BTCBR",
+      "decimals": 18,
+      "logoURI": "https://bitcoinbr.tech/logo.png"
+    },
+    {
+      "chainId": 885824,
+      "address": "0xFlashCoinAddress",
+      "name": "Flash BitcoinBR",
+      "symbol": "FBTCBR",
+      "decimals": 18,
+      "logoURI": "https://bitcoinbr.tech/flashcoin-logo.png"
+    }
+  ],
+  "version": {
+    "major": 1,
+    "minor": 0,
+    "patch": 0
+  }
+}

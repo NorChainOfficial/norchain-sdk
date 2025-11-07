@@ -1,0 +1,98 @@
+# GraphQL Code Generator Configuration
+# Generates TypeScript types from GraphQL schema and operations
+
+schema: './lib/graphql/schema.ts'
+
+documents:
+  - './lib/graphql/queries.ts'
+  - './lib/graphql/subscriptions-examples.ts'
+  - './components/**/*.tsx'
+  - './app/**/*.tsx'
+
+generates:
+  # Generate TypeScript types for the entire schema
+  ./lib/graphql/generated/types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-resolvers
+    config:
+      # Type safety options
+      strictScalars: true
+      skipTypename: false
+      enumsAsTypes: true
+
+      # Custom scalar types
+      scalars:
+        DateTime: string
+        BigInt: string
+        Address: string
+        Hash: string
+
+      # Naming conventions
+      namingConvention:
+        typeNames: pascal-case#pascal
+        enumValues: upper-case#upper
+        transformUnderscore: true
+
+      # Additional type safety
+      avoidOptionals:
+        field: false
+        inputValue: false
+        object: false
+
+      # Make all types readonly
+      immutableTypes: true
+
+      # Add utility types
+      maybeValue: T | null
+
+      # Resolver types
+      useIndexSignature: false
+      contextType: '../context#GraphQLContext'
+
+  # Generate React Apollo hooks
+  ./lib/graphql/generated/hooks.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      reactApolloVersion: 3
+
+      scalars:
+        DateTime: string
+        BigInt: string
+        Address: string
+        Hash: string
+
+      # Hook options
+      addDocBlocks: true
+      dedupeFragments: true
+
+  # Generate Apollo Client helpers
+  ./lib/graphql/generated/apollo-helpers.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-apollo-client-helpers
+    config:
+      scalars:
+        DateTime: string
+        BigInt: string
+        Address: string
+        Hash: string
+
+  # Generate introspection schema for tools
+  ./lib/graphql/generated/schema.json:
+    plugins:
+      - introspection
+    config:
+      minify: true
+
+hooks:
+  afterAllFileWrite:
+    - prettier --write

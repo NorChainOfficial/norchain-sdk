@@ -1,0 +1,195 @@
+# Environment Variables
+
+This guide covers all environment variables used across the NorChain ecosystem.
+
+## Explorer API
+
+**File**: `apps/explorer-api/.env`
+
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/norchain
+# OR Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-anon-key
+
+# JWT Authentication
+JWT_SECRET=your-secret-key-change-in-production
+JWT_EXPIRES_IN=7d
+
+# Redis (Optional)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# Blockchain RPC
+RPC_URL=https://rpc.norchain.org
+CHAIN_ID=65001
+
+# CORS
+CORS_ORIGIN=http://localhost:3002,http://localhost:3010,http://localhost:3001
+
+# Rate Limiting
+RATE_LIMIT_TTL=60
+RATE_LIMIT_MAX=100
+```
+
+## Explorer App
+
+**File**: `apps/explorer/.env.local`
+
+```env
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+
+# GraphQL
+NEXT_PUBLIC_GRAPHQL_URL=http://localhost:3000/graphql
+
+# WebSocket
+NEXT_PUBLIC_WS_URL=ws://localhost:3000
+
+# Blockchain RPC
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+## Landing Page
+
+**File**: `apps/landing/.env.local`
+
+```env
+# API Configuration (for network stats)
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
+
+## NEX Exchange
+
+**File**: `apps/nex-exchange/.env.local`
+
+```env
+# Explorer API
+NEXT_PUBLIC_EXPLORER_API_URL=http://localhost:3000
+
+# Blockchain RPC
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+## Environment-Specific Values
+
+### Development
+
+```env
+# API URLs
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+NEXT_PUBLIC_EXPLORER_API_URL=http://localhost:3000
+
+# RPC
+NEXT_PUBLIC_RPC_URL=http://localhost:8545
+```
+
+### Staging
+
+```env
+# API URLs
+NEXT_PUBLIC_API_URL=https://staging-api.norchain.org/api/v1
+NEXT_PUBLIC_EXPLORER_API_URL=https://staging-api.norchain.org
+
+# RPC
+NEXT_PUBLIC_RPC_URL=https://staging-rpc.norchain.org
+```
+
+### Production
+
+```env
+# API URLs
+NEXT_PUBLIC_API_URL=https://api.norchain.org/api/v1
+NEXT_PUBLIC_EXPLORER_API_URL=https://api.norchain.org
+
+# RPC
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+```
+
+## Security Notes
+
+1. **Never commit** `.env` files to version control
+2. **Use strong secrets** for `JWT_SECRET` in production
+3. **Rotate secrets** regularly
+4. **Use different secrets** for each environment
+5. **Restrict CORS** origins in production
+
+## Variable Reference
+
+### API URLs
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `NEXT_PUBLIC_API_URL` | Explorer API base URL | `http://localhost:3000/api/v1` |
+| `NEXT_PUBLIC_EXPLORER_API_URL` | Explorer API URL (no version) | `http://localhost:3000` |
+
+### Blockchain
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `NEXT_PUBLIC_RPC_URL` | Blockchain RPC endpoint | `https://rpc.norchain.org` |
+| `NEXT_PUBLIC_CHAIN_ID` | Chain ID | `65001` |
+| `RPC_URL` | Server-side RPC URL | `https://rpc.norchain.org` |
+| `CHAIN_ID` | Server-side Chain ID | `65001` |
+
+### Database
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `DATABASE_URL` | PostgreSQL connection string | - |
+| `SUPABASE_URL` | Supabase project URL | - |
+| `SUPABASE_KEY` | Supabase anon key | - |
+
+### Authentication
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `JWT_SECRET` | JWT signing secret | - |
+| `JWT_EXPIRES_IN` | JWT expiration time | `7d` |
+
+### Cache
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `REDIS_HOST` | Redis host | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+
+## Validation
+
+Each app validates environment variables on startup. Missing required variables will cause the app to fail with clear error messages.
+
+## Example Setup Script
+
+```bash
+#!/bin/bash
+
+# Explorer API
+cat > apps/explorer-api/.env << EOF
+PORT=3000
+NODE_ENV=development
+DATABASE_URL=postgresql://user:password@localhost:5432/norchain
+JWT_SECRET=$(openssl rand -hex 32)
+RPC_URL=https://rpc.norchain.org
+CHAIN_ID=65001
+EOF
+
+# Explorer App
+cat > apps/explorer/.env.local << EOF
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+EOF
+
+# Landing Page
+cat > apps/landing/.env.local << EOF
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+EOF
+```
+

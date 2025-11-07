@@ -1,0 +1,75 @@
+[package]
+name = "nor-core"
+version = "0.1.0"
+edition = "2021"
+authors = ["Nor Wallet Team"]
+license = "UNLICENSED"
+
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]
+name = "nor_core"
+
+[dependencies]
+# Crypto primitives
+bip32 = "0.5"
+bip39 = { version = "2.0", features = ["rand"] }
+k256 = { version = "0.13", features = ["ecdsa"] }
+secp256k1 = { version = "0.28", features = ["recovery", "global-context"] }
+tiny-keccak = { version = "2.0", features = ["keccak"] }
+sha2 = "0.10"
+sha3 = "0.10"
+hmac = "0.12"
+pbkdf2 = { version = "0.12", features = ["simple"] }
+aes-gcm = "0.10"
+rand = "0.8"
+zeroize = { version = "1.7", features = ["derive"] }
+
+# Utilities
+hex = "0.4"
+uuid = { version = "1.6", features = ["v4"] }
+lazy_static = "1.4"
+
+# FFI bindings (cbindgen generates C headers)
+
+# Ethereum
+ethers-core = "2.0"
+rlp = "0.5"
+
+# TRON
+bs58 = "0.5"
+
+# JSON-RPC
+reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# Logging
+log = "0.4"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+
+
+# Target-specific configurations
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.13"
+
+[target.'cfg(target_os = "ios")'.dependencies]
+oslog = "0.2"
+
+[profile.release]
+opt-level = "z"     # Optimize for size
+lto = true          # Link-time optimization
+codegen-units = 1   # Better optimization
+strip = true        # Strip symbols
+panic = "abort"     # Smaller binary

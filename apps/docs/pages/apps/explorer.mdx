@@ -1,0 +1,173 @@
+# Explorer App
+
+The NorChain Explorer is a comprehensive blockchain explorer application built with Next.js.
+
+## Overview
+
+The Explorer App provides a user-friendly interface for browsing blockchain data, interacting with contracts, and analyzing network activity.
+
+## Features
+
+- ✅ **Block Browser** - Browse blocks, transactions, and accounts
+- ✅ **Contract Interaction** - Read and write to smart contracts
+- ✅ **Real-time Updates** - WebSocket-powered live data
+- ✅ **Analytics Dashboard** - Network statistics and charts
+- ✅ **Wallet Integration** - Connect and interact with wallets
+- ✅ **Transaction Tracking** - Monitor transaction status
+- ✅ **Token Explorer** - Browse tokens and token transfers
+
+## Tech Stack
+
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **State Management**: React Query
+- **GraphQL**: Apollo Client
+- **Blockchain**: Ethers.js
+
+## Configuration
+
+### Environment Variables
+
+Create `apps/explorer/.env.local`:
+
+```env
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+
+# Blockchain RPC
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+
+# GraphQL
+NEXT_PUBLIC_GRAPHQL_URL=http://localhost:3000/graphql
+
+# WebSocket
+NEXT_PUBLIC_WS_URL=ws://localhost:3000
+```
+
+## Running Locally
+
+```bash
+cd apps/explorer
+npm install
+npm run dev
+```
+
+The app will be available at http://localhost:3002
+
+## API Integration
+
+The Explorer App connects to the Explorer API for all data operations:
+
+### API Client
+
+```typescript
+// lib/api-client.ts
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+
+export const apiClient = {
+  getBlocks: async ({ page = 1, per_page = 20 }) => {
+    const response = await fetch(`${API_BASE_URL}/blocks?page=${page}&per_page=${per_page}`);
+    return response.json();
+  },
+  // ... more methods
+};
+```
+
+### GraphQL Client
+
+```typescript
+// lib/graphql/client.ts
+import { ApolloClient, InMemoryCache } from '@apollo/client';
+
+const client = new ApolloClient({
+  uri: process.env.NEXT_PUBLIC_GRAPHQL_URL,
+  cache: new InMemoryCache(),
+});
+```
+
+## Pages
+
+### Main Pages
+
+- `/` - Dashboard with network stats
+- `/blocks` - Block browser
+- `/transactions` - Transaction list
+- `/accounts` - Account browser
+- `/tokens` - Token explorer
+- `/contracts` - Contract browser
+
+### Account Pages
+
+- `/address/[address]` - Account details
+- `/address/[address]/transactions` - Account transactions
+- `/address/[address]/tokens` - Account tokens
+
+### Transaction Pages
+
+- `/tx/[hash]` - Transaction details
+- `/tx/[hash]/events` - Transaction events
+
+### Contract Pages
+
+- `/contracts/[address]` - Contract details
+- `/contracts/[address]/read` - Read contract
+- `/contracts/[address]/write` - Write contract
+- `/contracts/[address]/events` - Contract events
+
+## Components
+
+### Layout Components
+
+- `Header` - Navigation header
+- `Footer` - Footer with links
+- `Sidebar` - Navigation sidebar
+
+### Blockchain Components
+
+- `BlockCard` - Block information card
+- `TransactionCard` - Transaction information card
+- `AccountCard` - Account information card
+- `ContractViewer` - Contract source code viewer
+
+### Analytics Components
+
+- `NetworkStats` - Network statistics
+- `TransactionChart` - Transaction volume chart
+- `GasPriceChart` - Gas price chart
+
+## Development
+
+### Project Structure
+
+```
+apps/explorer/
+├── app/              # Next.js app directory
+│   ├── page.tsx      # Home page
+│   ├── blocks/       # Block pages
+│   ├── transactions/ # Transaction pages
+│   └── ...
+├── components/       # React components
+├── lib/             # Utilities and API clients
+├── hooks/           # React hooks
+└── types/           # TypeScript types
+```
+
+### Adding New Features
+
+1. **Create API client method** in `lib/api-client.ts`
+2. **Create component** in `components/`
+3. **Create page** in `app/`
+4. **Add types** in `types/`
+
+## Deployment
+
+See [Deployment Guide](/development/deployment) for production deployment instructions.
+
+## Related Documentation
+
+- [API Documentation](/api/overview)
+- [GraphQL API](/api/graphql)
+- [Development Guide](/development/setup)
+

@@ -1,0 +1,233 @@
+# Deployment
+
+Guide for deploying the NorChain ecosystem to production.
+
+## Overview
+
+The NorChain ecosystem consists of multiple services that can be deployed independently or together.
+
+## Deployment Options
+
+### Option 1: Docker Compose (Recommended for Single Server)
+
+Deploy all services using Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+### Option 2: Individual Services
+
+Deploy each service independently:
+
+- Explorer API (NestJS)
+- Explorer App (Next.js)
+- Landing Page (Next.js)
+- NEX Exchange (Next.js)
+- Documentation (Next.js)
+
+### Option 3: Kubernetes
+
+Deploy to Kubernetes cluster for scalability.
+
+## Pre-Deployment Checklist
+
+- [ ] Environment variables configured
+- [ ] Database migrations run
+- [ ] SSL certificates configured
+- [ ] Domain names configured
+- [ ] CORS settings updated
+- [ ] Rate limiting configured
+- [ ] Monitoring set up
+- [ ] Backup strategy in place
+
+## Explorer API Deployment
+
+### Build
+
+```bash
+cd apps/explorer-api
+npm run build
+```
+
+### Environment Variables
+
+```env
+NODE_ENV=production
+PORT=3000
+DATABASE_URL=postgresql://...
+JWT_SECRET=...
+RPC_URL=https://rpc.norchain.org
+CHAIN_ID=65001
+CORS_ORIGIN=https://explorer.norchain.org,https://norchain.org
+```
+
+### Run
+
+```bash
+npm run start:prod
+```
+
+### Docker
+
+```bash
+docker build -t norchain-api .
+docker run -p 3000:3000 --env-file .env norchain-api
+```
+
+## Explorer App Deployment
+
+### Build
+
+```bash
+cd apps/explorer
+npm run build
+```
+
+### Environment Variables
+
+```env
+NEXT_PUBLIC_API_URL=https://api.norchain.org/api/v1
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+### Deploy to Vercel
+
+```bash
+vercel --prod
+```
+
+### Deploy to Docker
+
+```bash
+docker build -t norchain-explorer .
+docker run -p 3002:3002 --env-file .env.local norchain-explorer
+```
+
+## Landing Page Deployment
+
+### Build
+
+```bash
+cd apps/landing
+npm run build
+```
+
+### Environment Variables
+
+```env
+NEXT_PUBLIC_API_URL=https://api.norchain.org/api/v1
+```
+
+### Deploy
+
+Similar to Explorer App deployment.
+
+## NEX Exchange Deployment
+
+### Build
+
+```bash
+cd apps/nex-exchange
+npm run build
+```
+
+### Environment Variables
+
+```env
+NEXT_PUBLIC_EXPLORER_API_URL=https://api.norchain.org
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+## Documentation Deployment
+
+### Build
+
+```bash
+cd apps/docs
+npm run build
+```
+
+### Deploy
+
+Deploy static export or use Next.js hosting.
+
+## Production Considerations
+
+### Security
+
+- Use HTTPS everywhere
+- Set secure JWT secrets
+- Enable rate limiting
+- Configure CORS properly
+- Use environment variables for secrets
+
+### Performance
+
+- Enable Redis caching
+- Use CDN for static assets
+- Enable compression
+- Optimize database queries
+- Use connection pooling
+
+### Monitoring
+
+- Set up health checks
+- Monitor error rates
+- Track API usage
+- Monitor database performance
+- Set up alerts
+
+### Scaling
+
+- Use load balancers
+- Scale API instances horizontally
+- Use database read replicas
+- Enable CDN caching
+- Use Redis for session storage
+
+## Health Checks
+
+### API Health
+
+```bash
+curl https://api.norchain.org/api/v1/health
+```
+
+### App Health
+
+```bash
+curl https://explorer.norchain.org/api/health
+```
+
+## Rollback Procedure
+
+1. **Identify issue**
+2. **Revert code changes**
+3. **Rebuild and redeploy**
+4. **Verify functionality**
+5. **Monitor for issues**
+
+## Backup Strategy
+
+### Database
+
+- Daily automated backups
+- Point-in-time recovery
+- Off-site backups
+
+### Configuration
+
+- Version control for configs
+- Encrypted secrets storage
+- Regular config backups
+
+## Support
+
+For deployment issues:
+- Check logs
+- Review monitoring
+- Contact DevOps team
+

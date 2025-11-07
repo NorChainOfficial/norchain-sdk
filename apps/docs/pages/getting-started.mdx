@@ -1,0 +1,150 @@
+# Getting Started
+
+This guide will help you set up the NorChain monorepo and get all services running.
+
+## Prerequisites
+
+- **Node.js** >= 18.0.0
+- **npm** >= 9.0.0
+- **PostgreSQL** >= 14 (or Supabase account)
+- **Redis** (optional, for caching)
+
+## Installation
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/nor-chain/norchain-monorepo
+cd norchain-monorepo
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+This installs dependencies for all workspace packages.
+
+## Environment Setup
+
+### Explorer API
+
+Create `apps/explorer-api/.env`:
+
+```env
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/norchain
+# OR Supabase
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-anon-key
+
+# Server
+PORT=3000
+NODE_ENV=development
+
+# JWT
+JWT_SECRET=your-secret-key-change-in-production
+JWT_EXPIRES_IN=7d
+
+# Redis (optional)
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# Blockchain RPC
+RPC_URL=https://rpc.norchain.org
+CHAIN_ID=65001
+
+# CORS
+CORS_ORIGIN=http://localhost:3002,http://localhost:3010,http://localhost:3001
+```
+
+### Explorer App
+
+Create `apps/explorer/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+### Landing Page
+
+Create `apps/landing/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api/v1
+```
+
+### NEX Exchange
+
+Create `apps/nex-exchange/.env.local`:
+
+```env
+NEXT_PUBLIC_EXPLORER_API_URL=http://localhost:3000
+NEXT_PUBLIC_RPC_URL=https://rpc.norchain.org
+NEXT_PUBLIC_CHAIN_ID=65001
+```
+
+## Running Services
+
+### Start All Services
+
+```bash
+npm run dev
+```
+
+This starts all services in parallel.
+
+### Start Individual Services
+
+```bash
+# Explorer API
+npm run explorer:dev
+
+# Explorer App
+cd apps/explorer && npm run dev
+
+# Landing Page
+cd apps/landing && npm run dev
+
+# NEX Exchange
+npm run nex:dev
+
+# Docs
+cd apps/docs && npm run dev
+```
+
+## Service Ports
+
+| Service | Port | URL |
+|---------|------|-----|
+| Explorer API | 3000 | http://localhost:3000 |
+| Explorer App | 3002 | http://localhost:3002 |
+| Landing Page | 3010 | http://localhost:3010 |
+| NEX Exchange | 3001 | http://localhost:3001 |
+| Documentation | 3011 | http://localhost:3011 |
+
+## Verify Installation
+
+1. **Check Explorer API**
+   ```bash
+   curl http://localhost:3000/api/v1/health
+   ```
+
+2. **Check Swagger Docs**
+   Open http://localhost:3000/api-docs
+
+3. **Check Explorer App**
+   Open http://localhost:3002
+
+4. **Check Landing Page**
+   Open http://localhost:3010
+
+## Next Steps
+
+- Read the [Architecture](/architecture) guide
+- Explore [API Documentation](/api/overview)
+- Check [Development Guide](/development/setup)
+

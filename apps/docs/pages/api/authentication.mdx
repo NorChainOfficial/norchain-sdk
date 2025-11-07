@@ -1,0 +1,216 @@
+# Authentication
+
+The NorChain Explorer API supports two authentication methods: **JWT Tokens** and **API Keys**.
+
+## JWT Authentication
+
+JWT tokens are used for user authentication and provide access to user-specific endpoints.
+
+### Register
+
+Create a new user account:
+
+```bash
+POST /api/v1/auth/register
+```
+
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "name": "John Doe"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "name": "John Doe",
+    "roles": ["user"],
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+### Login
+
+Get a JWT token:
+
+```bash
+POST /api/v1/auth/login
+```
+
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "expires_in": 604800
+  }
+}
+```
+
+### Using JWT Token
+
+Include the token in the `Authorization` header:
+
+```bash
+Authorization: Bearer <token>
+```
+
+**Example:**
+```bash
+curl http://localhost:3000/api/v1/account/summary?address=0x... \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+```
+
+## API Key Authentication
+
+API keys are used for programmatic access and provide better rate limits.
+
+### Create API Key
+
+Create an API key (requires JWT authentication):
+
+```bash
+POST /api/v1/auth/api-keys
+Authorization: Bearer <jwt-token>
+```
+
+**Request:**
+```json
+{
+  "name": "My API Key",
+  "description": "API key for production",
+  "scopes": ["read", "write"],
+  "expiresAt": "2025-12-31T23:59:59.000Z"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "id": "uuid",
+    "key": "nk_abc123...",
+    "name": "My API Key",
+    "scopes": ["read", "write"],
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Important**: Save the `key` value immediately - it's only shown once!
+
+### Using API Key
+
+Include the API key in the `X-API-Key` header:
+
+```bash
+X-API-Key: nk_abc123...
+```
+
+**Example:**
+```bash
+curl http://localhost:3000/api/v1/account/balance?address=0x... \
+  -H "X-API-Key: nk_abc123..."
+```
+
+## Public Endpoints
+
+Some endpoints don't require authentication:
+
+- `GET /api/v1/health` - Health check
+- `GET /api/v1/account/balance` - Get balance
+- `GET /api/v1/account/txlist` - Get transactions
+- `GET /api/v1/block/getblock` - Get block
+- `GET /api/v1/transaction/gettxinfo` - Get transaction
+
+## Rate Limits
+
+Authentication affects rate limits:
+
+- **Unauthenticated**: 100 requests/minute
+- **JWT Authenticated**: 1000 requests/minute
+- **API Key**: 1000 requests/minute (can be customized)
+
+## Scopes
+
+API keys can have specific scopes:
+
+- `read` - Read-only access
+- `write` - Write access (for contract verification, etc.)
+- `admin` - Administrative access
+
+## Token Expiration
+
+- **JWT Tokens**: Expire after 7 days (default)
+- **API Keys**: Can be set to expire at a specific date
+
+## Refresh Tokens
+
+JWT tokens can be refreshed:
+
+```bash
+POST /api/v1/auth/refresh
+Authorization: Bearer <token>
+```
+
+## Security Best Practices
+
+1. **Never commit tokens or API keys** to version control
+2. **Use environment variables** for API keys
+3. **Rotate API keys** regularly
+4. **Use HTTPS** in production
+5. **Set appropriate scopes** for API keys
+6. **Monitor API usage** for suspicious activity
+
+## Error Responses
+
+### Invalid Token
+```json
+{
+  "status": "0",
+  "message": "Unauthorized",
+  "result": null
+}
+```
+
+### Expired Token
+```json
+{
+  "status": "0",
+  "message": "Token expired",
+  "result": null
+}
+```
+
+### Invalid API Key
+```json
+{
+  "status": "0",
+  "message": "Invalid API key",
+  "result": null
+}
+```
+

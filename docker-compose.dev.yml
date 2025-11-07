@@ -1,0 +1,72 @@
+version: '3.8'
+
+# Development docker-compose with hot reload
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: norchain-postgres-dev
+    environment:
+      POSTGRES_DB: ${DB_NAME:-norchain_explorer}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres-data-dev:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - norchain-network-dev
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: norchain-redis-dev
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    volumes:
+      - redis-data-dev:/data
+    restart: unless-stopped
+    networks:
+      - norchain-network-dev
+
+  # Unified API (Development)
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: norchain-api-dev
+    ports:
+      - "${API_PORT:-4000}:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-norchain_explorer}
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-norchain_explorer}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-dev-secret}
+      - RPC_URL=${RPC_URL:-https://rpc.norchain.org}
+      - CHAIN_ID=${CHAIN_ID:-65001}
+      - CORS_ORIGIN=http://localhost:${EXPLORER_APP_PORT:-4002},http://localhost:${LANDING_PORT:-4010},http://localhost:${NEX_EXCHANGE_PORT:-4001},http://localhost:${DOCS_PORT:-4011},http://localhost:${WALLET_PORT:-4020}
+    volumes:
+      - ./apps/api/src:/app/src
+      - ./apps/api/dist:/app/dist
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - norchain-network-dev
+    command: npm run start:dev
+
+volumes:
+  postgres-data-dev:
+  redis-data-dev:
+
+networks:
+  norchain-network-dev:
+    driver: bridge
+

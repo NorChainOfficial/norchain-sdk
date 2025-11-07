@@ -1,0 +1,40 @@
+# WebSocket Server Dockerfile
+FROM node:20-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat netcat-openbsd
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml* ./
+RUN corepack enable pnpm && pnpm install --no-frozen-lockfile
+
+# Build stage
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Production stage
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV WS_PORT=3001
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 websocket
+RUN apk add --no-cache netcat-openbsd
+
+# Copy necessary files
+COPY --from=builder --chown=websocket:nodejs /app/server ./server
+COPY --from=builder --chown=websocket:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=websocket:nodejs /app/package.json ./package.json
+
+USER websocket
+
+EXPOSE 3001
+
+# Start WebSocket server
+CMD ["node", "server/websocket.ts"]
