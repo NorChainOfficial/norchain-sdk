@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
-import { CreateLimitOrderDto } from './dto/create-limit-order.dto';
-import { OrderSide } from './entities/limit-order.entity';
+import { CreateLimitOrderDto, OrderSide } from './dto/create-limit-order.dto';
 
 describe('OrdersController', () => {
   let controller: OrdersController;

@@ -5,6 +5,12 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { CreateApiKeyDto } from './dto/create-api-key.dto';
 
+// Mock bcrypt to avoid native module issues in test environment
+jest.mock('bcrypt', () => ({
+  hash: jest.fn().mockResolvedValue('hashed_password'),
+  compare: jest.fn().mockResolvedValue(true),
+}));
+
 describe('AuthController', () => {
   let controller: AuthController;
   let service: jest.Mocked<AuthService>;

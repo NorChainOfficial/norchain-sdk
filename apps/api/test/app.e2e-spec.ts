@@ -543,6 +543,87 @@ describe('AppController (e2e)', () => {
           expect([200, 404]).toContain(res.status);
         });
     });
+
+    it('/api/v1/proxy/eth_getTransactionReceipt (GET) should return transaction receipt', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/proxy/eth_getTransactionReceipt')
+        .query({ txhash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef' })
+        .expect((res) => {
+          expect([200, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/v1/proxy/eth_call (POST) should execute call', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/proxy/eth_call')
+        .send({
+          transaction: {
+            to: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+            data: '0x70a08231',
+          },
+          tag: 'latest',
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('status');
+          expect(res.body).toHaveProperty('result');
+        });
+    });
+
+    it('/api/v1/proxy/eth_estimateGas (POST) should estimate gas', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/proxy/eth_estimateGas')
+        .send({
+          transaction: {
+            to: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+            from: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
+            value: '1000000000000000000',
+          },
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('status');
+          expect(res.body).toHaveProperty('result');
+        });
+    });
+
+    it('/api/v1/proxy/eth_getCode (GET) should return contract code', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/proxy/eth_getCode')
+        .query({ address: '0xdAC17F958D2ee523a2206206994597C13D831ec7', tag: 'latest' })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('status');
+          expect(res.body).toHaveProperty('result');
+        });
+    });
+
+    it('/api/v1/proxy/eth_getLogs (POST) should return event logs', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/proxy/eth_getLogs')
+        .send({
+          filter: {
+            fromBlock: '0x3E8',
+            toBlock: '0x7D0',
+            address: '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+          },
+        })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('status');
+          expect(res.body).toHaveProperty('result');
+        });
+    });
+
+    it('/api/v1/proxy/eth_gasPrice (GET) should return gas price', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/proxy/eth_gasPrice')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('status');
+          expect(res.body).toHaveProperty('result');
+        });
+    });
   });
 
   describe('Auth Endpoints', () => {
@@ -663,6 +744,47 @@ describe('AppController (e2e)', () => {
           expect([200, 401]).toContain(res.status);
         });
     });
+
+    it('/api/v1/notifications (POST) should create notification', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/notifications')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          type: 'transaction',
+          title: 'Test Notification',
+          message: 'This is a test notification',
+        })
+        .expect((res) => {
+          expect([200, 201, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/v1/notifications/:id/read (PATCH) should mark notification as read', () => {
+      return request(app.getHttpServer())
+        .patch('/api/v1/notifications/test-id/read')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 404, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/v1/notifications/read-all (PATCH) should mark all as read', () => {
+      return request(app.getHttpServer())
+        .patch('/api/v1/notifications/read-all')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/v1/notifications/:id (DELETE) should delete notification', () => {
+      return request(app.getHttpServer())
+        .delete('/api/v1/notifications/test-id')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 404, 401]).toContain(res.status);
+        });
+    });
   });
 
   describe('Orders Endpoints', () => {
@@ -720,6 +842,34 @@ describe('AppController (e2e)', () => {
         .expect(201)
         .expect((res) => {
           expect(res.body).toHaveProperty('id');
+        });
+    });
+
+    it('/api/v1/orders/stop-loss (GET) should return stop-loss orders', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/orders/stop-loss')
+        .query({ user: '0xdAC17F958D2ee523a2206206994597C13D831ec7' })
+        .expect(200)
+        .expect((res) => {
+          expect(Array.isArray(res.body)).toBe(true);
+        });
+    });
+
+    it('/api/v1/orders/dca (GET) should return DCA schedules', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/orders/dca')
+        .query({ user: '0xdAC17F958D2ee523a2206206994597C13D831ec7' })
+        .expect(200)
+        .expect((res) => {
+          expect(Array.isArray(res.body)).toBe(true);
+        });
+    });
+
+    it('/api/v1/orders/limit/:id (DELETE) should cancel limit order', () => {
+      return request(app.getHttpServer())
+        .delete('/api/v1/orders/limit/test-id')
+        .expect((res) => {
+          expect([200, 404]).toContain(res.status);
         });
     });
   });
