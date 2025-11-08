@@ -34,7 +34,8 @@ describe('GasPredictionService', () => {
       proxyService.eth_gasPrice.mockResolvedValue({
         status: '1',
         result: '0x3b9aca00',
-      });
+        message: 'Success',
+      } as any);
 
       const result = await service.predict();
 
@@ -49,7 +50,8 @@ describe('GasPredictionService', () => {
       proxyService.eth_gasPrice.mockResolvedValue({
         status: '1',
         result: '0x0',
-      });
+        message: 'Success',
+      } as any);
 
       const result = await service.predict();
 

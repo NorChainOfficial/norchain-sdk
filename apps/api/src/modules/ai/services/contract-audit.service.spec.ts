@@ -56,7 +56,8 @@ describe('ContractAuditService', () => {
       proxyService.eth_getCode.mockResolvedValue({
         status: '1',
         result: '0x',
-      });
+        message: 'OK',
+      } as any);
 
       const result = await service.audit(address);
 

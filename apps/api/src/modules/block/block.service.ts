@@ -191,8 +191,8 @@ export class BlockService {
    */
   private formatRpcBlock(block: any) {
     return {
-      blockNumber: block.number.toString(),
-      timeStamp: block.timestamp.toString(),
+      blockNumber: block.number?.toString() || '0',
+      timeStamp: block.timestamp?.toString() || '0',
       blockReward: '0',
       blockMiner: block.miner,
       blockHash: block.hash,

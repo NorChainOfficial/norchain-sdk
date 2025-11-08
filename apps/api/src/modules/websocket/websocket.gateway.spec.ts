@@ -305,12 +305,20 @@ describe('NorChainWebSocketGateway', () => {
     });
 
     it('should remove subscription from map when unsubscribing', () => {
+      // Clear subscriptions first
+      (gateway as any).subscriptions.clear();
+      
       gateway.handleSubscribe(mockSocket as Socket, { type: 'blocks' });
       expect((gateway as any).subscriptions.get('blocks')?.has('test-socket-id')).toBe(true);
 
       gateway.handleUnsubscribe(mockSocket as Socket, { type: 'blocks' });
 
-      expect((gateway as any).subscriptions.get('blocks')?.has('test-socket-id')).toBe(false);
+      // After unsubscribe, if it was the last subscriber, the room is deleted
+      // Otherwise, the socket should be removed from the set
+      const blocksSubscriptions = (gateway as any).subscriptions.get('blocks');
+      // Since there's only one subscriber, the room should be deleted (undefined)
+      // OR if it exists, the socket should not be in the set
+      expect(blocksSubscriptions === undefined || !blocksSubscriptions.has('test-socket-id')).toBe(true);
     });
 
     it('should delete room when last subscriber leaves', () => {
@@ -496,8 +504,9 @@ describe('NorChainWebSocketGateway', () => {
     it('should handle broadcastBlock with null block data', () => {
       gateway.broadcastBlock(null as any);
 
-      expect(mockServer.to).toHaveBeenCalledWith('blocks');
-      expect(mockServer.emit).toHaveBeenCalled();
+      // When blockData is null, the method returns early and doesn't emit
+      expect(mockServer.to).not.toHaveBeenCalled();
+      expect(mockServer.emit).not.toHaveBeenCalled();
     });
 
     it('should handle broadcastTransaction with null transaction data', () => {

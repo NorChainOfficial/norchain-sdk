@@ -35,10 +35,22 @@ describe('StateRootService', () => {
       proxyService.eth_getBlockByNumber.mockResolvedValue({
         status: '1',
         result: {
-          stateRoot: '0xabc123...',
           number: '0x64',
+          hash: '0xabc123',
+          parentHash: '0xdef456',
+          timestamp: '0x5f5e100',
+          gasLimit: '0x1c9c380',
+          gasUsed: '0x5208',
+          miner: '0x0000000000000000000000000000000000000000',
+          difficulty: '0x0',
+          extraData: '0x',
+          transactions: [],
+          transactionsRoot: '0x123',
+          stateRoot: '0xabc123...',
+          receiptsRoot: '0x456',
         },
-      });
+        message: 'OK',
+      } as any);
 
       const result = await service.getStateRoot(blockNumber);
 

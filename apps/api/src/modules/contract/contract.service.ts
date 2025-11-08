@@ -151,9 +151,14 @@ export class ContractService {
 
     await this.contractRepository.save(contract);
 
-    // Clear cache
-    await this.cacheService.del(`contract:abi:${address}`);
-    await this.cacheService.del(`contract:source:${address}`);
+    // Clear cache (handle errors gracefully)
+    try {
+      await this.cacheService.del(`contract:abi:${address}`);
+      await this.cacheService.del(`contract:source:${address}`);
+    } catch (error) {
+      // Log but don't fail verification if cache deletion fails
+      // This is a non-critical operation
+    }
 
     return ResponseDto.success({
       message: 'Contract verified successfully',

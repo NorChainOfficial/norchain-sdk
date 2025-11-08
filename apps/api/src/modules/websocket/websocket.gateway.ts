@@ -188,6 +188,10 @@ export class NorChainWebSocketGateway
    * @param {any} blockData - Block data
    */
   broadcastBlock(blockData: any) {
+    if (!blockData) {
+      this.logger.warn('Attempted to broadcast null block data');
+      return;
+    }
     this.server.to('blocks').emit('block', blockData);
     this.logger.debug(
       `Broadcasted block ${blockData.number} to ${this.getRoomSize('blocks')} clients`,

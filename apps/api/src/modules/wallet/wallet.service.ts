@@ -304,8 +304,9 @@ export class WalletService {
    */
   async getWalletAccounts(
     walletId: string,
-    includeInactive = false,
+    includeInactive?: boolean,
   ): Promise<WalletAccount[]> {
+    const includeInactiveFlag = includeInactive ?? false;
     const wallet = await this.walletRepository.findOne({
       where: { id: walletId },
     });
@@ -315,7 +316,7 @@ export class WalletService {
     }
 
     const where: any = { walletId };
-    if (!includeInactive) {
+    if (!includeInactiveFlag) {
       where.isActive = true;
     }
 

@@ -146,12 +146,12 @@ export class TransactionService {
    */
   private formatTransaction(tx: Transaction) {
     return {
-      blockNumber: tx.blockNumber.toString(),
+      blockNumber: tx.blockNumber?.toString() || '0',
       timeStamp: tx.block?.timestamp?.toString() || '0',
       hash: tx.hash,
-      nonce: tx.nonce.toString(),
-      blockHash: tx.blockHash,
-      transactionIndex: tx.transactionIndex.toString(),
+      nonce: tx.nonce?.toString() || '0',
+      blockHash: tx.blockHash || '',
+      transactionIndex: tx.transactionIndex?.toString() || '0',
       from: tx.fromAddress,
       to: tx.toAddress || '',
       value: tx.value,

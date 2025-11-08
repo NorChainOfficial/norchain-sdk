@@ -5,7 +5,7 @@ import { TransactionService } from '../../transaction/transaction.service';
 export interface AnomalyDetection {
   anomalies: Array<{
     type: string;
-    severity: 'low' | 'medium' | 'high';
+    severity: 'low' | 'medium' | 'high' | 'critical';
     description: string;
     timestamp: number;
   }>;

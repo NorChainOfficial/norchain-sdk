@@ -62,6 +62,7 @@ import { ImportWalletDto } from './dto/import-wallet.dto';
 import { SyncWalletDto } from './dto/sync-wallet.dto';
 import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { AccountModule } from '@/modules/account/account.module';
 
 describe('WalletService', () => {
   let service: WalletService;
@@ -128,7 +129,8 @@ describe('WalletService', () => {
     };
 
     // Create module with all required providers
-    const moduleBuilder = Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [],
       providers: [
         WalletService,
         {
@@ -171,9 +173,14 @@ describe('WalletService', () => {
           },
         },
       ],
-    });
-
-    const module: TestingModule = await moduleBuilder.compile();
+    })
+      .overrideProvider(AccountService)
+      .useValue(mockAccountService)
+      .overrideProvider(RpcService)
+      .useValue(mockRpcService)
+      .overrideProvider(CacheService)
+      .useValue(mockCacheService)
+      .compile();
 
     try {
       service = module.get<WalletService>(WalletService);

@@ -5,6 +5,8 @@ import { CreateWalletDto } from './dto/create-wallet.dto';
 import { ImportWalletDto } from './dto/import-wallet.dto';
 import { SyncWalletDto } from './dto/sync-wallet.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { WalletAccount } from './entities/wallet-account.entity';
+import { Wallet } from './entities/wallet.entity';
 
 describe('WalletController', () => {
   let controller: WalletController;
@@ -201,13 +203,21 @@ describe('WalletController', () => {
   describe('getWalletAccounts', () => {
     it('should return accounts for a wallet', async () => {
       const walletId = 'wallet-1';
-      const mockAccounts = [
+      const mockAccounts: WalletAccount[] = [
         {
           id: 'account-1',
           walletId,
           address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          publicKey: '0x1234567890abcdef',
           index: 0,
-        },
+          derivationPath: "m/44'/60'/0'/0/0",
+          label: null,
+          isActive: true,
+          metadata: {},
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          wallet: null,
+        } as WalletAccount,
       ];
 
       walletService.getWalletAccounts.mockResolvedValue(mockAccounts);
@@ -216,9 +226,10 @@ describe('WalletController', () => {
 
       expect(result.success).toBe(true);
       expect(result.result).toEqual(mockAccounts);
+      // When query is empty {}, dto.includeInactive is undefined
       expect(walletService.getWalletAccounts).toHaveBeenCalledWith(
         walletId,
-        false,
+        undefined,
       );
     });
 
@@ -242,17 +253,40 @@ describe('WalletController', () => {
       const walletId = 'wallet-1';
       const dto: SyncWalletDto = {};
 
+      const mockAccount: WalletAccount = {
+        id: 'account-1',
+        walletId: walletId,
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        publicKey: '0x1234567890abcdef',
+        index: 0,
+        derivationPath: "m/44'/60'/0'/0/0",
+        label: null,
+        isActive: true,
+        metadata: {},
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        wallet: null,
+      } as WalletAccount;
+
+      const mockWallet: Wallet = {
+        id: walletId,
+        name: 'Test Wallet',
+        userId: null,
+        user: null,
+        mnemonicHash: 'hashed',
+        isImported: false,
+        isActive: true,
+        accounts: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {},
+      } as Wallet;
+
       const mockResult = {
-        wallet: {
-          id: walletId,
-          accounts: [],
-        },
+        wallet: mockWallet,
         accounts: [
           {
-            account: {
-              id: 'account-1',
-              address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
-            },
+            account: mockAccount,
             balance: '1000000000000000000',
             transactionCount: 5,
           },
@@ -290,11 +324,19 @@ describe('WalletController', () => {
         metadata: { key: 'value' },
       };
 
-      const mockWallet = {
+      const mockWallet: Wallet = {
         id: walletId,
-        ...updates,
+        name: updates.name,
+        userId: null,
+        user: null,
+        mnemonicHash: 'hashed',
+        isImported: false,
+        isActive: true,
         accounts: [],
-      };
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: updates.metadata || {},
+      } as Wallet;
 
       walletService.updateWallet.mockResolvedValue(mockWallet);
 
@@ -408,8 +450,22 @@ describe('WalletController', () => {
         force: true,
       };
 
+      const mockWallet: Wallet = {
+        id: walletId,
+        name: 'Test Wallet',
+        userId: null,
+        user: null,
+        mnemonicHash: 'hashed',
+        isImported: false,
+        isActive: true,
+        accounts: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {},
+      } as Wallet;
+
       const mockResult = {
-        wallet: { id: walletId, accounts: [] },
+        wallet: mockWallet,
         accounts: [],
       };
 
@@ -425,7 +481,7 @@ describe('WalletController', () => {
       const walletId = 'wallet-1';
       const updates = { name: 'New Name' };
 
-      const mockWallet = {
+      const mockWallet: Wallet = {
         id: walletId,
         name: 'New Name',
         userId: null,
@@ -437,7 +493,7 @@ describe('WalletController', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         metadata: {},
-      };
+      } as Wallet;
 
       walletService.updateWallet.mockResolvedValue(mockWallet);
 

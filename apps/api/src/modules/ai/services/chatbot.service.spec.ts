@@ -54,7 +54,16 @@ describe('ChatbotService', () => {
 
     it('should answer with AI when API key is present', async () => {
       const question = 'What is gas?';
+      // Mock configService.get to return API key (called in constructor)
       configService.get.mockReturnValue('test-api-key');
+      
+      // Create a new service instance to pick up the mocked API key
+      const serviceWithKey = new (await import('./chatbot.service')).ChatbotService(
+        httpService as any,
+        configService as any,
+      );
+      
+      // Mock the Observable properly for firstValueFrom
       httpService.post.mockReturnValue(
         of({
           data: {
@@ -64,13 +73,18 @@ describe('ChatbotService', () => {
               },
             ],
           },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: {},
         } as any),
       );
 
-      const result = await service.answer(question);
+      const result = await serviceWithKey.answer(question);
 
       expect(result.answer).toBeDefined();
-      expect(result.confidence).toBe(85);
+      expect(result.answer).toBe('Gas is the fee paid for transactions on the blockchain.');
+      expect(result.confidence).toBe(85); // AI response returns 85 confidence
       expect(httpService.post).toHaveBeenCalled();
     });
 

@@ -56,16 +56,24 @@ describe('TransactionAnalysisService', () => {
       const txHash = '0x123...';
       proxyService.eth_getTransactionByHash.mockResolvedValue({
         status: '1',
+        message: 'OK',
         result: {
+          hash: '0xabc123',
+          blockNumber: '0x12345',
+          blockHash: '0xdef456',
+          transactionIndex: '0x0',
           from: '0xfrom',
           to: '0xto',
           value: '0x0',
           gas: '0x5208',
           gasPrice: '0x3b9aca00',
+          input: '0x',
+          nonce: '0x1',
         },
       });
       proxyService.eth_getTransactionReceipt.mockResolvedValue({
         status: '1',
+        message: 'OK',
         result: {
           gasUsed: '0x5208',
           status: '0x1',
@@ -86,16 +94,24 @@ describe('TransactionAnalysisService', () => {
       const txHash = '0x123...';
       proxyService.eth_getTransactionByHash.mockResolvedValue({
         status: '1',
+        message: 'OK',
         result: {
+          hash: '0xabc123',
+          blockNumber: '0x12345',
+          blockHash: '0xdef456',
+          transactionIndex: '0x0',
           from: '0xfrom',
           to: '0xto',
           value: '0x0',
           gas: '0x5208',
           gasPrice: '0x3b9aca00',
+          input: '0x',
+          nonce: '0x1',
         },
       });
       proxyService.eth_getTransactionReceipt.mockResolvedValue({
         status: '1',
+        message: 'OK',
         result: {
           gasUsed: '0x5208',
           status: '0x1',

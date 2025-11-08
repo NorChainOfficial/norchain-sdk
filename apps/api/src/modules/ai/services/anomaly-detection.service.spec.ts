@@ -61,7 +61,8 @@ describe('AnomalyDetectionService', () => {
 
     it('should handle errors', async () => {
       const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb';
-      proxyService.getBlockNumber.mockRejectedValue(new Error('RPC error'));
+      // Mock the private getRecentTransactions method to throw
+      jest.spyOn(service as any, 'getRecentTransactions').mockRejectedValue(new Error('RPC error'));
 
       await expect(service.detect(address)).rejects.toThrow();
     });

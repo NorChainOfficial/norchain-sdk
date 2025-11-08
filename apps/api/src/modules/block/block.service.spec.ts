@@ -282,25 +282,27 @@ describe('BlockService', () => {
 
       it('should handle database errors gracefully', async () => {
         const dto: GetBlockDto = { blockno: 12345 };
+        const mockRpcBlock = {
+          number: 12345,
+          hash: '0xabc',
+          parentHash: '0xdef',
+          timestamp: 1234567890,
+          gasLimit: BigInt('1000000'),
+          gasUsed: BigInt('500000'),
+          miner: '0x123',
+          transactions: [],
+        } as any;
 
         cacheService.getOrSet.mockImplementation(async (key, fn) => {
-          blockRepository.findOne.mockRejectedValue(new Error('Database error'));
+          // First call fails with database error, then fallback to RPC
+          blockRepository.findOne.mockRejectedValueOnce(new Error('Database error'));
+          rpcService.getBlock.mockResolvedValue(mockRpcBlock as any);
           try {
             return await fn();
           } catch (error) {
-            // Fallback to RPC
-            const mockRpcBlock = {
-              number: 12345,
-              hash: '0xabc',
-              parentHash: '0xdef',
-              timestamp: 1234567890,
-              gasLimit: BigInt('1000000'),
-              gasUsed: BigInt('500000'),
-              miner: '0x123',
-              transactions: [],
-            } as any;
+            // If database fails, RPC should succeed
             rpcService.getBlock.mockResolvedValue(mockRpcBlock as any);
-            return fn();
+            return await fn();
           }
         });
 
