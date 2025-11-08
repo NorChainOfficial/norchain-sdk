@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { AxiosResponse } from 'axios';
 import { ProxyService } from '../../proxy/proxy.service';
 
 export interface TransactionAnalysis {
@@ -92,7 +93,7 @@ Provide comprehensive analysis including:
 Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommendations[], patterns[], anomalies[]`;
 
     try {
-      const response = await firstValueFrom(
+      const response: AxiosResponse<any> = await firstValueFrom(
         this.httpService.post(
           this.aiApiUrl,
           {
@@ -110,7 +111,7 @@ Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommenda
         ),
       );
 
-      const content = response.data.content?.[0]?.text || '';
+      const content = response.data?.content?.[0]?.text || '';
       const jsonMatch = content.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
@@ -158,15 +159,12 @@ Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommenda
     };
   }
 
-  private analyzeGas(context: any) {
+  private analyzeGas(context: any): { used: string; price: string; efficiency: 'efficient' | 'moderate' | 'inefficient' } {
     const gasUsed = parseInt(context.gasUsed || '0', 16);
     const gasLimit = parseInt(context.gas || '0', 16);
-    const efficiency =
-      gasUsed / gasLimit < 0.5
-        ? 'efficient'
-        : gasUsed / gasLimit < 0.8
-          ? 'moderate'
-          : 'inefficient';
+    const ratio = gasLimit > 0 ? gasUsed / gasLimit : 0;
+    const efficiency: 'efficient' | 'moderate' | 'inefficient' = 
+      ratio < 0.5 ? 'efficient' : ratio < 0.8 ? 'moderate' : 'inefficient';
 
     return {
       used: context.gasUsed || '0x0',

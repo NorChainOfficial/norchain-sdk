@@ -11,15 +11,13 @@ export class StateRootService {
     blockNumber: string,
   ): Promise<{ stateRoot: string; blockNumber: string }> {
     try {
-      const block = await this.proxyService.call('eth_getBlockByNumber', [
-        blockNumber,
-        false,
-      ]);
+      const result = await this.proxyService.eth_getBlockByNumber(blockNumber, false);
+      const block = result.status === '1' ? result.result : null;
       return {
         stateRoot: block?.stateRoot || '0x0',
         blockNumber,
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error(
         `Error getting state root for block ${blockNumber}:`,
         error,

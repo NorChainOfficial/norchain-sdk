@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { AxiosResponse } from 'axios';
 
 export interface ChatResponse {
   answer: string;
@@ -48,7 +49,7 @@ Be concise and accurate.`;
       : question;
 
     try {
-      const response = await firstValueFrom(
+      const response: AxiosResponse<any> = await firstValueFrom(
         this.httpService.post(
           'https://api.anthropic.com/v1/messages',
           {
@@ -69,7 +70,7 @@ Be concise and accurate.`;
         ),
       );
 
-      const content = response.data.content?.[0]?.text || '';
+      const content = response.data?.content?.[0]?.text || '';
 
       return {
         answer: content,

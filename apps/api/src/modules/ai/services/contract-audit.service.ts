@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
+import { AxiosResponse } from 'axios';
 import { ProxyService } from '../../proxy/proxy.service';
 
 export interface ContractAudit {
@@ -74,7 +75,7 @@ Check for:
 Return JSON with: securityScore (0-100), vulnerabilities[], recommendations[], bestPractices[], riskLevel`;
 
     try {
-      const response = await firstValueFrom(
+      const response: AxiosResponse<any> = await firstValueFrom(
         this.httpService.post(
           'https://api.anthropic.com/v1/messages',
           {
@@ -92,7 +93,7 @@ Return JSON with: securityScore (0-100), vulnerabilities[], recommendations[], b
         ),
       );
 
-      const content = response.data.content?.[0]?.text || '';
+      const content = response.data?.content?.[0]?.text || '';
       const jsonMatch = content.match(/\{[\s\S]*\}/);
 
       if (jsonMatch) {
