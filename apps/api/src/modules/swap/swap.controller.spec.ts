@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SwapController } from './swap.controller';
 import { SwapService } from './swap.service';
 import { PriceAggregatorService } from './price-aggregator.service';
+import { GetQuoteDto } from './dto/get-quote.dto';
+import { ExecuteSwapDto } from './dto/execute-swap.dto';
 
 describe('SwapController', () => {
   let controller: SwapController;
@@ -41,11 +43,11 @@ describe('SwapController', () => {
 
   describe('getQuote', () => {
     it('should return swap quote', async () => {
-      const dto = {
+      const dto: GetQuoteDto = {
         tokenIn: '0x123',
         tokenOut: '0x456',
         amountIn: '1000',
-        chainId: 1,
+        chainId: '65001',
       };
       const mockQuote = {
         amountOut: '100',
@@ -59,18 +61,22 @@ describe('SwapController', () => {
       const result = await controller.getQuote(dto);
 
       expect(result).toEqual(mockQuote);
-      expect(priceAggregator.getQuote).toHaveBeenCalledWith(dto.tokenIn, dto.tokenOut, dto.amountIn, dto.chainId);
+      expect(priceAggregator.getQuote).toHaveBeenCalledWith(
+        dto.tokenIn,
+        dto.tokenOut,
+        dto.amountIn,
+        Number(dto.chainId) || 65001,
+      );
     });
   });
 
   describe('executeSwap', () => {
     it('should execute swap', async () => {
-      const dto = {
-        tokenIn: '0x123',
-        tokenOut: '0x456',
-        amountIn: '1000',
-        amountOutMin: '900',
+      const dto: ExecuteSwapDto = {
+        quoteId: 'quote-123',
+        signedTx: '0x1234567890abcdef',
         userAddress: '0x789',
+        chainId: '65001',
       };
       const mockResponse = { success: true, txHash: '0xabc123' };
       swapService.executeSwap.mockResolvedValue(mockResponse as any);

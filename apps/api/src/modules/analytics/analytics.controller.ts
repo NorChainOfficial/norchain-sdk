@@ -1,9 +1,7 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
 import { Public } from '@/common/decorators/public.decorator';
-import { IsEthereumAddress, IsOptional, IsInt, Min, Max } from 'class-validator';
-import { Type } from 'class-transformer';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 
 @ApiTags('Analytics')
@@ -25,9 +23,13 @@ export class AnalyticsController {
   @ApiResponse({ status: 200, description: 'Transaction analytics retrieved successfully' })
   async getTransactionAnalytics(
     @Query('address') address: string,
-    @Query('days') @Type(() => Number) @IsOptional() @IsInt() @Min(1) @Max(365) days?: number,
+    @Query('days', new DefaultValuePipe(30), ParseIntPipe) days: number = 30,
   ) {
-    return this.analyticsService.getTransactionAnalytics(address, days || 30);
+    // Validate days range
+    if (days < 1 || days > 365) {
+      days = 30;
+    }
+    return this.analyticsService.getTransactionAnalytics(address, days);
   }
 
   @Public()

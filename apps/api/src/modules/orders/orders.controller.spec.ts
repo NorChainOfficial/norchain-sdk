@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
-import { ResponseDto } from '@/common/interfaces/api-response.interface';
+import { CreateLimitOrderDto } from './dto/create-limit-order.dto';
+import { OrderSide } from './entities/limit-order.entity';
 
 describe('OrdersController', () => {
   let controller: OrdersController;
@@ -38,10 +39,10 @@ describe('OrdersController', () => {
 
   describe('createLimitOrder', () => {
     it('should create limit order', async () => {
-      const dto = {
+      const dto: CreateLimitOrderDto = {
         userAddress: '0x123',
         pair: 'NOR/USDT',
-        side: 'buy' as const,
+        side: OrderSide.BUY,
         price: '0.0001',
         amount: '1000000000000000000',
       };

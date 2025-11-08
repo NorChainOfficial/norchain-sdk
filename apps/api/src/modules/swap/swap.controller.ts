@@ -20,7 +20,7 @@ export class SwapController {
   @ApiResponse({ status: 200, description: 'Quote retrieved successfully' })
   async getQuote(@Body() dto: GetQuoteDto) {
     const { tokenIn, tokenOut, amountIn, chainId } = dto;
-    return this.priceAggregator.getQuote(tokenIn, tokenOut, amountIn, chainId);
+    return this.priceAggregator.getQuote(tokenIn, tokenOut, amountIn, Number(chainId) || 65001);
   }
 
   @Public()

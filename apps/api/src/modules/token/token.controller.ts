@@ -1,9 +1,7 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TokenService } from './token.service';
 import { Public } from '@/common/decorators/public.decorator';
-import { IsEthereumAddress, IsOptional, IsInt, Min } from 'class-validator';
-import { Type } from 'class-transformer';
 
 @ApiTags('Token')
 @Controller('token')
@@ -43,13 +41,13 @@ export class TokenController {
   @ApiResponse({ status: 200, description: 'Token transfers retrieved successfully' })
   async getTokenTransfers(
     @Query('contractaddress') contractaddress: string,
-    @Query('page') @Type(() => Number) @IsOptional() @IsInt() @Min(1) page?: number,
-    @Query('limit') @Type(() => Number) @IsOptional() @IsInt() @Min(1) limit?: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
   ) {
     return this.tokenService.getTokenTransfers(
       contractaddress,
-      page || 1,
-      limit || 10,
+      page,
+      limit,
     );
   }
 }

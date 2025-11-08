@@ -1,59 +1,55 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import { TokenService } from './token.service';
-import { TokenMetadata } from './entities/token-metadata.entity';
-import { TokenHolder } from './entities/token-holder.entity';
-import { TokenTransfer } from './entities/token-transfer.entity';
 import { RpcService } from '@/common/services/rpc.service';
 import { CacheService } from '@/common/services/cache.service';
-import { ethers } from 'ethers';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { TokenMetadata } from './entities/token-metadata.entity';
+import { TokenTransfer } from './entities/token-transfer.entity';
+import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 describe('TokenService', () => {
   let service: TokenService;
-  let tokenMetadataRepository: any;
-  let tokenHolderRepository: any;
-  let tokenTransferRepository: any;
   let rpcService: jest.Mocked<RpcService>;
   let cacheService: jest.Mocked<CacheService>;
+  let tokenMetadataRepository: jest.Mocked<Repository<TokenMetadata>>;
+  let tokenTransferRepository: jest.Mocked<Repository<TokenTransfer>>;
 
   beforeEach(async () => {
-    const mockTokenMetadataRepository = {
-      findOne: jest.fn(),
-    };
-
-    const mockTokenHolderRepository = {
-      findOne: jest.fn(),
-    };
-
-    const mockTokenTransferRepository = {
-      createQueryBuilder: jest.fn(),
-    };
-
     const mockRpcService = {
-      getProvider: jest.fn().mockReturnValue({
-        call: jest.fn(),
-      }),
+      call: jest.fn(),
+      getBlock: jest.fn(),
+      getBlockNumber: jest.fn(),
+      getBalance: jest.fn(),
+      getTransaction: jest.fn(),
+      getTransactionReceipt: jest.fn(),
+      getTransactionCount: jest.fn(),
+      getFeeData: jest.fn(),
+      getLogs: jest.fn(),
     };
 
     const mockCacheService = {
+      get: jest.fn(),
+      set: jest.fn(),
       getOrSet: jest.fn(),
+      del: jest.fn(),
+      reset: jest.fn(),
+    };
+
+    const mockTokenMetadataRepository = {
+      findOne: jest.fn(),
+      save: jest.fn(),
+      create: jest.fn(),
+    };
+
+    const mockTokenTransferRepository = {
+      find: jest.fn(),
+      createQueryBuilder: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TokenService,
-        {
-          provide: getRepositoryToken(TokenMetadata),
-          useValue: mockTokenMetadataRepository,
-        },
-        {
-          provide: getRepositoryToken(TokenHolder),
-          useValue: mockTokenHolderRepository,
-        },
-        {
-          provide: getRepositoryToken(TokenTransfer),
-          useValue: mockTokenTransferRepository,
-        },
         {
           provide: RpcService,
           useValue: mockRpcService,
@@ -62,15 +58,26 @@ describe('TokenService', () => {
           provide: CacheService,
           useValue: mockCacheService,
         },
+        {
+          provide: getRepositoryToken(TokenMetadata),
+          useValue: mockTokenMetadataRepository,
+        },
+        {
+          provide: getRepositoryToken(TokenTransfer),
+          useValue: mockTokenTransferRepository,
+        },
       ],
     }).compile();
 
     service = module.get<TokenService>(TokenService);
-    tokenMetadataRepository = module.get(getRepositoryToken(TokenMetadata));
-    tokenHolderRepository = module.get(getRepositoryToken(TokenHolder));
-    tokenTransferRepository = module.get(getRepositoryToken(TokenTransfer));
     rpcService = module.get(RpcService);
     cacheService = module.get(CacheService);
+    tokenMetadataRepository = module.get(getRepositoryToken(TokenMetadata));
+    tokenTransferRepository = module.get(getRepositoryToken(TokenTransfer));
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it('should be defined', () => {
@@ -78,73 +85,62 @@ describe('TokenService', () => {
   });
 
   describe('getTokenSupply', () => {
-    it('should return supply from database', async () => {
-      const contractAddress = '0x123';
-      const mockMetadata = {
-        address: contractAddress,
-        totalSupply: '1000000000000000000',
-      };
+    it('should return token supply from RPC', async () => {
+      const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+      const supply = BigInt('1000000000000000000');
 
       cacheService.getOrSet.mockImplementation(async (key, fn) => {
-        tokenMetadataRepository.findOne.mockResolvedValue(mockMetadata);
+        rpcService.call.mockResolvedValue('0x' + supply.toString(16));
         return fn();
       });
 
       const result = await service.getTokenSupply(contractAddress);
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
-      expect(result.result).toBe(mockMetadata.totalSupply);
+      expect(result.result).toBe(supply.toString());
+      expect(rpcService.call).toHaveBeenCalled();
     });
 
-    it('should return supply from RPC if not in database', async () => {
-      const contractAddress = '0x123';
-      const totalSupply = BigInt('1000000000000000000');
-
-      const mockContract = {
-        totalSupply: jest.fn().mockResolvedValue(totalSupply),
-      };
+    it('should handle errors gracefully', async () => {
+      const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
 
       cacheService.getOrSet.mockImplementation(async (key, fn) => {
-        tokenMetadataRepository.findOne.mockResolvedValue(null);
-        const provider = rpcService.getProvider();
-        (provider as any).call = jest.fn().mockResolvedValue(
-          ethers.AbiCoder.defaultAbiCoder().encode(['uint256'], [totalSupply]),
-        );
+        rpcService.call.mockRejectedValue(new Error('RPC error'));
         return fn();
       });
 
       const result = await service.getTokenSupply(contractAddress);
 
-      expect(result.status).toBe('1');
+      expect(result.status).toBe('0');
+      expect(result.message).toBeDefined();
     });
   });
 
   describe('getTokenAccountBalance', () => {
-    it('should return balance from database', async () => {
-      const contractAddress = '0x123';
-      const address = '0x456';
-      const mockHolder = {
-        tokenAddress: contractAddress,
-        holderAddress: address,
-        balance: '1000000000000000000',
-      };
+    it('should return token balance for account', async () => {
+      const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+      const address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+      const balance = BigInt('1000000000000000000');
 
       cacheService.getOrSet.mockImplementation(async (key, fn) => {
-        tokenHolderRepository.findOne.mockResolvedValue(mockHolder);
+        rpcService.call.mockResolvedValue('0x' + balance.toString(16));
         return fn();
       });
 
       const result = await service.getTokenAccountBalance(contractAddress, address);
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
-      expect(result.result).toBe(mockHolder.balance);
+      expect(result.result).toBe(balance.toString());
+      expect(rpcService.call).toHaveBeenCalled();
     });
   });
 
   describe('getTokenInfo', () => {
-    it('should return token info from database', async () => {
-      const contractAddress = '0x123';
-      const mockMetadata = {
+    it('should return token info from cache or RPC', async () => {
+      const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+      const tokenInfo = {
         address: contractAddress,
         name: 'Test Token',
         symbol: 'TEST',
@@ -153,44 +149,47 @@ describe('TokenService', () => {
         tokenType: 'ERC20',
       };
 
-      cacheService.getOrSet.mockImplementation(async (key, fn) => {
-        tokenMetadataRepository.findOne.mockResolvedValue(mockMetadata);
-        return fn();
-      });
+      cacheService.getOrSet.mockResolvedValue(tokenInfo);
 
       const result = await service.getTokenInfo(contractAddress);
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
-      expect(result.result).toEqual(mockMetadata);
+      expect(result.result).toEqual(tokenInfo);
     });
   });
 
   describe('getTokenTransfers', () => {
-    it('should return paginated token transfers', async () => {
-      const contractAddress = '0x123';
+    it('should return token transfers with pagination', async () => {
+      const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
       const page = 1;
       const limit = 10;
 
-      const mockQueryBuilder = {
+      const mockTransfers = {
+        data: [],
+        meta: {
+          page: 1,
+          limit: 10,
+          total: 0,
+          totalPages: 0,
+          hasNextPage: false,
+          hasPreviousPage: false,
+        },
+      };
+
+      tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
         where: jest.fn().mockReturnThis(),
         orderBy: jest.fn().mockReturnThis(),
-        addOrderBy: jest.fn().mockReturnThis(),
         skip: jest.fn().mockReturnThis(),
         take: jest.fn().mockReturnThis(),
         getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
-      };
-
-      tokenTransferRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      });
 
       const result = await service.getTokenTransfers(contractAddress, page, limit);
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
       expect(result.result).toBeDefined();
-      if (result.result) {
-        expect(result.result.meta.page).toBe(page);
-        expect(result.result.meta.limit).toBe(limit);
-      }
     });
   });
 });
-

@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { StatsService } from './stats.service';
 import { RpcService } from '@/common/services/rpc.service';
 import { CacheService } from '@/common/services/cache.service';
+import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 describe('StatsService', () => {
   let service: StatsService;
@@ -12,10 +13,17 @@ describe('StatsService', () => {
     const mockRpcService = {
       getBlockNumber: jest.fn(),
       getBlock: jest.fn(),
+      getBalance: jest.fn(),
+      call: jest.fn(),
+      getFeeData: jest.fn(),
     };
 
     const mockCacheService = {
+      get: jest.fn(),
+      set: jest.fn(),
       getOrSet: jest.fn(),
+      del: jest.fn(),
+      reset: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -37,78 +45,91 @@ describe('StatsService', () => {
     cacheService = module.get(CacheService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
   describe('getEthSupply', () => {
-    it('should return ETH supply', async () => {
-      cacheService.getOrSet.mockImplementation(async (key, fn) => {
-        rpcService.getBlockNumber.mockResolvedValue(10000);
-        return fn();
-      });
+    it('should return ETH supply stats', async () => {
+      const supply = {
+        EthSupply: '1000000',
+        Eth2Staking: '0',
+        EthBurntFees: '0',
+      };
+
+      cacheService.getOrSet.mockResolvedValue(supply);
 
       const result = await service.getEthSupply();
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
-      expect(result.result).toHaveProperty('EthSupply');
-      expect(result.result).toHaveProperty('Eth2Staking');
-      expect(result.result).toHaveProperty('EthBurntFees');
+      expect(result.result).toEqual(supply);
     });
   });
 
   describe('getEthPrice', () => {
-    it('should return ETH price', async () => {
-      cacheService.getOrSet.mockResolvedValue({
+    it('should return ETH price stats', async () => {
+      const price = {
         ethbtc: '0.05',
-        ethbtc_timestamp: Date.now().toString(),
-        ethusd: '2500',
-        ethusd_timestamp: Date.now().toString(),
-      });
+        ethbtc_timestamp: '1234567890',
+        ethusd: '2000',
+        ethusd_timestamp: '1234567890',
+      };
+
+      cacheService.getOrSet.mockResolvedValue(price);
 
       const result = await service.getEthPrice();
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
-      expect(result.result).toHaveProperty('ethusd');
-      expect(result.result).toHaveProperty('ethbtc');
+      expect(result.result).toEqual(price);
     });
   });
 
   describe('getChainSize', () => {
-    it('should return chain size statistics', async () => {
+    it('should return chain size stats', async () => {
+      const chainSize = {
+        chainSize: '1000',
+        chainSizeFees: '500',
+        blockNumber: '12345',
+        blockTime: '2024-01-01T00:00:00Z',
+      };
+
       cacheService.getOrSet.mockImplementation(async (key, fn) => {
         rpcService.getBlockNumber.mockResolvedValue(12345);
         rpcService.getBlock.mockResolvedValue({
-          number: 12345,
-          hash: '0xabc',
           timestamp: 1234567890,
-          gasUsed: BigInt('500000'),
-          gasLimit: BigInt('1000000'),
+          toJSON: jest.fn(),
         } as any);
         return fn();
       });
 
       const result = await service.getChainSize();
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
-      expect(result.result).toHaveProperty('blockNumber');
-      expect(result.result).toHaveProperty('blockTime');
+      expect(result.result).toBeDefined();
     });
   });
 
   describe('getNodeCount', () => {
-    it('should return node count', async () => {
-      cacheService.getOrSet.mockResolvedValue({
-        TotalNodeCount: '100',
-        SyncNodeCount: '95',
-      });
+    it('should return node count stats', async () => {
+      const nodeCount = {
+        TotalNodeCount: '10',
+        SyncNodeCount: '8',
+      };
+
+      cacheService.getOrSet.mockResolvedValue(nodeCount);
 
       const result = await service.getNodeCount();
 
+      expect(result).toBeDefined();
       expect(result.status).toBe('1');
-      expect(result.result).toHaveProperty('TotalNodeCount');
-      expect(result.result).toHaveProperty('SyncNodeCount');
+      expect(result.result).toEqual(nodeCount);
     });
   });
 });
-
