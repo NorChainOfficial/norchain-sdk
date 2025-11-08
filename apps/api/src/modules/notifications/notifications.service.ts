@@ -125,6 +125,14 @@ export class NotificationsService {
    * @returns {Promise<void>}
    */
   async delete(notificationId: string, userId: string): Promise<void> {
+    const notification = await this.notificationRepository.findOne({
+      where: { id: notificationId, userId },
+    });
+
+    if (!notification) {
+      throw new Error('Notification not found');
+    }
+
     await this.notificationRepository.delete({ id: notificationId, userId });
   }
 

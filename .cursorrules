@@ -1,0 +1,361 @@
+# NorChain Monorepo - Cursor Rules & Memory
+
+## 🎯 Project Context
+
+You are working on the **NorChain Ecosystem Monorepo** - a comprehensive blockchain platform with:
+- **Unified API** (NestJS) - Backend API for all services
+- **Explorer** (Next.js) - Blockchain explorer frontend
+- **NEX Exchange** (Next.js) - Decentralized exchange platform
+- **Wallet** (Next.js) - Web-based cryptocurrency wallet
+- **Mobile Apps** - Android (Kotlin) and iOS (Swift) wallets
+- **Documentation** (Nextra) - Developer documentation site
+- **Shared Packages** - SDK, Design System, Wallet Core (Rust)
+
+## 🏗️ Architecture Principles
+
+### Core Principles
+- **API-First**: All frontend apps consume the Unified API
+- **SOLID Principles**: Apply consistently across all code
+- **Type Safety**: Full TypeScript with strict mode
+- **Modular Design**: Feature-based module organization
+- **Clean Architecture**: Separation of concerns (Controllers → Services → Repositories → Entities)
+
+### Technology Stack
+- **Backend**: NestJS 10, TypeScript, PostgreSQL, Redis
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
+- **Mobile**: Kotlin (Android), Swift (iOS)
+- **Native Core**: Rust (via FFI)
+- **Infrastructure**: Docker, Docker Compose
+
+## 📁 File Organization Rules
+
+### ⚠️ CRITICAL: Do NOT Store Files in Root
+
+**NEVER create or store these file types in the root directory:**
+- ❌ Markdown files (`.md`) - Move to `docs/` or appropriate subdirectory
+- ❌ Script files (`.sh`, `.js`) - Move to `scripts/` directory
+- ❌ Status/Progress reports - Move to `docs/status/` or `docs/reports/`
+- ❌ Testing reports - Move to `docs/testing/` or app-specific `test/` directories
+- ❌ Build/deployment reports - Move to `docs/deployment/`
+
+### Proper File Structure
+
+```
+norchain-monorepo/
+├── README.md                    # ✅ Main project README (ONLY root MD file)
+├── package.json                 # ✅ Root package.json
+├── docker-compose.yml           # ✅ Root docker-compose
+├── .cursorrules                 # ✅ This file
+│
+├── docs/                        # ✅ ALL documentation
+│   ├── architecture/           # Architecture docs
+│   ├── deployment/             # Deployment guides
+│   ├── development/            # Development guides
+│   ├── implementation/         # Implementation docs
+│   ├── product/                # Product docs
+│   ├── status/                 # Status reports (moved from root)
+│   ├── reports/                # Analysis reports (moved from root)
+│   ├── testing/                # Testing documentation
+│   └── README.md               # Documentation index
+│
+├── scripts/                     # ✅ ALL scripts
+│   ├── build/                  # Build scripts
+│   ├── deployment/             # Deployment scripts
+│   ├── testing/                # Test scripts
+│   └── setup/                  # Setup scripts
+│
+├── apps/                       # ✅ Application code
+│   ├── api/                    # Unified API
+│   │   ├── src/                # Source code
+│   │   ├── docs/               # API-specific docs
+│   │   ├── scripts/            # API-specific scripts
+│   │   └── README.md           # API README
+│   ├── explorer/               # Explorer app
+│   ├── wallet/                 # Wallet app
+│   └── ...
+│
+└── packages/                    # ✅ Shared packages
+    ├── sdk/                    # SDK package
+    ├── design-system/          # Design system
+    └── wallet-core/            # Rust wallet core
+```
+
+### When Creating New Files
+
+**Before creating any file, ask:**
+1. **Is this a markdown file?** → Move to `docs/` or appropriate subdirectory
+2. **Is this a script?** → Move to `scripts/` or app-specific `scripts/` directory
+3. **Is this a status/report?** → Move to `docs/status/` or `docs/reports/`
+4. **Is this app-specific?** → Place in the app's directory
+
+**Root directory should ONLY contain:**
+- `README.md` (main project README)
+- `package.json` (root package.json)
+- `docker-compose.yml` (root docker-compose)
+- `.cursorrules` (this file)
+- `.gitignore`
+- Configuration files (`.env.example`, `tsconfig.json`, etc.)
+
+## 💻 Coding Standards
+
+### TypeScript & JavaScript
+- **Always use TypeScript** for new code
+- **Strict mode enabled** - No `any` types without justification
+- **Use interfaces** for object shapes
+- **Use types** for unions, intersections, and computed types
+- **Prefer `const`** over `let`, avoid `var`
+- **Use async/await** instead of promises chains
+- **Destructure** when accessing multiple properties
+
+### Code Organization
+- **Keep files under 200-300 lines** - Refactor if exceeded
+- **Single Responsibility Principle** - One class/function per file
+- **Avoid code duplication** - Extract shared logic
+- **Use meaningful names** - Descriptive variable and function names
+- **Add JSDoc comments** for public APIs and complex logic
+
+### NestJS Patterns
+- **Module Structure**: `dto/`, `entities/`, `repositories/`, `services/`, `controllers/`
+- **Use DTOs** for all request/response validation
+- **Use Guards** for authentication/authorization
+- **Use Interceptors** for transformation and logging
+- **Use Filters** for exception handling
+- **Dependency Injection** - Use constructor injection
+
+### React/Next.js Patterns
+- **Server Components** by default (Next.js 14)
+- **Client Components** only when needed (`'use client'`)
+- **Component Structure**: Co-locate components with pages
+- **Hooks**: Custom hooks for reusable logic
+- **State Management**: Zustand for global state, React Query for server state
+- **Styling**: Tailwind CSS utility classes
+
+### Error Handling
+- **Always handle errors** - Use try/catch or error boundaries
+- **Provide meaningful error messages** - Include context
+- **Log errors** - Use structured logging (Winston for API, console for frontend)
+- **Return proper HTTP status codes** - 400, 401, 403, 404, 500, etc.
+- **Use global exception filters** (NestJS) or error boundaries (React)
+
+## 🧪 Testing Guidelines
+
+### Test Coverage Target: 80%+
+- **Unit Tests**: Test services, utilities, and business logic
+- **Integration Tests**: Test database, Redis, external services
+- **E2E Tests**: Test complete user flows
+- **Controller Tests**: Test HTTP endpoints and validation
+
+### Test Organization
+- **Unit tests**: Co-located with source files (`*.spec.ts`)
+- **Integration tests**: `*.integration.spec.ts` in test directories
+- **E2E tests**: `test/` directory at app root
+- **Test utilities**: `test/utils/` or `test/helpers/`
+
+### Testing Best Practices
+- **Test behavior, not implementation** - Focus on what, not how
+- **Use descriptive test names** - `describe` and `it` should be clear
+- **Mock external dependencies** - Don't hit real APIs/databases in unit tests
+- **Test edge cases** - Empty inputs, null values, error conditions
+- **Keep tests fast** - Unit tests should be < 100ms each
+
+## 🔒 Security Guidelines
+
+### Authentication & Authorization
+- **JWT tokens** for API authentication
+- **API keys** as alternative authentication method
+- **Role-based access control** (RBAC) where needed
+- **Never expose private keys** - Client-side signing only
+
+### Data Security
+- **Validate all inputs** - Use DTOs with class-validator
+- **Sanitize user input** - Prevent XSS and injection attacks
+- **Use parameterized queries** - TypeORM handles SQL injection prevention
+- **Encrypt sensitive data** - Use Keychain (iOS) or Keystore (Android)
+
+### Environment Variables
+- **Never commit `.env` files** - Use `.env.example` instead
+- **Document all environment variables** - In README or docs
+- **Use strong secrets** - Generate secure random strings
+- **Different secrets per environment** - Dev, test, prod
+
+## 🚀 Performance Guidelines
+
+### API Performance
+- **Use Redis caching** - Cache frequently accessed data
+- **Implement pagination** - For list endpoints
+- **Optimize database queries** - Use indexes, avoid N+1 queries
+- **Use connection pooling** - Configure TypeORM pool size
+- **Compress responses** - Enable gzip compression
+
+### Frontend Performance
+- **Code splitting** - Use Next.js dynamic imports
+- **Image optimization** - Use Next.js Image component
+- **Lazy loading** - Load components and data on demand
+- **Memoization** - Use React.memo, useMemo, useCallback appropriately
+- **Bundle analysis** - Monitor bundle size
+
+## 📝 Documentation Standards
+
+### Code Documentation
+- **JSDoc comments** for public APIs, complex functions, and classes
+- **Inline comments** for non-obvious logic (explain why, not what)
+- **README.md** in each app/package directory
+- **Type definitions** - Self-documenting with TypeScript
+
+### Documentation Files
+- **Architecture docs** → `docs/architecture/`
+- **API docs** → `apps/api/docs/` or Swagger
+- **Deployment docs** → `docs/deployment/`
+- **Development guides** → `docs/development/`
+- **Status reports** → `docs/status/`
+- **Analysis reports** → `docs/reports/`
+
+### README Structure
+Each README should include:
+- Project description
+- Quick start guide
+- Installation instructions
+- Configuration
+- Usage examples
+- API documentation (if applicable)
+- Contributing guidelines
+
+## 🔍 Code Review Checklist
+
+Before submitting code, ensure:
+- ✅ No TypeScript/linting errors
+- ✅ Tests written and passing
+- ✅ Code follows SOLID principles
+- ✅ Files are properly organized (not in root)
+- ✅ Documentation updated
+- ✅ Error handling implemented
+- ✅ Security considerations addressed
+- ✅ Performance optimizations applied (if needed)
+
+## 🎨 UI/UX Guidelines
+
+### Design Principles
+- **Apple Developer Standards** - Clean, elegant, intuitive UI
+- **Modern & Professional** - Inspiring and eye-catching design
+- **User-Friendly** - Intuitive navigation and interactions
+- **Accessible** - Follow WCAG guidelines
+- **Responsive** - Mobile-first approach
+
+### Component Design
+- **Reusable components** - Extract common UI patterns
+- **Consistent styling** - Use design system tokens
+- **Loading states** - Show loading indicators
+- **Error states** - Display helpful error messages
+- **Empty states** - Provide guidance when no data
+
+## 🐳 Docker & Deployment
+
+### Docker Best Practices
+- **Multi-stage builds** - Optimize image size
+- **Health checks** - Configure for all services
+- **Environment variables** - Use env files, not hardcoded values
+- **Non-root user** - Run containers as non-root when possible
+- **Layer caching** - Order Dockerfile commands for optimal caching
+
+### Deployment
+- **Environment-specific configs** - Dev, test, prod
+- **Health check endpoints** - `/api/v1/health`
+- **Graceful shutdown** - Handle SIGTERM signals
+- **Logging** - Structured logs for production
+- **Monitoring** - Set up monitoring and alerting
+
+## 🔄 Git Workflow
+
+### Commit Messages
+- **Use conventional commits** - `feat:`, `fix:`, `docs:`, `refactor:`, etc.
+- **Be descriptive** - Explain what and why
+- **Reference issues** - Link to related issues/PRs
+
+### Branch Strategy
+- **main** - Production-ready code
+- **develop** - Integration branch (if used)
+- **feature/** - Feature branches
+- **fix/** - Bug fix branches
+- **docs/** - Documentation updates
+
+## 🚫 Common Mistakes to Avoid
+
+1. **❌ Creating files in root** - Always use proper directories
+2. **❌ Using `any` type** - Use proper types or `unknown`
+3. **❌ Ignoring errors** - Always handle errors properly
+4. **❌ Hardcoding values** - Use environment variables or config
+5. **❌ Skipping tests** - Write tests for new features
+6. **❌ Large files** - Refactor files over 200-300 lines
+7. **❌ Code duplication** - Extract shared logic
+8. **❌ Missing documentation** - Document public APIs
+9. **❌ Committing secrets** - Never commit `.env` files
+10. **❌ Breaking changes** - Maintain backward compatibility
+
+## 📚 Memory & Context
+
+### Project Structure
+- **Monorepo** - npm workspaces for package management
+- **Unified API** - Single backend for all frontend apps
+- **Shared Database** - PostgreSQL used by Unified API only
+- **No direct DB access** - Frontend apps call API, never DB directly
+
+### Key Endpoints
+- **API Base**: `http://localhost:4000/api/v1` (external)
+- **API Internal**: `http://api:3000/api/v1` (Docker network)
+- **Swagger Docs**: `http://localhost:4000/api-docs`
+
+### Port Configuration
+- **API**: 4000 (external), 3000 (internal)
+- **Explorer**: 4002 (external), 3002 (internal)
+- **Landing**: 4010 (external), 3010 (internal)
+- **NEX Exchange**: 4001 (external), 3001 (internal)
+- **Wallet**: 4020 (external), 4020 (internal)
+- **Docs**: 4011 (external), 3011 (internal)
+- **PostgreSQL**: 5433 (external), 5432 (internal)
+- **Redis**: 6380 (external), 6379 (internal)
+
+### Development Commands
+- **Run all**: `npm run dev` (parallel)
+- **Run API**: `npm run api:dev`
+- **Run Explorer**: `npm run explorer:dev`
+- **Run NEX**: `npm run nex:dev`
+- **Run Wallet**: `npm run wallet:dev`
+- **Build all**: `npm run build`
+- **Test all**: `npm run test`
+- **Lint all**: `npm run lint`
+
+### Important Notes
+- **Never run `npm run dev`** - Focus on `npm run lint` and `npm run build` per user preference
+- **Check existing code** - Before adding new components, search for similar functionality
+- **Refactor when needed** - Keep code clean and organized
+- **Environment-aware** - Code should work in dev, test, and prod
+- **No mocking in prod** - Mocking only for tests, never in dev/prod code
+
+## 🎯 Quick Reference
+
+### File Organization
+- **Docs** → `docs/` directory
+- **Scripts** → `scripts/` directory
+- **App code** → `apps/[app-name]/`
+- **Shared code** → `packages/[package-name]/`
+- **Root** → Only config files and main README
+
+### Code Quality
+- **TypeScript strict mode** ✅
+- **SOLID principles** ✅
+- **Test coverage 80%+** ⚠️ (currently ~28-29%)
+- **Files < 200-300 lines** ✅
+- **No code duplication** ✅
+
+### Before Making Changes
+1. ✅ Analyze existing codebase for similar functionality
+2. ✅ Check if code/component already exists
+3. ✅ Understand architecture and patterns
+4. ✅ Plan changes before implementing
+5. ✅ Ensure proper file organization
+
+---
+
+**Last Updated**: January 2025  
+**Maintained By**: Development Team
+

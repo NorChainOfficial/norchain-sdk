@@ -18,6 +18,7 @@ describe('NotificationsService', () => {
       findOne: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      count: jest.fn(),
       createQueryBuilder: jest.fn(),
     };
 
@@ -231,6 +232,7 @@ describe('NotificationsService', () => {
       const userId = 'user-1';
 
       notificationRepository.findOne.mockResolvedValue(null);
+      notificationRepository.delete.mockResolvedValue({ affected: 0 } as any);
 
       await expect(service.delete(notificationId, userId)).rejects.toThrow(
         'Notification not found',

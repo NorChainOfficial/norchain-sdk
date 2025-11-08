@@ -21,12 +21,39 @@ Complete product requirements, features, and specifications for the NorChain eco
 - [Wallet Integration](./development/WALLET_INTEGRATION_COMPLETE.md) - Wallet app integration
 - [Mobile Apps Integration](./development/MOBILE_APPS_INTEGRATION.md) - Mobile apps guide
 - [Migration Guide](./development/MIGRATION_COMPLETE.md) - Migration documentation
+- [Supabase Quick Start](./development/SUPABASE_QUICK_START.md) - Supabase setup guide
 
 ### [Deployment](./deployment/)
 - [Docker Setup](./deployment/DOCKER_SETUP.md) - Complete Docker guide
 - [Port Configuration](./deployment/PORTS_CONFIGURATION.md) - Port mapping
 - [Docker Complete](./deployment/DOCKER_COMPLETE.md) - Docker implementation
 - [Quick Start](./deployment/README_DOCKER.md) - Quick Docker start
+- [Deployment Status](./deployment/DEPLOYMENT_*.md) - Deployment reports and summaries
+
+### [Testing](./testing/)
+- [Testing Guide](./testing/TESTING_GUIDE.md) - How to run tests
+- [Testing Status](./testing/TESTING_STATUS*.md) - Current testing status
+- [Test Reports](./testing/*.md) - Test completion reports and results
+- See [README](./testing/README.md) for complete list
+
+### [Status Reports](./status/)
+- [Build Status](./status/BUILD_*.md) - Build progress and completion reports
+- [Service Status](./status/SERVICE_STATUS_*.md) - Service health reports
+- [Status Reports](./status/*_STATUS*.md) - Various status reports
+- See [README](./status/README.md) for complete list
+
+### [Analysis Reports](./reports/)
+- [Codebase Analysis](./reports/CODEBASE_ANALYSIS.md) - Comprehensive codebase analysis
+- [Testing Analysis](./reports/COMPLETE_TESTING_ANALYSIS.md) - Testing analysis
+- [Ecosystem Reports](./reports/ECOSYSTEM_*.md) - Ecosystem build reports
+- [API Reports](./reports/ENDPOINT_INVENTORY.md) - API endpoint inventory
+- See [README](./reports/README.md) for complete list
+
+### [Implementation](./implementation/)
+- [API Status](./implementation/API_STATUS.md) - API implementation status
+- [Integration Guide](./implementation/INTEGRATION_GUIDE.md) - Integration documentation
+- [Workflow](./implementation/WORKFLOW.md) - Development workflow
+- [Quick Start](./implementation/QUICK_START.md) - Quick start guide
 
 ### [Next Steps](./NEXT_STEPS.md)
 Roadmap and next steps for development and deployment.
