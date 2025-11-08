@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { BadRequestException } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { Transaction } from './entities/transaction.entity';
 import { RpcService } from '@/common/services/rpc.service';
 import { CacheService } from '@/common/services/cache.service';
+import { BroadcastTransactionDto } from './dto/broadcast-transaction.dto';
 
 describe('TransactionService', () => {
   let service: TransactionService;
@@ -19,6 +21,7 @@ describe('TransactionService', () => {
     const mockRpcService = {
       getTransaction: jest.fn(),
       getTransactionReceipt: jest.fn(),
+      broadcastTransaction: jest.fn(),
     };
 
     const mockCacheService = {
@@ -264,6 +267,98 @@ describe('TransactionService', () => {
         expect(result.result.status).toBe('confirmed');
         expect(result.result.isError).toBe('0');
       }
+    });
+  });
+
+  describe('broadcastTransaction', () => {
+    it('should broadcast a signed transaction successfully', async () => {
+      const dto: BroadcastTransactionDto = {
+        signedTransaction:
+          '0xf86c808502540be400825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b24e8ddbdc05c6dff2790f53122fd4a99d7c1c0',
+      };
+
+      const mockResponse = {
+        hash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+        from: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        to: '0x3535353535353535353535353535353535353535',
+        value: BigInt('1000000000000000000'),
+        gasLimit: BigInt('21000'),
+        gasPrice: BigInt('1000000000'),
+        nonce: 0,
+        toJSON: jest.fn(),
+        wait: jest.fn(),
+        provider: null,
+      } as any;
+
+      rpcService.broadcastTransaction.mockResolvedValue(mockResponse);
+
+      const result = await service.broadcastTransaction(dto);
+
+      expect(result.status).toBe('1');
+      expect(result.result).toBeDefined();
+      expect(result.result.hash).toBe(mockResponse.hash);
+      expect(result.result.from).toBe(mockResponse.from);
+      expect(result.result.status).toBe('pending');
+      expect(result.result.message).toBe('Transaction broadcast successfully');
+      expect(rpcService.broadcastTransaction).toHaveBeenCalledWith(
+        dto.signedTransaction,
+      );
+    });
+
+    it('should throw BadRequestException for invalid transaction', async () => {
+      const dto: BroadcastTransactionDto = {
+        signedTransaction: '0xinvalid',
+      };
+
+      rpcService.broadcastTransaction.mockRejectedValue(
+        new Error('Invalid transaction'),
+      );
+
+      await expect(service.broadcastTransaction(dto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should handle RPC errors gracefully', async () => {
+      const dto: BroadcastTransactionDto = {
+        signedTransaction:
+          '0xf86c808502540be400825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b24e8ddbdc05c6dff2790f53122fd4a99d7c1c0',
+      };
+
+      rpcService.broadcastTransaction.mockRejectedValue(
+        new Error('Network error'),
+      );
+
+      await expect(service.broadcastTransaction(dto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should handle transaction with null to address (contract creation)', async () => {
+      const dto: BroadcastTransactionDto = {
+        signedTransaction:
+          '0xf86c808502540be400825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b24e8ddbdc05c6dff2790f53122fd4a99d7c1c0',
+      };
+
+      const mockResponse = {
+        hash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+        from: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        to: null,
+        value: BigInt('0'),
+        gasLimit: BigInt('100000'),
+        gasPrice: BigInt('1000000000'),
+        nonce: 0,
+        toJSON: jest.fn(),
+        wait: jest.fn(),
+        provider: null,
+      } as any;
+
+      rpcService.broadcastTransaction.mockResolvedValue(mockResponse);
+
+      const result = await service.broadcastTransaction(dto);
+
+      expect(result.status).toBe('1');
+      expect(result.result.to).toBeNull();
     });
   });
 });
