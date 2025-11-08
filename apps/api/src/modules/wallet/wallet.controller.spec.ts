@@ -53,7 +53,15 @@ describe('WalletController', () => {
         wallet: {
           id: 'wallet-1',
           name: dto.name,
+          userId: null,
+          user: null,
+          mnemonicHash: 'hashed',
+          isImported: false,
+          isActive: true,
           accounts: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: {},
         },
         mnemonic: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
       };
@@ -80,7 +88,15 @@ describe('WalletController', () => {
         wallet: {
           id: 'wallet-1',
           name: dto.name,
+          userId: 'user-1',
+          user: null,
+          mnemonicHash: 'hashed',
+          isImported: false,
+          isActive: true,
           accounts: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: {},
         },
         mnemonic: 'test mnemonic',
       };
@@ -105,8 +121,15 @@ describe('WalletController', () => {
         wallet: {
           id: 'wallet-1',
           name: dto.name,
+          userId: null,
+          user: null,
+          mnemonicHash: 'hashed',
           isImported: true,
+          isActive: true,
           accounts: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: {},
         },
         mnemonic: undefined,
       };
@@ -142,7 +165,15 @@ describe('WalletController', () => {
       const mockWallet = {
         id: walletId,
         name: 'Test Wallet',
+        userId: null,
+        user: null,
+        mnemonicHash: 'hashed',
+        isImported: false,
+        isActive: true,
         accounts: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {},
       };
 
       walletService.getWalletById.mockResolvedValue(mockWallet);
@@ -288,6 +319,158 @@ describe('WalletController', () => {
 
       expect(result.success).toBe(true);
       expect(walletService.deleteWallet).toHaveBeenCalledWith(walletId);
+    });
+
+    it('should handle delete errors', async () => {
+      const walletId = 'non-existent';
+
+      walletService.deleteWallet.mockRejectedValue(
+        new NotFoundException('Wallet not found'),
+      );
+
+      await expect(controller.deleteWallet(walletId)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('Edge Cases for 100% Coverage', () => {
+    it('should handle createWallet with all optional fields', async () => {
+      const dto: CreateWalletDto = {
+        name: 'Test Wallet',
+        passphrase: 'my-passphrase',
+        deriveFirstAccount: false,
+        metadata: { key: 'value' },
+      };
+
+      const mockResult = {
+        wallet: {
+          id: 'wallet-1',
+          name: dto.name,
+          userId: null,
+          user: null,
+          mnemonicHash: 'hashed',
+          isImported: false,
+          isActive: true,
+          accounts: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: dto.metadata || {},
+        },
+        mnemonic: 'test mnemonic',
+      };
+
+      walletService.createWallet.mockResolvedValue(mockResult);
+
+      const result = await controller.createWallet(dto);
+
+      expect(result.success).toBe(true);
+      expect(walletService.createWallet).toHaveBeenCalledWith(dto, undefined);
+    });
+
+    it('should handle importWallet with all fields', async () => {
+      const dto: ImportWalletDto = {
+        mnemonicOrPrivateKey:
+          'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+        name: 'Imported Wallet',
+        passphrase: 'my-passphrase',
+        deriveFirstAccount: true,
+        metadata: { key: 'value' },
+      };
+
+      const mockResult = {
+        wallet: {
+          id: 'wallet-1',
+          name: dto.name,
+          userId: null,
+          user: null,
+          mnemonicHash: 'hashed',
+          isImported: true,
+          isActive: true,
+          accounts: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: dto.metadata || {},
+        },
+      };
+
+      walletService.importWallet.mockResolvedValue(mockResult);
+
+      const result = await controller.importWallet(dto);
+
+      expect(result.success).toBe(true);
+    });
+
+    it('should handle syncWallet with force flag', async () => {
+      const walletId = 'wallet-1';
+      const dto: SyncWalletDto = {
+        accountAddresses: ['0x123'],
+        force: true,
+      };
+
+      const mockResult = {
+        wallet: { id: walletId, accounts: [] },
+        accounts: [],
+      };
+
+      walletService.syncWallet.mockResolvedValue(mockResult);
+
+      const result = await controller.syncWallet(walletId, dto);
+
+      expect(result.success).toBe(true);
+      expect(walletService.syncWallet).toHaveBeenCalledWith(walletId, dto);
+    });
+
+    it('should handle updateWallet with only name', async () => {
+      const walletId = 'wallet-1';
+      const updates = { name: 'New Name' };
+
+      const mockWallet = {
+        id: walletId,
+        name: 'New Name',
+        userId: null,
+        user: null,
+        mnemonicHash: 'hashed',
+        isImported: false,
+        isActive: true,
+        accounts: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: {},
+      };
+
+      walletService.updateWallet.mockResolvedValue(mockWallet);
+
+      const result = await controller.updateWallet(walletId, updates);
+
+      expect(result.success).toBe(true);
+      expect(result.result.name).toBe('New Name');
+    });
+
+    it('should handle updateWallet with only metadata', async () => {
+      const walletId = 'wallet-1';
+      const updates = { metadata: { key: 'value' } };
+
+      const mockWallet = {
+        id: walletId,
+        name: 'Test Wallet',
+        userId: null,
+        user: null,
+        mnemonicHash: 'hashed',
+        isImported: false,
+        isActive: true,
+        accounts: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        metadata: { key: 'value' },
+      };
+
+      walletService.updateWallet.mockResolvedValue(mockWallet);
+
+      const result = await controller.updateWallet(walletId, updates);
+
+      expect(result.success).toBe(true);
+      expect(result.result.metadata).toEqual({ key: 'value' });
     });
   });
 });

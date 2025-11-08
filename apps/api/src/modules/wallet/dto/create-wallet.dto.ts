@@ -36,4 +36,3 @@ export class CreateWalletDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

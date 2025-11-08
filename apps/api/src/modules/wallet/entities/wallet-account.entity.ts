@@ -56,4 +56,3 @@ export class WalletAccount {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

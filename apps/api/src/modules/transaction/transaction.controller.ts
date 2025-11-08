@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Query, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Query,
+  Body,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TransactionService } from './transaction.service';
 import { BroadcastTransactionDto } from './dto/broadcast-transaction.dto';
@@ -73,7 +81,10 @@ export class TransactionController {
       },
     },
   })
-  @ApiResponse({ status: 400, description: 'Bad request - Invalid transaction' })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request - Invalid transaction',
+  })
   async broadcastTransaction(@Body() dto: BroadcastTransactionDto) {
     return this.transactionService.broadcastTransaction(dto);
   }

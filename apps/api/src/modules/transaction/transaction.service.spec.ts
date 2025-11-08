@@ -360,6 +360,242 @@ describe('TransactionService', () => {
       expect(result.status).toBe('1');
       expect(result.result.to).toBeNull();
     });
+
+    it('should handle transaction with all fields populated', async () => {
+      const dto: BroadcastTransactionDto = {
+        signedTransaction:
+          '0xf86c808502540be400825208943535353535353535353535353535353535353535880de0b6b3a76400008025a028ef61340bd939bc2195fe537567866003e1a15d3c71ff63e1590620aa636276a067cbe9d8997f761aecb703304b24e8ddbdc05c6dff2790f53122fd4a99d7c1c0',
+      };
+
+      const mockResponse = {
+        hash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+        from: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        to: '0x3535353535353535353535353535353535353535',
+        value: BigInt('1000000000000000000'),
+        gasLimit: BigInt('21000'),
+        gasPrice: BigInt('1000000000'),
+        maxFeePerGas: BigInt('2000000000'),
+        maxPriorityFeePerGas: BigInt('100000000'),
+        nonce: 0,
+        data: '0x',
+        chainId: 1,
+        type: 2,
+        toJSON: jest.fn(),
+        wait: jest.fn(),
+        provider: null,
+      } as any;
+
+      rpcService.broadcastTransaction.mockResolvedValue(mockResponse);
+
+      const result = await service.broadcastTransaction(dto);
+
+      expect(result.status).toBe('1');
+      expect(result.result.hash).toBe(mockResponse.hash);
+      expect(result.result.gasPrice).toBe('1000000000');
+    });
+  });
+
+  describe('Additional Coverage for 100%', () => {
+    describe('getTransaction', () => {
+      it('should handle transaction with null block', async () => {
+        const txHash = '0x123';
+        const mockTx = {
+          hash: txHash,
+          blockNumber: null,
+          blockHash: null,
+          transactionIndex: null,
+          fromAddress: '0xfrom',
+          toAddress: '0xto',
+          value: '1000000000000000000',
+          gas: '21000',
+          gasPrice: '20000000000',
+          gasUsed: null,
+          nonce: 0,
+          inputData: '0x',
+          status: null,
+          block: null,
+          logs: [],
+        };
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          transactionRepository.findOne.mockResolvedValue(mockTx);
+          return fn();
+        });
+
+        const result = await service.getTransaction(txHash);
+
+        expect(result.status).toBe('1');
+        expect(result.result).toBeDefined();
+      });
+
+      it('should handle RPC transaction with null blockNumber', async () => {
+        const txHash = '0x123';
+        const mockRpcTx = {
+          hash: txHash,
+          blockNumber: null,
+          blockHash: null,
+          index: null,
+          from: '0xfrom',
+          to: '0xto',
+          value: BigInt('1000000000000000000'),
+          gasLimit: BigInt('21000'),
+          gasPrice: BigInt('20000000000'),
+          data: '0x',
+          nonce: 0,
+          type: 2,
+          toJSON: jest.fn(),
+          wait: jest.fn(),
+          provider: null,
+        } as any;
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          transactionRepository.findOne.mockResolvedValue(null);
+          rpcService.getTransaction.mockResolvedValue(mockRpcTx);
+          rpcService.getTransactionReceipt.mockResolvedValue(null);
+          return fn();
+        });
+
+        const result = await service.getTransaction(txHash);
+
+        expect(result.status).toBe('1');
+        expect(result.result.blockNumber).toBe('0');
+      });
+    });
+
+    describe('getTxReceiptStatus', () => {
+      it('should handle transaction with status 0', async () => {
+        const txHash = '0x123';
+        const mockTx = {
+          hash: txHash,
+          status: 0,
+        };
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          transactionRepository.findOne.mockResolvedValue(mockTx);
+          return fn();
+        });
+
+        const result = await service.getTxReceiptStatus(txHash);
+
+        expect(result.status).toBe('1');
+        expect(result.result.status).toBe('0');
+        expect(result.result.message).toBe('Fail');
+      });
+
+      it('should handle receipt with status 0', async () => {
+        const txHash = '0x123';
+        const mockReceipt = {
+          hash: txHash,
+          status: 0,
+          gasUsed: BigInt('21000'),
+          cumulativeGasUsed: BigInt('21000'),
+          logs: [],
+          to: '0xto',
+          from: '0xfrom',
+          contractAddress: null,
+          blockNumber: 12345,
+          blockHash: '0xabc',
+          transactionIndex: 0,
+          type: 2,
+          toJSON: jest.fn(),
+        } as any;
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          transactionRepository.findOne.mockResolvedValue(null);
+          rpcService.getTransactionReceipt.mockResolvedValue(mockReceipt);
+          return fn();
+        });
+
+        const result = await service.getTxReceiptStatus(txHash);
+
+        expect(result.status).toBe('1');
+        expect(result.result.status).toBe('0');
+        expect(result.result.message).toBe('Fail');
+      });
+    });
+
+    describe('getStatus', () => {
+      it('should handle transaction with error status', async () => {
+        const txHash = '0x123';
+        const mockTx = {
+          hash: txHash,
+          blockNumber: 12345,
+          blockHash: '0xabc',
+          index: 0,
+          from: '0xfrom',
+          to: '0xto',
+          value: BigInt('0'),
+          gasLimit: BigInt('21000'),
+          gasPrice: BigInt('20000000000'),
+          data: '0x',
+          nonce: 0,
+          type: 2,
+          toJSON: jest.fn(),
+          wait: jest.fn(),
+          provider: null,
+        } as any;
+
+        const mockReceipt = {
+          hash: txHash,
+          status: 0, // Failed transaction
+          gasUsed: BigInt('21000'),
+          cumulativeGasUsed: BigInt('21000'),
+          logs: [],
+          to: '0xto',
+          from: '0xfrom',
+          contractAddress: null,
+          blockNumber: 12345,
+          blockHash: '0xabc',
+          transactionIndex: 0,
+          type: 2,
+          toJSON: jest.fn(),
+        } as any;
+
+        rpcService.getTransaction.mockResolvedValue(mockTx);
+        rpcService.getTransactionReceipt.mockResolvedValue(mockReceipt);
+
+        const result = await service.getStatus(txHash);
+
+        expect(result.status).toBe('1');
+        if (result.result) {
+          expect(result.result.status).toBe('confirmed');
+          expect(result.result.isError).toBe('1');
+          expect(result.result.errDescription).toBe('Transaction failed');
+        }
+      });
+
+      it('should handle null receipt', async () => {
+        const txHash = '0x123';
+        const mockTx = {
+          hash: txHash,
+          blockNumber: 12345,
+          blockHash: '0xabc',
+          index: 0,
+          from: '0xfrom',
+          to: '0xto',
+          value: BigInt('0'),
+          gasLimit: BigInt('21000'),
+          gasPrice: BigInt('20000000000'),
+          data: '0x',
+          nonce: 0,
+          type: 2,
+          toJSON: jest.fn(),
+          wait: jest.fn(),
+          provider: null,
+        } as any;
+
+        rpcService.getTransaction.mockResolvedValue(mockTx);
+        rpcService.getTransactionReceipt.mockResolvedValue(null);
+
+        const result = await service.getStatus(txHash);
+
+        expect(result.status).toBe('1');
+        if (result.result) {
+          expect(result.result.status).toBe('confirmed');
+          expect(result.result.isError).toBe('0');
+        }
+      });
+    });
   });
 });
 

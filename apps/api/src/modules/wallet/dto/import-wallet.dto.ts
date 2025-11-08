@@ -13,7 +13,8 @@ import {
 export class ImportWalletDto {
   @ApiProperty({
     description: 'Mnemonic phrase (12 or 24 words) or private key (hex)',
-    example: 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
+    example:
+      'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about',
   })
   @IsString()
   @MinLength(1)
@@ -50,4 +51,3 @@ export class ImportWalletDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

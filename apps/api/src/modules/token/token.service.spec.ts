@@ -287,5 +287,454 @@ describe('TokenService', () => {
       expect(result.status).toBe('1');
       expect(result.result).toBeDefined();
     });
+
+    it('should handle pagination correctly', async () => {
+      const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+      const page = 2;
+      const limit = 10;
+
+      tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        addOrderBy: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 25]),
+      });
+
+      const result = await service.getTokenTransfers(contractAddress, page, limit);
+
+      expect(result.status).toBe('1');
+      expect(result.result.meta.page).toBe(2);
+      expect(result.result.meta.totalPages).toBe(3);
+      expect(result.result.meta.hasNextPage).toBe(true);
+      expect(result.result.meta.hasPreviousPage).toBe(true);
+    });
+
+    it('should handle empty transfers list', async () => {
+      const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+      tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
+        where: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        addOrderBy: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      });
+
+      const result = await service.getTokenTransfers(contractAddress);
+
+      expect(result.status).toBe('1');
+      expect(result.result.data).toEqual([]);
+      expect(result.result.meta.total).toBe(0);
+    });
+  });
+
+  describe('Error Handling', () => {
+    describe('getTokenSupply', () => {
+      it('should handle database errors gracefully', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockRejectedValue(
+          new Error('Database error'),
+        );
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          try {
+            return await fn();
+          } catch (error) {
+            return '0';
+          }
+        });
+
+        const result = await service.getTokenSupply(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result).toBe('0');
+      });
+
+      it('should return 0 when RPC call fails', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        rpcService.getProvider = jest.fn().mockReturnValue({} as any);
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          try {
+            return await fn();
+          } catch (error) {
+            return '0';
+          }
+        });
+
+        const result = await service.getTokenSupply(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result).toBe('0');
+      });
+    });
+
+    describe('getTokenAccountBalance', () => {
+      it('should handle database errors gracefully', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+        const address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+
+        tokenHolderRepository.findOne.mockRejectedValue(
+          new Error('Database error'),
+        );
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          try {
+            return await fn();
+          } catch (error) {
+            return '0';
+          }
+        });
+
+        const result = await service.getTokenAccountBalance(
+          contractAddress,
+          address,
+        );
+
+        expect(result.status).toBe('1');
+        expect(result.result).toBe('0');
+      });
+
+      it('should return 0 when RPC call fails', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+        const address = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+
+        tokenHolderRepository.findOne.mockResolvedValue(null);
+        rpcService.getProvider = jest.fn().mockReturnValue({} as any);
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          try {
+            return await fn();
+          } catch (error) {
+            return '0';
+          }
+        });
+
+        const result = await service.getTokenAccountBalance(
+          contractAddress,
+          address,
+        );
+
+        expect(result.status).toBe('1');
+        expect(result.result).toBe('0');
+      });
+    });
+
+    describe('getTokenInfo', () => {
+      it('should return error when token not found', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        rpcService.getProvider = jest.fn().mockReturnValue({} as any);
+        cacheService.getOrSet.mockResolvedValue(null);
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('0');
+        expect(result.message).toBe('Token not found');
+      });
+
+      it('should handle RPC errors and return null', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        rpcService.getProvider = jest.fn().mockReturnValue({} as any);
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          try {
+            return await fn();
+          } catch (error) {
+            return null;
+          }
+        });
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('0');
+        expect(result.message).toBe('Token not found');
+      });
+
+      it('should handle partial RPC call failures', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        const mockProvider = {} as any;
+        rpcService.getProvider = jest.fn().mockReturnValue(mockProvider);
+
+        // Mock ethers.Contract to simulate partial failures
+        const mockContract = {
+          name: jest.fn().mockResolvedValue('Test Token'),
+          symbol: jest.fn().mockRejectedValue(new Error('RPC error')),
+          decimals: jest.fn().mockResolvedValue(18),
+          totalSupply: jest.fn().mockResolvedValue(BigInt('1000000')),
+        };
+
+        jest.spyOn(require('ethers'), 'Contract').mockImplementation(() => mockContract);
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          return await fn();
+        });
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result).toBeDefined();
+        expect(result.result.symbol).toBe('');
+      });
+    });
+
+    describe('getTokenTransfers', () => {
+      it('should handle query builder errors', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          addOrderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getManyAndCount: jest.fn().mockRejectedValue(new Error('Query error')),
+        });
+
+        await expect(
+          service.getTokenTransfers(contractAddress),
+        ).rejects.toThrow('Query error');
+      });
+
+      it('should handle default pagination values', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          addOrderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+        });
+
+        const result = await service.getTokenTransfers(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result.meta.page).toBe(1);
+        expect(result.result.meta.limit).toBe(10);
+      });
+    });
+  });
+
+  describe('Additional Coverage for 100%', () => {
+    describe('getTokenInfo', () => {
+      it('should return token info from database with all fields', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+        const tokenInfo = {
+          address: contractAddress,
+          name: 'Test Token',
+          symbol: 'TEST',
+          decimals: 18,
+          totalSupply: '1000000000000000000',
+          tokenType: 'ERC721',
+        };
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          const metadata = {
+            address: contractAddress,
+            name: tokenInfo.name,
+            symbol: tokenInfo.symbol,
+            decimals: tokenInfo.decimals,
+            totalSupply: tokenInfo.totalSupply,
+            tokenType: tokenInfo.tokenType,
+          };
+          tokenMetadataRepository.findOne.mockResolvedValue(metadata as any);
+          return fn();
+        });
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result).toEqual(tokenInfo);
+      });
+
+      it('should handle RPC call with all methods succeeding', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        const mockProvider = {} as any;
+        rpcService.getProvider = jest.fn().mockReturnValue(mockProvider);
+
+        const mockContract = {
+          name: jest.fn().mockResolvedValue('Test Token'),
+          symbol: jest.fn().mockResolvedValue('TEST'),
+          decimals: jest.fn().mockResolvedValue(18),
+          totalSupply: jest.fn().mockResolvedValue(BigInt('1000000')),
+        };
+
+        jest.spyOn(require('ethers'), 'Contract').mockImplementation(() => mockContract);
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          return await fn();
+        });
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result.name).toBe('Test Token');
+        expect(result.result.symbol).toBe('TEST');
+        expect(result.result.decimals).toBe(18);
+        expect(result.result.totalSupply).toBe('1000000');
+        expect(result.result.tokenType).toBe('ERC20');
+      });
+
+      it('should handle RPC call with name failing', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        const mockProvider = {} as any;
+        rpcService.getProvider = jest.fn().mockReturnValue(mockProvider);
+
+        const mockContract = {
+          name: jest.fn().mockRejectedValue(new Error('RPC error')),
+          symbol: jest.fn().mockResolvedValue('TEST'),
+          decimals: jest.fn().mockResolvedValue(18),
+          totalSupply: jest.fn().mockResolvedValue(BigInt('1000000')),
+        };
+
+        jest.spyOn(require('ethers'), 'Contract').mockImplementation(() => mockContract);
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          return await fn();
+        });
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result.name).toBe('');
+      });
+
+      it('should handle RPC call with decimals failing', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        const mockProvider = {} as any;
+        rpcService.getProvider = jest.fn().mockReturnValue(mockProvider);
+
+        const mockContract = {
+          name: jest.fn().mockResolvedValue('Test Token'),
+          symbol: jest.fn().mockResolvedValue('TEST'),
+          decimals: jest.fn().mockRejectedValue(new Error('RPC error')),
+          totalSupply: jest.fn().mockResolvedValue(BigInt('1000000')),
+        };
+
+        jest.spyOn(require('ethers'), 'Contract').mockImplementation(() => mockContract);
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          return await fn();
+        });
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result.decimals).toBe(18); // Default value
+      });
+
+      it('should handle RPC call with totalSupply failing', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenMetadataRepository.findOne.mockResolvedValue(null);
+        const mockProvider = {} as any;
+        rpcService.getProvider = jest.fn().mockReturnValue(mockProvider);
+
+        const mockContract = {
+          name: jest.fn().mockResolvedValue('Test Token'),
+          symbol: jest.fn().mockResolvedValue('TEST'),
+          decimals: jest.fn().mockResolvedValue(18),
+          totalSupply: jest.fn().mockRejectedValue(new Error('RPC error')),
+        };
+
+        jest.spyOn(require('ethers'), 'Contract').mockImplementation(() => mockContract);
+
+        cacheService.getOrSet.mockImplementation(async (key, fn) => {
+          return await fn();
+        });
+
+        const result = await service.getTokenInfo(contractAddress);
+
+        expect(result.status).toBe('1');
+        expect(result.result.totalSupply).toBe('0');
+      });
+    });
+
+    describe('getTokenTransfers', () => {
+      it('should handle transfers with data', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+        const mockTransfers = [
+          {
+            id: '1',
+            tokenAddress: contractAddress,
+            fromAddress: '0xfrom',
+            toAddress: '0xto',
+            value: '1000',
+            blockNumber: 12345,
+            logIndex: 0,
+          },
+        ];
+
+        tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          addOrderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getManyAndCount: jest.fn().mockResolvedValue([mockTransfers, 1]),
+        });
+
+        const result = await service.getTokenTransfers(contractAddress, 1, 10);
+
+        expect(result.status).toBe('1');
+        expect(result.result.data).toHaveLength(1);
+        expect(result.result.meta.total).toBe(1);
+        expect(result.result.meta.totalPages).toBe(1);
+      });
+
+      it('should handle last page correctly', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          addOrderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getManyAndCount: jest.fn().mockResolvedValue([[], 25]),
+        });
+
+        const result = await service.getTokenTransfers(contractAddress, 3, 10);
+
+        expect(result.status).toBe('1');
+        expect(result.result.meta.page).toBe(3);
+        expect(result.result.meta.totalPages).toBe(3);
+        expect(result.result.meta.hasNextPage).toBe(false);
+        expect(result.result.meta.hasPreviousPage).toBe(true);
+      });
+
+      it('should handle first page correctly', async () => {
+        const contractAddress = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
+
+        tokenTransferRepository.createQueryBuilder = jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+          addOrderBy: jest.fn().mockReturnThis(),
+          skip: jest.fn().mockReturnThis(),
+          take: jest.fn().mockReturnThis(),
+          getManyAndCount: jest.fn().mockResolvedValue([[], 25]),
+        });
+
+        const result = await service.getTokenTransfers(contractAddress, 1, 10);
+
+        expect(result.status).toBe('1');
+        expect(result.result.meta.hasPreviousPage).toBe(false);
+        expect(result.result.meta.hasNextPage).toBe(true);
+      });
+    });
   });
 });

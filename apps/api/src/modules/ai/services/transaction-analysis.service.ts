@@ -41,11 +41,14 @@ export class TransactionAnalysisService {
   async analyze(txHash: string): Promise<TransactionAnalysis> {
     try {
       // Get transaction data
-      const txDataResult = await this.proxyService.eth_getTransactionByHash(txHash);
-      const receiptResult = await this.proxyService.eth_getTransactionReceipt(txHash);
-      
+      const txDataResult =
+        await this.proxyService.eth_getTransactionByHash(txHash);
+      const receiptResult =
+        await this.proxyService.eth_getTransactionReceipt(txHash);
+
       const txData = txDataResult.status === '1' ? txDataResult.result : null;
-      const receipt = receiptResult.status === '1' ? receiptResult.result : null;
+      const receipt =
+        receiptResult.status === '1' ? receiptResult.result : null;
 
       // Build context
       const context = {
@@ -159,11 +162,15 @@ Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommenda
     };
   }
 
-  private analyzeGas(context: any): { used: string; price: string; efficiency: 'efficient' | 'moderate' | 'inefficient' } {
+  private analyzeGas(context: any): {
+    used: string;
+    price: string;
+    efficiency: 'efficient' | 'moderate' | 'inefficient';
+  } {
     const gasUsed = parseInt(context.gasUsed || '0', 16);
     const gasLimit = parseInt(context.gas || '0', 16);
     const ratio = gasLimit > 0 ? gasUsed / gasLimit : 0;
-    const efficiency: 'efficient' | 'moderate' | 'inefficient' = 
+    const efficiency: 'efficient' | 'moderate' | 'inefficient' =
       ratio < 0.5 ? 'efficient' : ratio < 0.8 ? 'moderate' : 'inefficient';
 
     return {

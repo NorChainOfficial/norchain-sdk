@@ -9,13 +9,9 @@ import { CacheService } from '@/common/services/cache.service';
 import { AccountModule } from '@/modules/account/account.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Wallet, WalletAccount]),
-    AccountModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Wallet, WalletAccount]), AccountModule],
   controllers: [WalletController],
   providers: [WalletService, RpcService, CacheService],
   exports: [WalletService],
 })
 export class WalletModule {}
-

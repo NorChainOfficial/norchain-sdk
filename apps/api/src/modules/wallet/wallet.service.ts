@@ -77,7 +77,7 @@ export class WalletService {
   async createWallet(
     dto: CreateWalletDto,
     userId?: string,
-  ): Promise<{ wallet: Wallet; mnemonic: string }> {
+  ): Promise<{ wallet: Wallet; mnemonic?: string }> {
     try {
       // Generate a new mnemonic
       const mnemonic = ethers.Mnemonic.entropyToPhrase(
@@ -86,7 +86,10 @@ export class WalletService {
 
       return this.createWalletFromMnemonic(mnemonic, dto, userId);
     } catch (error) {
-      this.logger.error(`Failed to create wallet: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to create wallet: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to create wallet');
     }
   }
@@ -124,7 +127,10 @@ export class WalletService {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      this.logger.error(`Failed to import wallet: ${error.message}`, error.stack);
+      this.logger.error(
+        `Failed to import wallet: ${error.message}`,
+        error.stack,
+      );
       throw new BadRequestException('Failed to import wallet');
     }
   }
@@ -156,9 +162,7 @@ export class WalletService {
 
       // Derive first account if requested (default: true)
       const deriveFirstAccount =
-        dto.deriveFirstAccount !== undefined
-          ? dto.deriveFirstAccount
-          : true;
+        dto.deriveFirstAccount !== undefined ? dto.deriveFirstAccount : true;
 
       if (deriveFirstAccount) {
         await this.deriveAccount(savedWallet.id, 0, hdNode);
@@ -211,7 +215,7 @@ export class WalletService {
       const account = this.walletAccountRepository.create({
         walletId: savedWallet.id,
         address: walletInstance.address,
-        publicKey: walletInstance.publicKey,
+        publicKey: null, // Public key not stored for private key wallets
         index: 0,
         derivationPath: null, // No derivation path for private key wallets
         isActive: true,
@@ -270,9 +274,26 @@ export class WalletService {
       return existingAccount;
     }
 
-    // Note: We cannot derive accounts without the mnemonic
-    // This is a limitation - the API cannot derive accounts without the mnemonic
-    // The client must provide the derived account information
+    // If hdNode is provided, we can derive the account
+    if (hdNode) {
+      const derivationPath = `m/44'/60'/0'/0/${index}`;
+      const derivedWallet = hdNode.derivePath(derivationPath);
+
+      const account = this.walletAccountRepository.create({
+        walletId,
+        address: derivedWallet.address,
+        publicKey: derivedWallet.publicKey || null,
+        index,
+        derivationPath,
+        isActive: true,
+        metadata: {},
+      });
+
+      return await this.walletAccountRepository.save(account);
+    }
+
+    // Note: We cannot derive accounts without the mnemonic or hdNode
+    // The client must provide the derived account information or use the client SDK
     throw new BadRequestException(
       'Account derivation requires mnemonic. Please use the client SDK to derive accounts and sync them via the sync endpoint.',
     );
@@ -336,14 +357,22 @@ export class WalletService {
     }
 
     // Sync each account
-    const syncResults = await Promise.all(
+    const syncResults: Array<{
+      account: WalletAccount;
+      balance: string;
+      transactionCount: number;
+    }> = await Promise.all(
       accountsToSync.map(async (account) => {
         const cacheKey = `wallet:${walletId}:account:${account.address}`;
-        
+
         if (!dto.force) {
           const cached = await this.cacheService.get(cacheKey);
           if (cached) {
-            return cached;
+            return cached as {
+              account: WalletAccount;
+              balance: string;
+              transactionCount: number;
+            };
           }
         }
 
@@ -396,9 +425,9 @@ export class WalletService {
     updates: Partial<Pick<Wallet, 'name' | 'metadata'>>,
   ): Promise<Wallet> {
     const wallet = await this.getWalletById(walletId);
-    
+
     Object.assign(wallet, updates);
-    
+
     return this.walletRepository.save(wallet);
   }
 
@@ -407,9 +436,8 @@ export class WalletService {
    */
   async deleteWallet(walletId: string): Promise<void> {
     const wallet = await this.getWalletById(walletId);
-    
+
     wallet.isActive = false;
     await this.walletRepository.save(wallet);
   }
 }
-

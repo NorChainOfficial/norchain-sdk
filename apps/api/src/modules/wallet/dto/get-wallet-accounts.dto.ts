@@ -13,4 +13,3 @@ export class GetWalletAccountsDto {
   @IsBoolean()
   includeInactive?: boolean;
 }
-

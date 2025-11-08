@@ -120,6 +120,20 @@ export class RpcService {
   }
 
   /**
+   * Gets the transaction count (nonce) of an address.
+   *
+   * @param {string} address - Ethereum address
+   * @returns {Promise<number>} Transaction count (nonce)
+   * @example
+   * ```typescript
+   * const count = await rpcService.getTransactionCount('0x...');
+   * ```
+   */
+  async getTransactionCount(address: string): Promise<number> {
+    return this.provider.getTransactionCount(address);
+  }
+
+  /**
    * Gets the bytecode of a contract.
    *
    * @param {string} address - Contract address

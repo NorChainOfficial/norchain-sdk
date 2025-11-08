@@ -11,12 +11,7 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { WalletService } from './wallet.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { ImportWalletDto } from './dto/import-wallet.dto';
@@ -236,4 +231,3 @@ export class WalletController {
     };
   }
 }
-

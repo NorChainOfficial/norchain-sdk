@@ -1,7 +1,11 @@
 // Using Joi for validation - install: npm install joi
-// For now, using basic validation
+// For now, using basic validation - Joi schema commented out until joi is installed
+// import * as Joi from 'joi';
+
 export const configValidationSchema = null;
 
+// Uncomment when joi is installed:
+/*
 export const configValidationSchema = Joi.object({
   // Server
   NODE_ENV: Joi.string()
@@ -46,3 +50,4 @@ export const configValidationSchema = Joi.object({
   INDEXER_SYNC_INTERVAL: Joi.number().default(3000),
   INDEXER_BATCH_SIZE: Joi.number().default(100),
 });
+*/

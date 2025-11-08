@@ -33,7 +33,10 @@ export class ContractAuditService {
 
   async audit(contractAddress: string): Promise<ContractAudit> {
     try {
-      const codeResult = await this.proxyService.eth_getCode(contractAddress, 'latest');
+      const codeResult = await this.proxyService.eth_getCode(
+        contractAddress,
+        'latest',
+      );
       const code = codeResult.status === '1' ? codeResult.result : '0x';
 
       if (!code || code === '0x') {
