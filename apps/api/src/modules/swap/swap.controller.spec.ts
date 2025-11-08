@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SwapController } from './swap.controller';
 import { SwapService } from './swap.service';
 import { PriceAggregatorService } from './price-aggregator.service';
-import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 describe('SwapController', () => {
   let controller: SwapController;
