@@ -46,4 +46,3 @@ export const configValidationSchema = Joi.object({
   INDEXER_SYNC_INTERVAL: Joi.number().default(3000),
   INDEXER_BATCH_SIZE: Joi.number().default(100),
 });
-

@@ -5,7 +5,7 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Gas Service
- * 
+ *
  * Provides gas price estimation and oracle data.
  */
 @Injectable()
@@ -17,7 +17,7 @@ export class GasService {
 
   /**
    * Gets gas oracle data with recommended gas prices.
-   * 
+   *
    * @returns {Promise<ResponseDto>} Gas oracle data
    */
   async getGasOracle() {
@@ -56,7 +56,7 @@ export class GasService {
 
   /**
    * Estimates gas for a transaction.
-   * 
+   *
    * @param {any} transaction - Transaction request
    * @returns {Promise<ResponseDto>} Gas estimate
    */
@@ -86,4 +86,3 @@ export class GasService {
     }
   }
 }
-

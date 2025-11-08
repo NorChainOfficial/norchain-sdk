@@ -78,4 +78,3 @@ export class Transaction {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

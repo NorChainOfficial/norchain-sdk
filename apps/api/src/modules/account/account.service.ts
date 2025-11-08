@@ -12,10 +12,10 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Account Service
- * 
+ *
  * Provides account-related operations including balance queries,
  * transaction history, and account summaries.
- * 
+ *
  * @class AccountService
  * @example
  * ```typescript
@@ -33,9 +33,9 @@ export class AccountService {
 
   /**
    * Gets the balance of an Ethereum address.
-   * 
+   *
    * Uses caching to reduce RPC calls. Cache TTL: 10 seconds.
-   * 
+   *
    * @param {GetBalanceDto} dto - DTO containing the address
    * @returns {Promise<ResponseDto<string>>} Balance in wei as string
    * @example
@@ -63,10 +63,10 @@ export class AccountService {
 
   /**
    * Gets transaction list for an address.
-   * 
+   *
    * Tries to fetch from database first, falls back to RPC if database
    * is not available or has no data.
-   * 
+   *
    * @param {GetTransactionsDto} dto - DTO containing address and pagination options
    * @returns {Promise<ResponseDto>} Paginated transaction list
    * @example
@@ -118,9 +118,9 @@ export class AccountService {
 
   /**
    * Gets account summary including balance, transaction count, and token count.
-   * 
+   *
    * Uses caching to improve performance. Cache TTL: 60 seconds.
-   * 
+   *
    * @param {string} address - Ethereum address
    * @returns {Promise<ResponseDto>} Account summary
    * @example
@@ -145,9 +145,9 @@ export class AccountService {
 
   /**
    * Gets list of tokens held by an address.
-   * 
+   *
    * Returns all ERC20 tokens with non-zero balance for the address.
-   * 
+   *
    * @param {GetTokenListDto} dto - DTO containing address and pagination options
    * @returns {Promise<ResponseDto>} Paginated token list
    */
@@ -167,10 +167,10 @@ export class AccountService {
 
   /**
    * Gets token transfers for an address.
-   * 
+   *
    * Returns ERC20 token transfers (incoming and outgoing) for an address.
    * Optionally filtered by token contract address.
-   * 
+   *
    * @param {GetTokenTransfersDto} dto - DTO containing address, optional contract, and pagination
    * @returns {Promise<ResponseDto>} Paginated token transfers
    */
@@ -198,10 +198,10 @@ export class AccountService {
 
   /**
    * Gets balance for multiple addresses.
-   * 
+   *
    * Returns balances for up to 20 addresses in a single call.
    * Uses caching to reduce RPC calls.
-   * 
+   *
    * @param {GetBalanceMultiDto} dto - DTO containing array of addresses
    * @returns {Promise<ResponseDto>} Array of balances
    */
@@ -231,10 +231,10 @@ export class AccountService {
 
   /**
    * Gets internal transactions (contract calls) for an address.
-   * 
+   *
    * Returns internal transactions (trace calls) for an address.
    * These are transactions that occurred as a result of contract execution.
-   * 
+   *
    * @param {GetInternalTransactionsDto} dto - DTO containing address and pagination
    * @returns {Promise<ResponseDto>} Paginated internal transactions
    */

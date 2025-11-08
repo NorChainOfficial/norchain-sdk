@@ -1,4 +1,10 @@
-import { IsEthereumAddress, IsOptional, IsInt, Min, Max } from 'class-validator';
+import {
+  IsEthereumAddress,
+  IsOptional,
+  IsInt,
+  Min,
+  Max,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { PaginationDto } from '@/common/interfaces/pagination.interface';
@@ -22,4 +28,3 @@ export class GetTransactionsDto extends PaginationDto {
   @Min(0)
   endblock?: number;
 }
-

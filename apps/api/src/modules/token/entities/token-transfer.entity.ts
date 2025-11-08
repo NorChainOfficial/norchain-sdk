@@ -56,4 +56,3 @@ export class TokenTransfer {
   @CreateDateColumn()
   createdAt: Date;
 }
-

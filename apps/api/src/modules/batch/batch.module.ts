@@ -10,4 +10,3 @@ import { CacheService } from '@/common/services/cache.service';
   exports: [BatchService],
 })
 export class BatchModule {}
-

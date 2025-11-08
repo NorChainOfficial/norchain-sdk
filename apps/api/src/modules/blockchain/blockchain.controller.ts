@@ -11,7 +11,10 @@ export class BlockchainController {
   @Public()
   @Get('state-root/:blockNumber')
   @ApiOperation({ summary: 'Get state root for a block' })
-  @ApiResponse({ status: 200, description: 'State root retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'State root retrieved successfully',
+  })
   async getStateRoot(@Param('blockNumber') blockNumber: string) {
     return this.blockchainService.getStateRoot(blockNumber);
   }
@@ -19,7 +22,10 @@ export class BlockchainController {
   @Public()
   @Get('validators')
   @ApiOperation({ summary: 'Get validator set information' })
-  @ApiResponse({ status: 200, description: 'Validators retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Validators retrieved successfully',
+  })
   async getValidators() {
     return this.blockchainService.getValidators();
   }
@@ -27,9 +33,11 @@ export class BlockchainController {
   @Public()
   @Get('consensus/info')
   @ApiOperation({ summary: 'Get consensus information' })
-  @ApiResponse({ status: 200, description: 'Consensus info retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Consensus info retrieved successfully',
+  })
   async getConsensusInfo() {
     return this.blockchainService.getConsensusInfo();
   }
 }
-

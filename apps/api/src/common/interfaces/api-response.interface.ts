@@ -33,4 +33,3 @@ export class ResponseDto<T> {
     return new ResponseDto('0', result, message);
   }
 }
-

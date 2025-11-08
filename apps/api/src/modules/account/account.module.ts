@@ -26,4 +26,3 @@ import { CacheService } from '@/common/services/cache.service';
   exports: [AccountService],
 })
 export class AccountModule {}
-

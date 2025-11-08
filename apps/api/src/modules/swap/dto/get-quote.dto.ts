@@ -1,4 +1,9 @@
-import { IsString, IsNotEmpty, IsOptional, IsNumberString } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumberString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GetQuoteDto {
@@ -35,4 +40,3 @@ export class GetQuoteDto {
   @IsNumberString()
   chainId?: string;
 }
-

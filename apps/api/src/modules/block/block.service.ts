@@ -9,7 +9,7 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Block Service
- * 
+ *
  * Provides block-related operations including block queries,
  * block rewards, and block countdown.
  */
@@ -26,7 +26,7 @@ export class BlockService {
 
   /**
    * Gets block information by block number or tag.
-   * 
+   *
    * @param {GetBlockDto} dto - DTO containing block number or tag
    * @returns {Promise<ResponseDto>} Block information
    */
@@ -77,9 +77,9 @@ export class BlockService {
 
   /**
    * Gets block reward information.
-   * 
+   *
    * Calculates block reward including base reward, uncle rewards, and fees.
-   * 
+   *
    * @param {number} blockNumber - Block number
    * @returns {Promise<ResponseDto>} Block reward information
    */
@@ -129,7 +129,7 @@ export class BlockService {
 
   /**
    * Gets block countdown until next block.
-   * 
+   *
    * @param {number} blockNumber - Block number
    * @returns {Promise<ResponseDto>} Countdown information
    */
@@ -160,7 +160,7 @@ export class BlockService {
 
   /**
    * Gets latest block number.
-   * 
+   *
    * @returns {Promise<ResponseDto>} Latest block number
    */
   async getBlockNumber() {
@@ -210,4 +210,3 @@ export class BlockService {
     };
   }
 }
-

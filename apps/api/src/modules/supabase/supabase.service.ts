@@ -1,14 +1,18 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createClient, SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
+import {
+  createClient,
+  SupabaseClient,
+  RealtimeChannel,
+} from '@supabase/supabase-js';
 import { NorChainWebSocketGateway } from '../websocket/websocket.gateway';
 
 /**
  * Supabase Service
- * 
+ *
  * Provides Supabase integration for real-time database subscriptions.
  * Listens to database changes and broadcasts via WebSocket.
- * 
+ *
  * @class SupabaseService
  * @example
  * ```typescript
@@ -48,7 +52,9 @@ export class SupabaseService implements OnModuleInit {
    */
   async onModuleInit() {
     if (!this.supabase) {
-      this.logger.warn('Supabase not configured, skipping real-time subscriptions');
+      this.logger.warn(
+        'Supabase not configured, skipping real-time subscriptions',
+      );
       return;
     }
 
@@ -58,13 +64,15 @@ export class SupabaseService implements OnModuleInit {
       await this.subscribeToTokenTransfers();
       this.logger.log('Supabase real-time subscriptions initialized');
     } catch (error) {
-      this.logger.error(`Failed to initialize Supabase subscriptions: ${error.message}`);
+      this.logger.error(
+        `Failed to initialize Supabase subscriptions: ${error.message}`,
+      );
     }
   }
 
   /**
    * Gets the Supabase client instance.
-   * 
+   *
    * @returns {SupabaseClient} Supabase client
    */
   getClient(): SupabaseClient {
@@ -73,7 +81,7 @@ export class SupabaseService implements OnModuleInit {
 
   /**
    * Subscribes to new blocks.
-   * 
+   *
    * Listens for new blocks in the database and broadcasts via WebSocket.
    */
   async subscribeToBlocks() {
@@ -101,7 +109,7 @@ export class SupabaseService implements OnModuleInit {
 
   /**
    * Subscribes to new transactions.
-   * 
+   *
    * Listens for new transactions and broadcasts to relevant addresses.
    */
   async subscribeToTransactions() {
@@ -118,12 +126,12 @@ export class SupabaseService implements OnModuleInit {
         },
         (payload) => {
           const tx = payload.new as any;
-          
+
           // Broadcast to from address
           if (tx.fromAddress) {
             this.websocketGateway.broadcastTransaction(tx.fromAddress, tx);
           }
-          
+
           // Broadcast to to address
           if (tx.toAddress) {
             this.websocketGateway.broadcastTransaction(tx.toAddress, tx);
@@ -138,7 +146,7 @@ export class SupabaseService implements OnModuleInit {
 
   /**
    * Subscribes to token transfers.
-   * 
+   *
    * Listens for token transfers and broadcasts to relevant addresses.
    */
   async subscribeToTokenTransfers() {
@@ -155,7 +163,7 @@ export class SupabaseService implements OnModuleInit {
         },
         (payload) => {
           const transfer = payload.new as any;
-          
+
           // Broadcast to from address
           if (transfer.fromAddress) {
             this.websocketGateway.broadcastTokenTransfer(
@@ -163,7 +171,7 @@ export class SupabaseService implements OnModuleInit {
               transfer,
             );
           }
-          
+
           // Broadcast to to address
           if (transfer.toAddress) {
             this.websocketGateway.broadcastTokenTransfer(
@@ -181,14 +189,14 @@ export class SupabaseService implements OnModuleInit {
 
   /**
    * Subscribes to token holder updates.
-   * 
+   *
    * @param {string} tokenAddress - Token address
    */
   async subscribeToTokenHolders(tokenAddress: string) {
     if (!this.supabase) return;
 
     const channelName = `token-holders:${tokenAddress}`;
-    
+
     if (this.channels.has(channelName)) {
       return; // Already subscribed
     }
@@ -215,7 +223,7 @@ export class SupabaseService implements OnModuleInit {
 
   /**
    * Unsubscribes from a channel.
-   * 
+   *
    * @param {string} channelName - Channel name
    */
   async unsubscribe(channelName: string) {
@@ -244,4 +252,3 @@ export class SupabaseService implements OnModuleInit {
     this.channels.clear();
   }
 }
-

@@ -32,13 +32,13 @@ export class PortfolioOptimizationService {
     try {
       // Get token balances
       const tokens = await this.getTokenBalances(address);
-      
+
       const totalValue = tokens.reduce((sum, token) => sum + token.value, 0);
-      
+
       const recommendations: PortfolioOptimization['recommendations'] = [];
-      
+
       // Generate optimization recommendations
-      tokens.forEach(token => {
+      tokens.forEach((token) => {
         if (token.percentage > 50) {
           recommendations.push({
             action: 'rebalance',
@@ -65,21 +65,24 @@ export class PortfolioOptimizationService {
     }
   }
 
-  private async getTokenBalances(address: string): Promise<PortfolioOptimization['currentPortfolio']['tokens']> {
+  private async getTokenBalances(
+    address: string,
+  ): Promise<PortfolioOptimization['currentPortfolio']['tokens']> {
     // Placeholder - implement actual token balance fetching
     return [];
   }
 
-  private calculateOptimalAllocation(tokens: PortfolioOptimization['currentPortfolio']['tokens']): Record<string, number> {
+  private calculateOptimalAllocation(
+    tokens: PortfolioOptimization['currentPortfolio']['tokens'],
+  ): Record<string, number> {
     // Simple equal-weight allocation
     const allocation: Record<string, number> = {};
     const equalWeight = 100 / tokens.length;
-    
-    tokens.forEach(token => {
+
+    tokens.forEach((token) => {
       allocation[token.symbol] = equalWeight;
     });
 
     return allocation;
   }
 }
-

@@ -37,4 +37,3 @@ export class TokenHolder {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

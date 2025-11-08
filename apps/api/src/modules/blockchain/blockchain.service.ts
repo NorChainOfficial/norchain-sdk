@@ -25,4 +25,3 @@ export class BlockchainService {
     return this.consensusService.getInfo();
   }
 }
-

@@ -16,10 +16,10 @@ import { CreateApiKeyDto } from './dto/create-api-key.dto';
 
 /**
  * Auth Service
- * 
+ *
  * Handles user authentication, registration, and API key management.
  * Provides JWT token generation and validation.
- * 
+ *
  * @class AuthService
  * @example
  * ```typescript
@@ -28,7 +28,7 @@ import { CreateApiKeyDto } from './dto/create-api-key.dto';
  *   email: 'user@example.com',
  *   password: 'password123'
  * });
- * 
+ *
  * // Login and get JWT token
  * const { access_token } = await authService.login({
  *   email: 'user@example.com',
@@ -48,10 +48,10 @@ export class AuthService {
 
   /**
    * Registers a new user.
-   * 
+   *
    * Creates a new user account with hashed password.
    * Throws ConflictException if user already exists.
-   * 
+   *
    * @param {RegisterDto} registerDto - Registration data
    * @returns {Promise<User>} Created user (without password)
    * @throws {ConflictException} If user already exists
@@ -87,10 +87,10 @@ export class AuthService {
 
   /**
    * Authenticates a user and returns JWT token.
-   * 
+   *
    * Validates email and password, then generates a JWT token.
    * Throws UnauthorizedException if credentials are invalid.
-   * 
+   *
    * @param {LoginDto} loginDto - Login credentials
    * @returns {Promise<{ access_token: string }>} JWT access token
    * @throws {UnauthorizedException} If credentials are invalid
@@ -133,9 +133,9 @@ export class AuthService {
 
   /**
    * Validates a user by ID.
-   * 
+   *
    * Used by JWT strategy to validate token payload.
-   * 
+   *
    * @param {string} userId - User ID
    * @returns {Promise<User | null>} User if found and active, null otherwise
    * @example
@@ -151,10 +151,10 @@ export class AuthService {
 
   /**
    * Validates an API key.
-   * 
+   *
    * Checks if API key exists, is active, and not expired.
    * Updates lastUsedAt timestamp on successful validation.
-   * 
+   *
    * @param {string} apiKey - API key string
    * @returns {Promise<ApiKey | null>} API key entity if valid, null otherwise
    * @example
@@ -189,9 +189,9 @@ export class AuthService {
 
   /**
    * Creates a new API key for a user.
-   * 
+   *
    * Generates a unique API key and associates it with the user.
-   * 
+   *
    * @param {string} userId - User ID
    * @param {CreateApiKeyDto} createApiKeyDto - API key creation data
    * @returns {Promise<ApiKey>} Created API key
@@ -233,7 +233,7 @@ export class AuthService {
 
   /**
    * Gets all API keys for a user.
-   * 
+   *
    * @param {string} userId - User ID
    * @returns {Promise<ApiKey[]>} Array of API keys
    * @example
@@ -250,9 +250,9 @@ export class AuthService {
 
   /**
    * Revokes an API key.
-   * 
+   *
    * Sets the API key as inactive. Only the owner can revoke their keys.
-   * 
+   *
    * @param {string} userId - User ID (owner)
    * @param {string} apiKeyId - API key ID to revoke
    * @returns {Promise<void>}
@@ -277,10 +277,10 @@ export class AuthService {
 
   /**
    * Generates a cryptographically secure API key.
-   * 
+   *
    * Uses crypto.randomBytes for secure random generation.
    * Format: nk_<32 random bytes in base36>
-   * 
+   *
    * @returns {string} Secure API key
    * @private
    */

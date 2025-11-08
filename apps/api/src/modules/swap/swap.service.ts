@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class SwapService {
@@ -6,7 +6,6 @@ export class SwapService {
     // Execute swap logic
     // Save to database
     // Return result
-    return { success: true, txHash: "0x..." };
+    return { success: true, txHash: '0x...' };
   }
 }
-

@@ -58,7 +58,9 @@ async function bootstrap() {
   // Swagger documentation
   const swaggerConfig = new DocumentBuilder()
     .setTitle('NorChain Unified API')
-    .setDescription('Production-ready REST API for NorChain ecosystem - Explorer, Wallet, Exchange, and all services')
+    .setDescription(
+      'Production-ready REST API for NorChain ecosystem - Explorer, Wallet, Exchange, and all services',
+    )
     .setVersion('2.0.0')
     .addBearerAuth(
       {
@@ -105,4 +107,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-

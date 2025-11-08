@@ -1,8 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
-@Entity("stop_loss_orders")
+@Entity('stop_loss_orders')
 export class StopLossOrder {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -14,16 +19,16 @@ export class StopLossOrder {
   @Column()
   tokenOut: string;
 
-  @Column("decimal", { precision: 78, scale: 0 })
+  @Column('decimal', { precision: 78, scale: 0 })
   amount: string;
 
-  @Column("decimal", { precision: 78, scale: 0 })
+  @Column('decimal', { precision: 78, scale: 0 })
   stopPrice: string;
 
   @Column()
   chainId: number;
 
-  @Column({ default: "active" })
+  @Column({ default: 'active' })
   status: string;
 
   @Column({ nullable: true })
@@ -35,4 +40,3 @@ export class StopLossOrder {
   @Column({ nullable: true })
   triggeredAt: Date;
 }
-

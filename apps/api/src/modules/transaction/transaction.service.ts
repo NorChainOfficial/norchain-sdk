@@ -8,7 +8,7 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Transaction Service
- * 
+ *
  * Provides transaction-related operations including transaction queries,
  * receipt status, and transaction information.
  */
@@ -23,7 +23,7 @@ export class TransactionService {
 
   /**
    * Gets transaction information by hash.
-   * 
+   *
    * @param {string} txhash - Transaction hash
    * @returns {Promise<ResponseDto>} Transaction information
    */
@@ -64,7 +64,7 @@ export class TransactionService {
 
   /**
    * Gets transaction receipt status.
-   * 
+   *
    * @param {string} txhash - Transaction hash
    * @returns {Promise<ResponseDto>} Transaction receipt status
    */
@@ -109,7 +109,7 @@ export class TransactionService {
 
   /**
    * Gets transaction status (pending, confirmed, failed).
-   * 
+   *
    * @param {string} txhash - Transaction hash
    * @returns {Promise<ResponseDto>} Transaction status
    */
@@ -192,4 +192,3 @@ export class TransactionService {
     };
   }
 }
-

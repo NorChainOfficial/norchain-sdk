@@ -34,4 +34,3 @@ import { TokenModule } from '../token/token.module';
   exports: [AIService],
 })
 export class AIModule {}
-

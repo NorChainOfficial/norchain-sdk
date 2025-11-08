@@ -26,9 +26,9 @@ export class AnomalyDetectionService {
     try {
       // Get recent transactions
       const transactions = await this.getRecentTransactions(address, days);
-      
+
       const anomalies: AnomalyDetection['anomalies'] = [];
-      
+
       // Detect unusual patterns
       if (transactions.length > 100) {
         anomalies.push({
@@ -40,7 +40,7 @@ export class AnomalyDetectionService {
       }
 
       // Detect large value transfers
-      const largeTransfers = transactions.filter(tx => {
+      const largeTransfers = transactions.filter((tx) => {
         const value = BigInt(tx.value || '0');
         return value > BigInt('1000000000000000000'); // > 1 ETH
       });
@@ -67,14 +67,17 @@ export class AnomalyDetectionService {
     }
   }
 
-  private async getRecentTransactions(address: string, days: number): Promise<any[]> {
+  private async getRecentTransactions(
+    address: string,
+    days: number,
+  ): Promise<any[]> {
     // Placeholder - implement actual transaction fetching
     return [];
   }
 
   private calculateRiskScore(anomalies: AnomalyDetection['anomalies']): number {
     let score = 0;
-    anomalies.forEach(anomaly => {
+    anomalies.forEach((anomaly) => {
       switch (anomaly.severity) {
         case 'critical':
           score += 40;
@@ -93,18 +96,21 @@ export class AnomalyDetectionService {
     return Math.min(score, 100);
   }
 
-  private generateRecommendations(anomalies: AnomalyDetection['anomalies']): string[] {
+  private generateRecommendations(
+    anomalies: AnomalyDetection['anomalies'],
+  ): string[] {
     const recommendations: string[] = [];
-    
-    if (anomalies.some(a => a.type === 'high_frequency')) {
+
+    if (anomalies.some((a) => a.type === 'high_frequency')) {
       recommendations.push('Monitor transaction frequency closely');
     }
-    
-    if (anomalies.some(a => a.type === 'large_transfers')) {
+
+    if (anomalies.some((a) => a.type === 'large_transfers')) {
       recommendations.push('Verify large transfers are authorized');
     }
 
-    return recommendations.length > 0 ? recommendations : ['No immediate concerns detected'];
+    return recommendations.length > 0
+      ? recommendations
+      : ['No immediate concerns detected'];
   }
 }
-

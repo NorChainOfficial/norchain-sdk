@@ -1,5 +1,10 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AccountService } from './account.service';
 import { GetBalanceDto } from './dto/get-balance.dto';
 import { GetTransactionsDto } from './dto/get-transactions.dto';
@@ -26,7 +31,10 @@ export class AccountController {
   @Public()
   @Get('txlist')
   @ApiOperation({ summary: 'Get transaction list for an address' })
-  @ApiResponse({ status: 200, description: 'Transactions retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Transactions retrieved successfully',
+  })
   async getTransactions(@Query() dto: GetTransactionsDto) {
     return this.accountService.getTransactions(dto);
   }
@@ -34,7 +42,10 @@ export class AccountController {
   @Public()
   @Get('tokenlist')
   @ApiOperation({ summary: 'Get list of tokens held by an address' })
-  @ApiResponse({ status: 200, description: 'Token list retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token list retrieved successfully',
+  })
   async getTokenList(@Query() dto: GetTokenListDto) {
     return this.accountService.getTokenList(dto);
   }
@@ -42,7 +53,10 @@ export class AccountController {
   @Public()
   @Get('tokentx')
   @ApiOperation({ summary: 'Get token transfers for an address' })
-  @ApiResponse({ status: 200, description: 'Token transfers retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Token transfers retrieved successfully',
+  })
   async getTokenTransfers(@Query() dto: GetTokenTransfersDto) {
     return this.accountService.getTokenTransfers(dto);
   }
@@ -58,7 +72,10 @@ export class AccountController {
   @Public()
   @Get('txlistinternal')
   @ApiOperation({ summary: 'Get internal transactions for an address' })
-  @ApiResponse({ status: 200, description: 'Internal transactions retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Internal transactions retrieved successfully',
+  })
   async getInternalTransactions(@Query() dto: GetInternalTransactionsDto) {
     return this.accountService.getInternalTransactions(dto);
   }
@@ -71,4 +88,3 @@ export class AccountController {
     return this.accountService.getAccountSummary(address);
   }
 }
-

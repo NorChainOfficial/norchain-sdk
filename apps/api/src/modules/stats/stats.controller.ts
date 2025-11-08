@@ -11,7 +11,10 @@ export class StatsController {
   @Public()
   @Get('ethsupply')
   @ApiOperation({ summary: 'Get total ETH supply' })
-  @ApiResponse({ status: 200, description: 'ETH supply retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'ETH supply retrieved successfully',
+  })
   async getEthSupply() {
     return this.statsService.getEthSupply();
   }
@@ -27,7 +30,10 @@ export class StatsController {
   @Public()
   @Get('chainsize')
   @ApiOperation({ summary: 'Get chain size statistics' })
-  @ApiResponse({ status: 200, description: 'Chain size retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chain size retrieved successfully',
+  })
   async getChainSize() {
     return this.statsService.getChainSize();
   }
@@ -35,9 +41,11 @@ export class StatsController {
   @Public()
   @Get('nodecount')
   @ApiOperation({ summary: 'Get network node count' })
-  @ApiResponse({ status: 200, description: 'Node count retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Node count retrieved successfully',
+  })
   async getNodeCount() {
     return this.statsService.getNodeCount();
   }
 }
-

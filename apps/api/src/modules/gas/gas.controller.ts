@@ -11,7 +11,10 @@ export class GasController {
   @Public()
   @Get('gasoracle')
   @ApiOperation({ summary: 'Get gas oracle with recommended gas prices' })
-  @ApiResponse({ status: 200, description: 'Gas oracle retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Gas oracle retrieved successfully',
+  })
   async getGasOracle() {
     return this.gasService.getGasOracle();
   }
@@ -19,9 +22,11 @@ export class GasController {
   @Public()
   @Post('gasestimate')
   @ApiOperation({ summary: 'Estimate gas for a transaction' })
-  @ApiResponse({ status: 200, description: 'Gas estimate retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Gas estimate retrieved successfully',
+  })
   async estimateGas(@Body() transaction: any) {
     return this.gasService.estimateGas(transaction);
   }
 }
-

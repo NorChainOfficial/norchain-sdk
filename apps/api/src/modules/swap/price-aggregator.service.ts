@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { CACHE_MANAGER } from "@nestjs/cache-manager";
-import { Inject } from "@nestjs/common";
-import { Cache } from "cache-manager";
-import { ethers } from "ethers";
+import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { ethers } from 'ethers';
 
 @Injectable()
 export class PriceAggregatorService {
@@ -12,7 +12,7 @@ export class PriceAggregatorService {
     tokenIn: string,
     tokenOut: string,
     amountIn: string,
-    chainId: number
+    chainId: number,
   ) {
     // Check cache first
     const cacheKey = `quote:${tokenIn}:${tokenOut}:${amountIn}:${chainId}`;
@@ -24,10 +24,10 @@ export class PriceAggregatorService {
     // Aggregate prices from all DEXs
     // This would call actual DEX routers
     const quote = {
-      amountOut: "100",
-      amountOutMin: "98",
+      amountOut: '100',
+      amountOutMin: '98',
       priceImpact: 0.5,
-      gasEstimate: "0.0001",
+      gasEstimate: '0.0001',
       route: [tokenIn, tokenOut],
     };
 
@@ -37,4 +37,3 @@ export class PriceAggregatorService {
     return quote;
   }
 }
-

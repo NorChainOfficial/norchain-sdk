@@ -22,4 +22,3 @@ export class GetInternalTransactionsDto extends PaginationDto {
   @Min(0)
   endblock?: number;
 }
-

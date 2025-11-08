@@ -1,8 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
-@Entity("limit_orders")
+@Entity('limit_orders')
 export class LimitOrder {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -14,25 +19,25 @@ export class LimitOrder {
   @Column()
   tokenOut: string;
 
-  @Column("decimal", { precision: 78, scale: 0 })
+  @Column('decimal', { precision: 78, scale: 0 })
   amountIn: string;
 
-  @Column("decimal", { precision: 78, scale: 0 })
+  @Column('decimal', { precision: 78, scale: 0 })
   amountOutMin: string;
 
-  @Column("decimal", { precision: 78, scale: 0 })
+  @Column('decimal', { precision: 78, scale: 0 })
   priceLimit: string;
 
   @Column()
   chainId: number;
 
-  @Column({ default: "pending" })
+  @Column({ default: 'pending' })
   status: string;
 
   @Column({ nullable: true })
   txHash: string;
 
-  @Column("decimal", { precision: 78, scale: 0, default: "0" })
+  @Column('decimal', { precision: 78, scale: 0, default: '0' })
   filledAmount: string;
 
   @CreateDateColumn()
@@ -44,4 +49,3 @@ export class LimitOrder {
   @Column({ nullable: true })
   filledAt: Date;
 }
-

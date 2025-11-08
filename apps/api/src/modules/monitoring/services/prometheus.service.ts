@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ProxyService } from '../../proxy/proxy.service';
+import { RpcService } from '@/common/services/rpc.service';
 
 @Injectable()
 export class PrometheusService {
   private readonly logger = new Logger(PrometheusService.name);
   private metrics: Map<string, number> = new Map();
 
-  constructor(private readonly proxyService: ProxyService) {
+  constructor(private readonly rpcService: RpcService) {
     this.initializeMetrics();
   }
 
@@ -25,13 +25,13 @@ export class PrometheusService {
 
   private async updateMetrics() {
     try {
-      const blockNumber = await this.proxyService.call('eth_blockNumber', []);
+      await this.rpcService.getBlockNumber(); // Verify connection
       this.metrics.set('blocks_per_second', 0.33); // ~3s per block
       this.metrics.set('txpool_size', 0); // Placeholder
       this.metrics.set('transactions_per_second', 0); // Placeholder
       this.metrics.set('cpu_usage', process.cpuUsage().user);
       this.metrics.set('memory_usage', process.memoryUsage().heapUsed);
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('Failed to update metrics:', error);
     }
   }
@@ -45,7 +45,8 @@ export class PrometheusService {
     output += '# TYPE txpool_size gauge\n';
     output += `txpool_size ${this.metrics.get('txpool_size')}\n\n`;
 
-    output += '# HELP transactions_per_second Transactions processed per second\n';
+    output +=
+      '# HELP transactions_per_second Transactions processed per second\n';
     output += '# TYPE transactions_per_second gauge\n';
     output += `transactions_per_second ${this.metrics.get('transactions_per_second')}\n\n`;
 
@@ -69,4 +70,3 @@ export class PrometheusService {
     this.metrics.set(name, value);
   }
 }
-

@@ -14,4 +14,3 @@ import { CacheService } from '@/common/services/cache.service';
   exports: [AnalyticsService],
 })
 export class AnalyticsModule {}
-

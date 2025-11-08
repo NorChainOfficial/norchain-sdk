@@ -30,4 +30,3 @@ import { ApiKeyStrategy } from './strategies/api-key.strategy';
   exports: [AuthService],
 })
 export class AuthModule {}
-

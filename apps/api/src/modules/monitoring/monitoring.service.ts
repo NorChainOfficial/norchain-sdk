@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrometheusService } from './services/prometheus.service';
-import { ProxyService } from '../proxy/proxy.service';
+import { RpcService } from '@/common/services/rpc.service';
 
 @Injectable()
 export class MonitoringService {
@@ -8,20 +8,20 @@ export class MonitoringService {
 
   constructor(
     private readonly prometheusService: PrometheusService,
-    private readonly proxyService: ProxyService,
+    private readonly rpcService: RpcService,
   ) {}
 
   async getHealth() {
     try {
-      const blockNumber = await this.proxyService.call('eth_blockNumber', []);
-      
+      const blockNumber = await this.rpcService.getBlockNumber();
+
       return {
         status: 'healthy',
         timestamp: Date.now(),
-        blockNumber: blockNumber || '0x0',
+        blockNumber: `0x${blockNumber.toString(16)}`,
         uptime: process.uptime(),
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('Health check failed:', error);
       return {
         status: 'unhealthy',
@@ -33,18 +33,19 @@ export class MonitoringService {
 
   async getStats() {
     try {
-      const blockNumber = await this.proxyService.call('eth_blockNumber', []);
-      const gasPrice = await this.proxyService.call('eth_gasPrice', []);
-      
+      const blockNumber = await this.rpcService.getBlockNumber();
+      const feeData = await this.rpcService.getFeeData();
+      const gasPrice = feeData.gasPrice || BigInt(0);
+
       return {
         blocksPerSecond: await this.calculateBlocksPerSecond(),
         txpoolSize: 0, // Placeholder
         cpuUsage: process.cpuUsage(),
         memoryUsage: process.memoryUsage(),
-        currentBlock: blockNumber || '0x0',
-        gasPrice: gasPrice || '0x0',
+        currentBlock: `0x${blockNumber.toString(16)}`,
+        gasPrice: `0x${gasPrice.toString(16)}`,
       };
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('Stats retrieval failed:', error);
       throw error;
     }
@@ -55,4 +56,3 @@ export class MonitoringService {
     return 0.33; // ~3s per block
   }
 }
-

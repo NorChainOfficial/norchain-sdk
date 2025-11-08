@@ -8,4 +8,3 @@ export interface AccountSummary {
   firstTransactionBlock?: number;
   lastTransactionBlock?: number;
 }
-

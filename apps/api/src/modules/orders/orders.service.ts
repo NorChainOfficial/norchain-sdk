@@ -1,9 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { LimitOrder } from "./entities/limit-order.entity";
-import { StopLossOrder } from "./entities/stop-loss-order.entity";
-import { DCASchedule } from "./entities/dca-schedule.entity";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { LimitOrder } from './entities/limit-order.entity';
+import { StopLossOrder } from './entities/stop-loss-order.entity';
+import { DCASchedule } from './entities/dca-schedule.entity';
 
 @Injectable()
 export class OrdersService {
@@ -13,7 +13,7 @@ export class OrdersService {
     @InjectRepository(StopLossOrder)
     private stopLossOrderRepository: Repository<StopLossOrder>,
     @InjectRepository(DCASchedule)
-    private dcaScheduleRepository: Repository<DCASchedule>
+    private dcaScheduleRepository: Repository<DCASchedule>,
   ) {}
 
   // Limit Orders
@@ -25,12 +25,12 @@ export class OrdersService {
   async getLimitOrders(userAddress: string) {
     return this.limitOrderRepository.find({
       where: { userAddress },
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
     });
   }
 
   async cancelLimitOrder(id: string) {
-    await this.limitOrderRepository.update(id, { status: "cancelled" });
+    await this.limitOrderRepository.update(id, { status: 'cancelled' });
     return { success: true };
   }
 
@@ -43,7 +43,7 @@ export class OrdersService {
   async getStopLossOrders(userAddress: string) {
     return this.stopLossOrderRepository.find({
       where: { userAddress },
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
     });
   }
 
@@ -56,8 +56,7 @@ export class OrdersService {
   async getDCASchedules(userAddress: string) {
     return this.dcaScheduleRepository.find({
       where: { userAddress },
-      order: { createdAt: "DESC" },
+      order: { createdAt: 'DESC' },
     });
   }
 }
-

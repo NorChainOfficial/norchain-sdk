@@ -22,11 +22,11 @@ export class GasPredictionService {
     try {
       const currentGasPrice = await this.proxyService.call('eth_gasPrice', []);
       const currentPrice = parseInt(currentGasPrice || '0x0', 16);
-      
+
       // Simple prediction based on recent trends
       // In production, use ML models or historical analysis
       const predictedPrice = currentPrice * 1.1; // 10% increase prediction
-      
+
       return {
         predictedPrice: '0x' + predictedPrice.toString(16),
         confidence: 65,
@@ -49,4 +49,3 @@ export class GasPredictionService {
     }
   }
 }
-

@@ -19,4 +19,3 @@ export class GetBlockDto {
   @Min(0)
   blockno?: number;
 }
-

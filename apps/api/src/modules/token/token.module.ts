@@ -23,4 +23,3 @@ import { CacheService } from '@/common/services/cache.service';
   exports: [TokenService],
 })
 export class TokenModule {}
-

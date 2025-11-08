@@ -5,7 +5,7 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Batch Service
- * 
+ *
  * Provides batch operations for efficient multi-address queries.
  * Optimized for performance with parallel processing and caching.
  */
@@ -18,7 +18,7 @@ export class BatchService {
 
   /**
    * Gets balances for multiple addresses in a single request.
-   * 
+   *
    * @param {string[]} addresses - Array of addresses (max 100)
    * @returns {Promise<ResponseDto>} Array of balances
    */
@@ -50,7 +50,7 @@ export class BatchService {
 
   /**
    * Gets transaction counts for multiple addresses.
-   * 
+   *
    * @param {string[]} addresses - Array of addresses (max 50)
    * @returns {Promise<ResponseDto>} Array of transaction counts
    */
@@ -83,7 +83,7 @@ export class BatchService {
 
   /**
    * Gets token balances for multiple addresses and tokens.
-   * 
+   *
    * @param {Array<{address: string, tokenAddress: string}>} requests - Array of address-token pairs
    * @returns {Promise<ResponseDto>} Array of token balances
    */
@@ -128,7 +128,7 @@ export class BatchService {
 
   /**
    * Gets block information for multiple block numbers.
-   * 
+   *
    * @param {number[]} blockNumbers - Array of block numbers (max 20)
    * @returns {Promise<ResponseDto>} Array of block information
    */
@@ -171,4 +171,3 @@ export class BatchService {
     return ResponseDto.success(blocks);
   }
 }
-

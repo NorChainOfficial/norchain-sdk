@@ -31,14 +31,20 @@ export class TransactionAnalysisService {
     private readonly proxyService: ProxyService,
   ) {
     this.aiApiKey = this.configService.get('ANTHROPIC_API_KEY', '');
-    this.aiApiUrl = this.configService.get('ANTHROPIC_API_URL', 'https://api.anthropic.com/v1/messages');
+    this.aiApiUrl = this.configService.get(
+      'ANTHROPIC_API_URL',
+      'https://api.anthropic.com/v1/messages',
+    );
   }
 
   async analyze(txHash: string): Promise<TransactionAnalysis> {
     try {
       // Get transaction data
-      const txData = await this.proxyService.call('eth_getTransactionByHash', [txHash]);
-      const receipt = await this.proxyService.call('eth_getTransactionReceipt', [txHash]);
+      const txDataResult = await this.proxyService.eth_getTransactionByHash(txHash);
+      const receiptResult = await this.proxyService.eth_getTransactionReceipt(txHash);
+      
+      const txData = txDataResult.status === '1' ? txDataResult.result : null;
+      const receipt = receiptResult.status === '1' ? receiptResult.result : null;
 
       // Build context
       const context = {
@@ -106,7 +112,7 @@ Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommenda
 
       const content = response.data.content?.[0]?.text || '';
       const jsonMatch = content.match(/\{[\s\S]*\}/);
-      
+
       if (jsonMatch) {
         const aiResult = JSON.parse(jsonMatch[0]);
         return {
@@ -124,15 +130,23 @@ Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommenda
   private analyzeFallback(context: any): TransactionAnalysis {
     const value = BigInt(context.value || '0');
     const isHighValue = value > BigInt('1000000000000000000'); // > 1 ETH
-    const riskLevel = isHighValue ? 'high' : context.status === '0x0' ? 'high' : 'low';
+    const riskLevel = isHighValue
+      ? 'high'
+      : context.status === '0x0'
+        ? 'high'
+        : 'low';
 
     return {
       summary: `Transaction from ${context.from?.slice(0, 10)}... to ${context.to?.slice(0, 10)}...`,
       riskLevel,
       confidence: 60,
       insights: [
-        isHighValue ? 'High-value transaction detected' : 'Standard transaction',
-        context.status === '0x0' ? 'Transaction failed' : 'Transaction succeeded',
+        isHighValue
+          ? 'High-value transaction detected'
+          : 'Standard transaction',
+        context.status === '0x0'
+          ? 'Transaction failed'
+          : 'Transaction succeeded',
       ],
       recommendations: [
         'Verify transaction details before confirming',
@@ -147,7 +161,12 @@ Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommenda
   private analyzeGas(context: any) {
     const gasUsed = parseInt(context.gasUsed || '0', 16);
     const gasLimit = parseInt(context.gas || '0', 16);
-    const efficiency = gasUsed / gasLimit < 0.5 ? 'efficient' : gasUsed / gasLimit < 0.8 ? 'moderate' : 'inefficient';
+    const efficiency =
+      gasUsed / gasLimit < 0.5
+        ? 'efficient'
+        : gasUsed / gasLimit < 0.8
+          ? 'moderate'
+          : 'inefficient';
 
     return {
       used: context.gasUsed || '0x0',
@@ -156,4 +175,3 @@ Return JSON with: summary, riskLevel, confidence (0-100), insights[], recommenda
     };
   }
 }
-

@@ -72,4 +72,3 @@ export class AuthController {
     return { message: 'API key revoked' };
   }
 }
-

@@ -62,4 +62,3 @@ export class NotificationsController {
     return { message: 'Notification deleted' };
   }
 }
-

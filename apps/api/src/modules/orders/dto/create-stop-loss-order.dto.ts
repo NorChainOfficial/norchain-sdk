@@ -1,4 +1,9 @@
-import { IsString, IsNotEmpty, IsNumberString, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumberString,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateStopLossOrderDto {
@@ -43,4 +48,3 @@ export class CreateStopLossOrderDto {
   @IsNumberString()
   expiresAt?: string;
 }
-

@@ -49,4 +49,3 @@ export class Contract {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

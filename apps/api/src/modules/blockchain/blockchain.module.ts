@@ -18,4 +18,3 @@ import { ProxyModule } from '../proxy/proxy.module';
   exports: [BlockchainService],
 })
 export class BlockchainModule {}
-

@@ -44,4 +44,3 @@ export const databaseConfig = (
   // Disable Redis cache for now - will enable after Redis connection is verified
   cache: false,
 });
-

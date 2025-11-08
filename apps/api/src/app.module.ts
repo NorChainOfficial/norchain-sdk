@@ -72,10 +72,12 @@ import { BlockchainModule } from './modules/blockchain/blockchain.module';
         const ttl = Number(configService.get('THROTTLE_TTL', 60)) || 60;
         const limit = Number(configService.get('THROTTLE_LIMIT', 100)) || 100;
         return {
-          throttlers: [{
-            ttl: ttl * 1000, // Convert to milliseconds
-            limit: limit,
-          }],
+          throttlers: [
+            {
+              ttl: ttl * 1000, // Convert to milliseconds
+              limit: limit,
+            },
+          ],
         };
       },
       inject: [ConfigService],
@@ -120,4 +122,3 @@ import { BlockchainModule } from './modules/blockchain/blockchain.module';
   ],
 })
 export class AppModule {}
-

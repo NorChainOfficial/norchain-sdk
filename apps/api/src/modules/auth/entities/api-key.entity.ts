@@ -48,4 +48,3 @@ export class ApiKey {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

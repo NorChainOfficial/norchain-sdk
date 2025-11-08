@@ -9,4 +9,3 @@ import { RpcService } from '@/common/services/rpc.service';
   exports: [ProxyService],
 })
 export class ProxyModule {}
-

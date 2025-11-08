@@ -4,10 +4,10 @@ import { Cache } from 'cache-manager';
 
 /**
  * Cache Service
- * 
+ *
  * Provides caching functionality using Redis.
  * Wraps the NestJS cache manager with additional utility methods.
- * 
+ *
  * @class CacheService
  * @example
  * ```typescript
@@ -23,7 +23,7 @@ export class CacheService {
 
   /**
    * Gets a value from cache.
-   * 
+   *
    * @template T - Type of the cached value
    * @param {string} key - Cache key
    * @returns {Promise<T | undefined>} Cached value or undefined
@@ -38,7 +38,7 @@ export class CacheService {
 
   /**
    * Sets a value in cache.
-   * 
+   *
    * @param {string} key - Cache key
    * @param {any} value - Value to cache
    * @param {number} [ttl] - Time to live in seconds (optional)
@@ -54,7 +54,7 @@ export class CacheService {
 
   /**
    * Deletes a value from cache.
-   * 
+   *
    * @param {string} key - Cache key to delete
    * @returns {Promise<void>}
    * @example
@@ -68,7 +68,7 @@ export class CacheService {
 
   /**
    * Clears all cache.
-   * 
+   *
    * @returns {Promise<void>}
    * @example
    * ```typescript
@@ -81,9 +81,9 @@ export class CacheService {
 
   /**
    * Gets a value from cache, or sets it if not found.
-   * 
+   *
    * This is a convenience method that combines get and set operations.
-   * 
+   *
    * @template T - Type of the value
    * @param {string} key - Cache key
    * @param {() => Promise<T>} fn - Function to generate value if not cached
@@ -114,9 +114,9 @@ export class CacheService {
 
   /**
    * Wraps a function with caching.
-   * 
+   *
    * Alias for getOrSet.
-   * 
+   *
    * @template T - Type of the return value
    * @param {string} key - Cache key
    * @param {() => Promise<T>} fn - Function to wrap
@@ -127,11 +127,7 @@ export class CacheService {
    * const result = await cacheService.wrap('key', expensiveFunction, 300);
    * ```
    */
-  async wrap<T>(
-    key: string,
-    fn: () => Promise<T>,
-    ttl?: number,
-  ): Promise<T> {
+  async wrap<T>(key: string, fn: () => Promise<T>, ttl?: number): Promise<T> {
     return this.getOrSet(key, fn, ttl);
   }
 }

@@ -9,7 +9,7 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Analytics Service
- * 
+ *
  * Provides advanced analytics and insights for addresses and network.
  */
 @Injectable()
@@ -25,7 +25,7 @@ export class AnalyticsService {
 
   /**
    * Gets portfolio summary for an address.
-   * 
+   *
    * @param {string} address - Address to analyze
    * @returns {Promise<ResponseDto>} Portfolio summary
    */
@@ -50,10 +50,7 @@ export class AnalyticsService {
 
         // Get token transfer stats
         const tokenTransferCount = await this.tokenTransferRepository.count({
-          where: [
-            { fromAddress: address },
-            { toAddress: address },
-          ],
+          where: [{ fromAddress: address }, { toAddress: address }],
         });
 
         // Calculate total value (simplified - would need token prices)
@@ -85,7 +82,7 @@ export class AnalyticsService {
 
   /**
    * Gets transaction analytics for an address.
-   * 
+   *
    * @param {string} address - Address to analyze
    * @param {number} days - Number of days to analyze (default: 30)
    * @returns {Promise<ResponseDto>} Transaction analytics
@@ -152,7 +149,7 @@ export class AnalyticsService {
 
   /**
    * Gets network statistics and trends.
-   * 
+   *
    * @returns {Promise<ResponseDto>} Network statistics
    */
   async getNetworkStatistics() {
@@ -189,4 +186,3 @@ export class AnalyticsService {
     return ResponseDto.success(stats);
   }
 }
-

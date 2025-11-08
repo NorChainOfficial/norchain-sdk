@@ -18,13 +18,11 @@ export class WinstonLogger implements LoggerService {
         new transports.Console({
           format: format.combine(
             format.colorize(),
-            format.printf(
-              ({ timestamp, level, message, context, ...meta }) => {
-                return `${timestamp} [${context || 'Application'}] ${level}: ${message} ${
-                  Object.keys(meta).length ? JSON.stringify(meta) : ''
-                }`;
-              },
-            ),
+            format.printf(({ timestamp, level, message, context, ...meta }) => {
+              return `${timestamp} [${context || 'Application'}] ${level}: ${message} ${
+                Object.keys(meta).length ? JSON.stringify(meta) : ''
+              }`;
+            }),
           ),
         }),
         new transports.File({
@@ -56,4 +54,3 @@ export class WinstonLogger implements LoggerService {
     this.logger.verbose(message, { context });
   }
 }
-

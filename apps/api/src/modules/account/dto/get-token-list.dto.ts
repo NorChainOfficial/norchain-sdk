@@ -22,4 +22,3 @@ export class GetTokenListDto extends PaginationDto {
   @Min(0)
   endblock?: number;
 }
-

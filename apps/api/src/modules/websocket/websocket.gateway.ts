@@ -14,10 +14,10 @@ import { ConfigService } from '@nestjs/config';
 
 /**
  * WebSocket Gateway
- * 
+ *
  * Handles real-time WebSocket connections for blockchain events.
  * Supports subscriptions to blocks, transactions, and account updates.
- * 
+ *
  * @class WebSocketGateway
  * @example
  * ```typescript
@@ -49,7 +49,7 @@ export class NorChainWebSocketGateway
 
   /**
    * Handles new WebSocket connections.
-   * 
+   *
    * @param {Socket} client - Socket client
    */
   async handleConnection(client: Socket) {
@@ -59,7 +59,9 @@ export class NorChainWebSocketGateway
       if (token) {
         const payload = this.jwtService.verify(token);
         client.data.userId = payload.sub;
-        this.logger.log(`Authenticated client: ${client.id} (user: ${payload.sub})`);
+        this.logger.log(
+          `Authenticated client: ${client.id} (user: ${payload.sub})`,
+        );
       }
 
       this.logger.log(`Client connected: ${client.id}`);
@@ -72,7 +74,7 @@ export class NorChainWebSocketGateway
 
   /**
    * Handles WebSocket disconnections.
-   * 
+   *
    * @param {Socket} client - Socket client
    */
   handleDisconnect(client: Socket) {
@@ -89,7 +91,7 @@ export class NorChainWebSocketGateway
 
   /**
    * Subscribe to blockchain events.
-   * 
+   *
    * @param {Socket} client - Socket client
    * @param {any} data - Subscription data
    * @example
@@ -101,7 +103,8 @@ export class NorChainWebSocketGateway
   @SubscribeMessage('subscribe')
   handleSubscribe(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { type: string; address?: string; tokenAddress?: string },
+    @MessageBody()
+    data: { type: string; address?: string; tokenAddress?: string },
   ) {
     const { type, address, tokenAddress } = data;
 
@@ -112,14 +115,18 @@ export class NorChainWebSocketGateway
         break;
       case 'transactions':
         if (!address) {
-          client.emit('error', { message: 'Address required for transaction subscription' });
+          client.emit('error', {
+            message: 'Address required for transaction subscription',
+          });
           return;
         }
         room = `transactions:${address.toLowerCase()}`;
         break;
       case 'token-transfers':
         if (!address) {
-          client.emit('error', { message: 'Address required for token transfer subscription' });
+          client.emit('error', {
+            message: 'Address required for token transfer subscription',
+          });
           return;
         }
         room = `token-transfers:${address.toLowerCase()}`;
@@ -137,7 +144,7 @@ export class NorChainWebSocketGateway
     }
 
     client.join(room);
-    
+
     if (!this.subscriptions.has(room)) {
       this.subscriptions.set(room, new Set());
     }
@@ -149,7 +156,7 @@ export class NorChainWebSocketGateway
 
   /**
    * Unsubscribe from blockchain events.
-   * 
+   *
    * @param {Socket} client - Socket client
    * @param {any} data - Unsubscription data
    */
@@ -159,12 +166,10 @@ export class NorChainWebSocketGateway
     @MessageBody() data: { type: string; address?: string },
   ) {
     const { type, address } = data;
-    const room = address 
-      ? `${type}:${address.toLowerCase()}`
-      : type;
+    const room = address ? `${type}:${address.toLowerCase()}` : type;
 
     client.leave(room);
-    
+
     const sockets = this.subscriptions.get(room);
     if (sockets) {
       sockets.delete(client.id);
@@ -179,53 +184,61 @@ export class NorChainWebSocketGateway
 
   /**
    * Broadcast new block to subscribers.
-   * 
+   *
    * @param {any} blockData - Block data
    */
   broadcastBlock(blockData: any) {
     this.server.to('blocks').emit('block', blockData);
-    this.logger.debug(`Broadcasted block ${blockData.number} to ${this.getRoomSize('blocks')} clients`);
+    this.logger.debug(
+      `Broadcasted block ${blockData.number} to ${this.getRoomSize('blocks')} clients`,
+    );
   }
 
   /**
    * Broadcast new transaction to subscribers.
-   * 
+   *
    * @param {string} address - Address to notify
    * @param {any} transactionData - Transaction data
    */
   broadcastTransaction(address: string, transactionData: any) {
     const room = `transactions:${address.toLowerCase()}`;
     this.server.to(room).emit('transaction', transactionData);
-    this.logger.debug(`Broadcasted transaction to ${address} (${this.getRoomSize(room)} clients)`);
+    this.logger.debug(
+      `Broadcasted transaction to ${address} (${this.getRoomSize(room)} clients)`,
+    );
   }
 
   /**
    * Broadcast token transfer to subscribers.
-   * 
+   *
    * @param {string} address - Address to notify
    * @param {any} transferData - Transfer data
    */
   broadcastTokenTransfer(address: string, transferData: any) {
     const room = `token-transfers:${address.toLowerCase()}`;
     this.server.to(room).emit('token-transfer', transferData);
-    this.logger.debug(`Broadcasted token transfer to ${address} (${this.getRoomSize(room)} clients)`);
+    this.logger.debug(
+      `Broadcasted token transfer to ${address} (${this.getRoomSize(room)} clients)`,
+    );
   }
 
   /**
    * Broadcast token update to subscribers.
-   * 
+   *
    * @param {string} tokenAddress - Token address
    * @param {any} tokenData - Token data
    */
   broadcastTokenUpdate(tokenAddress: string, tokenData: any) {
     const room = `token:${tokenAddress.toLowerCase()}`;
     this.server.to(room).emit('token-update', tokenData);
-    this.logger.debug(`Broadcasted token update to ${tokenAddress} (${this.getRoomSize(room)} clients)`);
+    this.logger.debug(
+      `Broadcasted token update to ${tokenAddress} (${this.getRoomSize(room)} clients)`,
+    );
   }
 
   /**
    * Get number of clients in a room.
-   * 
+   *
    * @param {string} room - Room name
    * @returns {number} Number of clients
    */
@@ -235,7 +248,7 @@ export class NorChainWebSocketGateway
 
   /**
    * Get connection statistics.
-   * 
+   *
    * @returns {object} Connection stats
    */
   getStats() {
@@ -250,4 +263,3 @@ export class NorChainWebSocketGateway
     };
   }
 }
-

@@ -7,4 +7,3 @@ export class OptimizePortfolioDto {
   @IsNotEmpty()
   address: string;
 }
-

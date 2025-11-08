@@ -1,5 +1,10 @@
 import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AIService } from './ai.service';
 import { Public } from '@/common/decorators/public.decorator';
 import { AnalyzeTransactionDto } from './dto/analyze-transaction.dto';
@@ -15,7 +20,10 @@ export class AIController {
   @Public()
   @Post('analyze-transaction')
   @ApiOperation({ summary: 'AI-powered transaction analysis' })
-  @ApiResponse({ status: 200, description: 'Transaction analyzed successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Transaction analyzed successfully',
+  })
   async analyzeTransaction(@Body() dto: AnalyzeTransactionDto) {
     return this.aiService.analyzeTransaction(dto.txHash);
   }
@@ -58,9 +66,11 @@ export class AIController {
   @Public()
   @Post('chat')
   @ApiOperation({ summary: 'AI chatbot assistant for blockchain questions' })
-  @ApiResponse({ status: 200, description: 'Chat response generated successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Chat response generated successfully',
+  })
   async chat(@Body() dto: ChatDto) {
     return this.aiService.chat(dto.question, dto.context);
   }
 }
-

@@ -13,4 +13,3 @@ import { CacheService } from '@/common/services/cache.service';
   exports: [BlockService],
 })
 export class BlockModule {}
-

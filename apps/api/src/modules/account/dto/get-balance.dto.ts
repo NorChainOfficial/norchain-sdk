@@ -6,4 +6,3 @@ export class GetBalanceDto {
   @IsEthereumAddress()
   address: string;
 }
-

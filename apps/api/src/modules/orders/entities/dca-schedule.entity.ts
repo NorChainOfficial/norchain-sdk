@@ -1,8 +1,13 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
-@Entity("dca_schedules")
+@Entity('dca_schedules')
 export class DCASchedule {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -14,7 +19,7 @@ export class DCASchedule {
   @Column()
   tokenOut: string;
 
-  @Column("decimal", { precision: 78, scale: 0 })
+  @Column('decimal', { precision: 78, scale: 0 })
   amountPerOrder: string;
 
   @Column()
@@ -23,7 +28,7 @@ export class DCASchedule {
   @Column()
   chainId: number;
 
-  @Column({ default: "active" })
+  @Column({ default: 'active' })
   status: string;
 
   @Column()
@@ -38,10 +43,9 @@ export class DCASchedule {
   @Column({ default: 0 })
   totalExecuted: number;
 
-  @Column("decimal", { precision: 78, scale: 0, default: "0" })
+  @Column('decimal', { precision: 78, scale: 0, default: '0' })
   totalSpent: string;
 
   @CreateDateColumn()
   createdAt: Date;
 }
-

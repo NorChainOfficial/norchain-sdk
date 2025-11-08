@@ -35,12 +35,15 @@ export class ChatbotService {
     }
   }
 
-  private async answerWithAI(question: string, context?: any): Promise<ChatResponse> {
+  private async answerWithAI(
+    question: string,
+    context?: any,
+  ): Promise<ChatResponse> {
     const systemPrompt = `You are a helpful blockchain assistant for NorChain. 
 Answer questions about blockchain, transactions, smart contracts, and DeFi.
 Be concise and accurate.`;
 
-    const userPrompt = context 
+    const userPrompt = context
       ? `Context: ${JSON.stringify(context)}\n\nQuestion: ${question}`
       : question;
 
@@ -82,23 +85,26 @@ Be concise and accurate.`;
 
   private answerFallback(question: string): ChatResponse {
     const lowerQuestion = question.toLowerCase();
-    
+
     if (lowerQuestion.includes('gas')) {
       return {
-        answer: 'Gas is the fee paid for transactions on the blockchain. You can check current gas prices using the /ai/predict-gas endpoint.',
+        answer:
+          'Gas is the fee paid for transactions on the blockchain. You can check current gas prices using the /ai/predict-gas endpoint.',
         confidence: 70,
       };
     }
 
     if (lowerQuestion.includes('transaction')) {
       return {
-        answer: 'Transactions are operations that change the blockchain state. You can analyze transactions using the /ai/analyze-transaction endpoint.',
+        answer:
+          'Transactions are operations that change the blockchain state. You can analyze transactions using the /ai/analyze-transaction endpoint.',
         confidence: 70,
       };
     }
 
     return {
-      answer: 'I can help with blockchain-related questions. Try asking about transactions, gas prices, smart contracts, or portfolio optimization.',
+      answer:
+        'I can help with blockchain-related questions. Try asking about transactions, gas prices, smart contracts, or portfolio optimization.',
       confidence: 50,
     };
   }
@@ -111,4 +117,3 @@ Be concise and accurate.`;
     ];
   }
 }
-

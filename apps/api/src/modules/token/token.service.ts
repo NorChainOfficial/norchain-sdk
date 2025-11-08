@@ -11,7 +11,7 @@ import { ethers } from 'ethers';
 
 /**
  * Token Service
- * 
+ *
  * Provides token-related operations including token supply, balances,
  * token information, and token transfers.
  */
@@ -39,7 +39,7 @@ export class TokenService {
 
   /**
    * Gets token total supply.
-   * 
+   *
    * @param {string} contractAddress - Token contract address
    * @returns {Promise<ResponseDto>} Token total supply
    */
@@ -79,15 +79,12 @@ export class TokenService {
 
   /**
    * Gets token balance for an address.
-   * 
+   *
    * @param {string} contractAddress - Token contract address
    * @param {string} address - Account address
    * @returns {Promise<ResponseDto>} Token balance
    */
-  async getTokenAccountBalance(
-    contractAddress: string,
-    address: string,
-  ) {
+  async getTokenAccountBalance(contractAddress: string, address: string) {
     const cacheKey = `token:balance:${contractAddress}:${address}`;
 
     const balance = await this.cacheService.getOrSet(
@@ -126,7 +123,7 @@ export class TokenService {
 
   /**
    * Gets token information including metadata.
-   * 
+   *
    * @param {string} contractAddress - Token contract address
    * @returns {Promise<ResponseDto>} Token information
    */
@@ -191,17 +188,13 @@ export class TokenService {
 
   /**
    * Gets token transfers for a token contract.
-   * 
+   *
    * @param {string} contractAddress - Token contract address
    * @param {number} page - Page number
    * @param {number} limit - Items per page
    * @returns {Promise<ResponseDto>} Paginated token transfers
    */
-  async getTokenTransfers(
-    contractAddress: string,
-    page = 1,
-    limit = 10,
-  ) {
+  async getTokenTransfers(contractAddress: string, page = 1, limit = 10) {
     const query = this.tokenTransferRepository
       .createQueryBuilder('transfer')
       .where('transfer.tokenAddress = :contractAddress', { contractAddress })
@@ -226,4 +219,3 @@ export class TokenService {
     });
   }
 }
-

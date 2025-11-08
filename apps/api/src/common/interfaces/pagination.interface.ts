@@ -42,4 +42,3 @@ export class PaginationDto {
   @IsIn(['ASC', 'DESC'])
   sortOrder?: 'ASC' | 'DESC' = 'DESC';
 }
-

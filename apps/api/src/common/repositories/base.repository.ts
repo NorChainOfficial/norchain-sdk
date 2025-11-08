@@ -1,5 +1,13 @@
-import { Repository, FindOptionsWhere, FindManyOptions, ObjectLiteral } from 'typeorm';
-import { PaginationOptions, PaginatedResult } from '../interfaces/pagination.interface';
+import {
+  Repository,
+  FindOptionsWhere,
+  FindManyOptions,
+  ObjectLiteral,
+} from 'typeorm';
+import {
+  PaginationOptions,
+  PaginatedResult,
+} from '../interfaces/pagination.interface';
 
 export abstract class BaseRepository<T extends ObjectLiteral> {
   constructor(protected readonly repository: Repository<T>) {}
@@ -67,4 +75,3 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
     };
   }
 }
-

@@ -20,7 +20,10 @@ export class BlockController {
   @Public()
   @Get('getblockreward')
   @ApiOperation({ summary: 'Get block reward information' })
-  @ApiResponse({ status: 200, description: 'Block reward retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Block reward retrieved successfully',
+  })
   async getBlockReward(@Query('blockno') blockno: number) {
     return this.blockService.getBlockReward(blockno);
   }
@@ -36,9 +39,11 @@ export class BlockController {
   @Public()
   @Get('getblocknumber')
   @ApiOperation({ summary: 'Get latest block number' })
-  @ApiResponse({ status: 200, description: 'Block number retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Block number retrieved successfully',
+  })
   async getBlockNumber() {
     return this.blockService.getBlockNumber();
   }
 }
-

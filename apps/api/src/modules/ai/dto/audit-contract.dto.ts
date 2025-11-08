@@ -7,4 +7,3 @@ export class AuditContractDto {
   @IsNotEmpty()
   contractAddress: string;
 }
-

@@ -7,10 +7,10 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 
 /**
  * Notifications Service
- * 
+ *
  * Manages user notifications and real-time delivery via WebSocket.
  * Supports push notifications, email notifications, and in-app notifications.
- * 
+ *
  * @class NotificationsService
  * @example
  * ```typescript
@@ -36,7 +36,7 @@ export class NotificationsService {
 
   /**
    * Creates a new notification.
-   * 
+   *
    * @param {CreateNotificationDto} dto - Notification data
    * @returns {Promise<Notification>} Created notification
    */
@@ -55,7 +55,7 @@ export class NotificationsService {
 
   /**
    * Gets notifications for a user.
-   * 
+   *
    * @param {string} userId - User ID
    * @param {object} options - Query options
    * @returns {Promise<Notification[]>} Array of notifications
@@ -82,7 +82,7 @@ export class NotificationsService {
 
   /**
    * Marks a notification as read.
-   * 
+   *
    * @param {string} notificationId - Notification ID
    * @param {string} userId - User ID (for authorization)
    * @returns {Promise<Notification>} Updated notification
@@ -106,7 +106,7 @@ export class NotificationsService {
 
   /**
    * Marks all notifications as read for a user.
-   * 
+   *
    * @param {string} userId - User ID
    * @returns {Promise<void>}
    */
@@ -119,7 +119,7 @@ export class NotificationsService {
 
   /**
    * Deletes a notification.
-   * 
+   *
    * @param {string} notificationId - Notification ID
    * @param {string} userId - User ID (for authorization)
    * @returns {Promise<void>}
@@ -138,7 +138,7 @@ export class NotificationsService {
 
   /**
    * Gets unread notification count for a user.
-   * 
+   *
    * @param {string} userId - User ID
    * @returns {Promise<number>} Unread count
    */
@@ -150,7 +150,7 @@ export class NotificationsService {
 
   /**
    * Sends a real-time notification to a user.
-   * 
+   *
    * @param {string} userId - User ID
    * @param {any} data - Notification data
    */
@@ -160,4 +160,3 @@ export class NotificationsService {
       .emit('notification', data);
   }
 }
-

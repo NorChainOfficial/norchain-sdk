@@ -51,4 +51,3 @@ export class Block {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

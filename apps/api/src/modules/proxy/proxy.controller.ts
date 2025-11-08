@@ -11,7 +11,10 @@ export class ProxyController {
   @Public()
   @Get('eth_blockNumber')
   @ApiOperation({ summary: 'Returns the number of the most recent block' })
-  @ApiResponse({ status: 200, description: 'Block number retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Block number retrieved successfully',
+  })
   async eth_blockNumber() {
     return this.proxyService.eth_blockNumber();
   }
@@ -29,7 +32,9 @@ export class ProxyController {
 
   @Public()
   @Get('eth_getBlockByNumber')
-  @ApiOperation({ summary: 'Returns information about a block by block number' })
+  @ApiOperation({
+    summary: 'Returns information about a block by block number',
+  })
   @ApiResponse({ status: 200, description: 'Block retrieved successfully' })
   async eth_getBlockByNumber(
     @Query('tag') tag: string,
@@ -41,7 +46,10 @@ export class ProxyController {
   @Public()
   @Get('eth_getTransactionByHash')
   @ApiOperation({ summary: 'Returns transaction information by hash' })
-  @ApiResponse({ status: 200, description: 'Transaction retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Transaction retrieved successfully',
+  })
   async eth_getTransactionByHash(@Query('txhash') txhash: string) {
     return this.proxyService.eth_getTransactionByHash(txhash);
   }
@@ -49,16 +57,24 @@ export class ProxyController {
   @Public()
   @Get('eth_getTransactionReceipt')
   @ApiOperation({ summary: 'Returns transaction receipt by hash' })
-  @ApiResponse({ status: 200, description: 'Transaction receipt retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Transaction receipt retrieved successfully',
+  })
   async eth_getTransactionReceipt(@Query('txhash') txhash: string) {
     return this.proxyService.eth_getTransactionReceipt(txhash);
   }
 
   @Public()
   @Post('eth_call')
-  @ApiOperation({ summary: 'Executes a new message call without creating a transaction' })
+  @ApiOperation({
+    summary: 'Executes a new message call without creating a transaction',
+  })
   @ApiResponse({ status: 200, description: 'Call executed successfully' })
-  async eth_call(@Body('transaction') transaction: any, @Body('tag') tag?: string) {
+  async eth_call(
+    @Body('transaction') transaction: any,
+    @Body('tag') tag?: string,
+  ) {
     return this.proxyService.eth_call(transaction, tag);
   }
 
@@ -74,7 +90,10 @@ export class ProxyController {
   @Get('eth_getCode')
   @ApiOperation({ summary: 'Returns code at a given address' })
   @ApiResponse({ status: 200, description: 'Code retrieved successfully' })
-  async eth_getCode(@Query('address') address: string, @Query('tag') tag: string = 'latest') {
+  async eth_getCode(
+    @Query('address') address: string,
+    @Query('tag') tag: string = 'latest',
+  ) {
     return this.proxyService.eth_getCode(address, tag);
   }
 
@@ -94,4 +113,3 @@ export class ProxyController {
     return this.proxyService.eth_gasPrice();
   }
 }
-

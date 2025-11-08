@@ -5,7 +5,7 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Stats Service
- * 
+ *
  * Provides network statistics including supply, price, chain size, and node count.
  */
 @Injectable()
@@ -17,7 +17,7 @@ export class StatsService {
 
   /**
    * Gets total ETH supply.
-   * 
+   *
    * @returns {Promise<ResponseDto>} Total supply
    */
   async getEthSupply() {
@@ -32,7 +32,7 @@ export class StatsService {
         // Simplified calculation - adjust based on your chain's emission schedule
         const baseSupply = BigInt(1000000) * BigInt(10) ** BigInt(18); // 1M ETH base
         const blockReward = BigInt(2) * BigInt(10) ** BigInt(18); // 2 ETH per block
-        const totalSupply = baseSupply + (BigInt(currentBlock) * blockReward);
+        const totalSupply = baseSupply + BigInt(currentBlock) * blockReward;
 
         return {
           EthSupply: totalSupply.toString(),
@@ -48,7 +48,7 @@ export class StatsService {
 
   /**
    * Gets ETH price (would typically come from an external API).
-   * 
+   *
    * @returns {Promise<ResponseDto>} ETH price
    */
   async getEthPrice() {
@@ -73,7 +73,7 @@ export class StatsService {
 
   /**
    * Gets chain size statistics.
-   * 
+   *
    * @returns {Promise<ResponseDto>} Chain size stats
    */
   async getChainSize() {
@@ -100,7 +100,7 @@ export class StatsService {
 
   /**
    * Gets node count (would typically come from network monitoring).
-   * 
+   *
    * @returns {Promise<ResponseDto>} Node count
    */
   async getNodeCount() {
@@ -121,4 +121,3 @@ export class StatsService {
     return ResponseDto.success(nodeCount);
   }
 }
-

@@ -8,7 +8,7 @@ import { ResponseDto } from '@/common/interfaces/api-response.interface';
 
 /**
  * Contract Service
- * 
+ *
  * Provides contract-related operations including ABI retrieval,
  * source code, and contract verification.
  */
@@ -23,7 +23,7 @@ export class ContractService {
 
   /**
    * Gets contract ABI.
-   * 
+   *
    * @param {string} address - Contract address
    * @returns {Promise<ResponseDto>} Contract ABI
    */
@@ -55,7 +55,7 @@ export class ContractService {
 
   /**
    * Gets contract source code.
-   * 
+   *
    * @param {string} address - Contract address
    * @returns {Promise<ResponseDto>} Contract source code and metadata
    */
@@ -101,7 +101,7 @@ export class ContractService {
 
   /**
    * Verifies and stores contract source code.
-   * 
+   *
    * @param {any} verificationData - Contract verification data
    * @returns {Promise<ResponseDto>} Verification result
    */
@@ -114,7 +114,15 @@ export class ContractService {
     runs?: number;
     abi: any;
   }) {
-    const { address, sourceCode, contractName, compilerVersion, optimizationUsed, runs, abi } = verificationData;
+    const {
+      address,
+      sourceCode,
+      contractName,
+      compilerVersion,
+      optimizationUsed,
+      runs,
+      abi,
+    } = verificationData;
 
     let contract = await this.contractRepository.findOne({
       where: { address },
@@ -153,4 +161,3 @@ export class ContractService {
     });
   }
 }
-

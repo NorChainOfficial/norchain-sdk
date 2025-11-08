@@ -23,7 +23,10 @@ export class MonitoringController {
   @Public()
   @Get('health')
   @ApiOperation({ summary: 'Detailed health check' })
-  @ApiResponse({ status: 200, description: 'Health status retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Health status retrieved successfully',
+  })
   async getHealth() {
     return this.monitoringService.getHealth();
   }
@@ -31,9 +34,11 @@ export class MonitoringController {
   @Public()
   @Get('stats')
   @ApiOperation({ summary: 'Node statistics' })
-  @ApiResponse({ status: 200, description: 'Statistics retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Statistics retrieved successfully',
+  })
   async getStats() {
     return this.monitoringService.getStats();
   }
 }
-

@@ -4,10 +4,10 @@ import { ethers } from 'ethers';
 
 /**
  * RPC Service
- * 
+ *
  * Provides blockchain RPC interaction using ethers.js.
  * Handles all direct blockchain queries and operations.
- * 
+ *
  * @class RpcService
  * @example
  * ```typescript
@@ -22,7 +22,7 @@ export class RpcService {
 
   /**
    * Creates an instance of RpcService.
-   * 
+   *
    * @param {ConfigService} configService - Configuration service
    * @throws {Error} If RPC_URL is not configured
    */
@@ -38,7 +38,7 @@ export class RpcService {
 
   /**
    * Gets the ethers.js provider instance.
-   * 
+   *
    * @returns {ethers.JsonRpcProvider} The provider instance
    */
   getProvider(): ethers.JsonRpcProvider {
@@ -47,7 +47,7 @@ export class RpcService {
 
   /**
    * Gets the current block number.
-   * 
+   *
    * @returns {Promise<number>} The current block number
    * @example
    * ```typescript
@@ -60,7 +60,7 @@ export class RpcService {
 
   /**
    * Gets block information by block number or tag.
-   * 
+   *
    * @param {number | string} blockNumber - Block number or tag ('latest', 'pending')
    * @returns {Promise<ethers.Block | null>} Block information or null if not found
    * @example
@@ -75,7 +75,7 @@ export class RpcService {
 
   /**
    * Gets transaction information by hash.
-   * 
+   *
    * @param {string} txHash - Transaction hash
    * @returns {Promise<ethers.TransactionResponse | null>} Transaction information or null
    * @example
@@ -91,7 +91,7 @@ export class RpcService {
 
   /**
    * Gets transaction receipt by hash.
-   * 
+   *
    * @param {string} txHash - Transaction hash
    * @returns {Promise<ethers.TransactionReceipt | null>} Transaction receipt or null
    * @example
@@ -107,7 +107,7 @@ export class RpcService {
 
   /**
    * Gets the balance of an address.
-   * 
+   *
    * @param {string} address - Ethereum address
    * @returns {Promise<bigint>} Balance in wei
    * @example
@@ -121,7 +121,7 @@ export class RpcService {
 
   /**
    * Gets the bytecode of a contract.
-   * 
+   *
    * @param {string} address - Contract address
    * @returns {Promise<string>} Contract bytecode
    * @example
@@ -135,7 +135,7 @@ export class RpcService {
 
   /**
    * Calls a contract method without creating a transaction.
-   * 
+   *
    * @param {ethers.TransactionRequest} transaction - Transaction request
    * @param {string | number} [blockTag] - Block tag (optional)
    * @returns {Promise<string>} Call result
@@ -163,7 +163,7 @@ export class RpcService {
 
   /**
    * Gets event logs matching a filter.
-   * 
+   *
    * @param {ethers.Filter} filter - Event filter
    * @returns {Promise<ethers.Log[]>} Array of matching logs
    * @example
@@ -180,7 +180,7 @@ export class RpcService {
 
   /**
    * Estimates gas for a transaction.
-   * 
+   *
    * @param {ethers.TransactionRequest} transaction - Transaction request
    * @returns {Promise<bigint>} Estimated gas
    * @example
@@ -191,15 +191,13 @@ export class RpcService {
    * });
    * ```
    */
-  async estimateGas(
-    transaction: ethers.TransactionRequest,
-  ): Promise<bigint> {
+  async estimateGas(transaction: ethers.TransactionRequest): Promise<bigint> {
     return this.provider.estimateGas(transaction);
   }
 
   /**
    * Gets current fee data (gas prices).
-   * 
+   *
    * @returns {Promise<ethers.FeeData>} Fee data including gas prices
    * @example
    * ```typescript
@@ -213,7 +211,7 @@ export class RpcService {
 
   /**
    * Validates an Ethereum address.
-   * 
+   *
    * @param {string} address - Address to validate
    * @returns {boolean} True if valid, false otherwise
    * @example
@@ -233,7 +231,7 @@ export class RpcService {
 
   /**
    * Formats an address to checksum format.
-   * 
+   *
    * @param {string} address - Address to format
    * @returns {string} Checksummed address
    * @example

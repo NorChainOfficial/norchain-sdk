@@ -9,4 +9,3 @@ import { WebSocketModule } from '../websocket/websocket.module';
   exports: [SupabaseService],
 })
 export class SupabaseModule {}
-

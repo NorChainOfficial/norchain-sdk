@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsNumberString, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumberString,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export enum OrderSide {
@@ -64,4 +70,3 @@ export class CreateLimitOrderDto {
   @IsNumberString()
   expiresAt?: string;
 }
-

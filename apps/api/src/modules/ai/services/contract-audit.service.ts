@@ -32,8 +32,9 @@ export class ContractAuditService {
 
   async audit(contractAddress: string): Promise<ContractAudit> {
     try {
-      const code = await this.proxyService.call('eth_getCode', [contractAddress, 'latest']);
-      
+      const codeResult = await this.proxyService.eth_getCode(contractAddress, 'latest');
+      const code = codeResult.status === '1' ? codeResult.result : '0x';
+
       if (!code || code === '0x') {
         return {
           securityScore: 0,
@@ -55,7 +56,10 @@ export class ContractAuditService {
     }
   }
 
-  private async auditWithAI(contractAddress: string, code: string): Promise<ContractAudit> {
+  private async auditWithAI(
+    contractAddress: string,
+    code: string,
+  ): Promise<ContractAudit> {
     const prompt = `Perform security audit of this smart contract:
 Address: ${contractAddress}
 Code: ${code.slice(0, 5000)}...
@@ -90,7 +94,7 @@ Return JSON with: securityScore (0-100), vulnerabilities[], recommendations[], b
 
       const content = response.data.content?.[0]?.text || '';
       const jsonMatch = content.match(/\{[\s\S]*\}/);
-      
+
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]);
       }
@@ -103,9 +107,10 @@ Return JSON with: securityScore (0-100), vulnerabilities[], recommendations[], b
 
   private auditFallback(code: string): ContractAudit {
     const vulnerabilities: ContractAudit['vulnerabilities'] = [];
-    
+
     // Basic pattern detection
-    if (code.includes('0xf4')) { // CALL opcode
+    if (code.includes('0xf4')) {
+      // CALL opcode
       vulnerabilities.push({
         severity: 'medium',
         type: 'External Call',
@@ -131,4 +136,3 @@ Return JSON with: securityScore (0-100), vulnerabilities[], recommendations[], b
     };
   }
 }
-

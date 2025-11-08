@@ -11,7 +11,10 @@ export class ContractController {
   @Public()
   @Get('getabi')
   @ApiOperation({ summary: 'Get contract ABI' })
-  @ApiResponse({ status: 200, description: 'Contract ABI retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Contract ABI retrieved successfully',
+  })
   async getAbi(@Query('address') address: string) {
     return this.contractService.getAbi(address);
   }
@@ -19,7 +22,10 @@ export class ContractController {
   @Public()
   @Get('getsourcecode')
   @ApiOperation({ summary: 'Get contract source code' })
-  @ApiResponse({ status: 200, description: 'Contract source code retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Contract source code retrieved successfully',
+  })
   async getSourceCode(@Query('address') address: string) {
     return this.contractService.getSourceCode(address);
   }
@@ -32,4 +38,3 @@ export class ContractController {
     return this.contractService.verifyContract(verificationData);
   }
 }
-

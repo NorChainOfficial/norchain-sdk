@@ -10,7 +10,10 @@ import { BaseRepository } from '@/common/repositories/base.repository';
 import { AccountSummary } from '../entities/account.entity';
 
 @Injectable()
-export class AccountRepository extends BaseRepository<Transaction> implements BaseRepository<Transaction> {
+export class AccountRepository
+  extends BaseRepository<Transaction>
+  implements BaseRepository<Transaction>
+{
   constructor(
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
@@ -43,9 +46,12 @@ export class AccountRepository extends BaseRepository<Transaction> implements Ba
   async getTokenCount(address: string): Promise<number> {
     const result = await this.tokenTransferRepository
       .createQueryBuilder('transfer')
-      .where('transfer.fromAddress = :address OR transfer.toAddress = :address', {
-        address,
-      })
+      .where(
+        'transfer.fromAddress = :address OR transfer.toAddress = :address',
+        {
+          address,
+        },
+      )
       .select('COUNT(DISTINCT transfer.tokenAddress)', 'count')
       .getRawOne();
 
@@ -259,4 +265,3 @@ export class AccountRepository extends BaseRepository<Transaction> implements Ba
     };
   }
 }
-

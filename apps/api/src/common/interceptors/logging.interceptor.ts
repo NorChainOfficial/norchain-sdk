@@ -30,12 +30,9 @@ export class LoggingInterceptor implements NestInterceptor {
         },
         error: (error) => {
           const delay = Date.now() - now;
-          this.logger.error(
-            `${method} ${url} - ${delay}ms - ${error.message}`,
-          );
+          this.logger.error(`${method} ${url} - ${delay}ms - ${error.message}`);
         },
       }),
     );
   }
 }
-

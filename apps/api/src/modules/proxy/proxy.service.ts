@@ -5,7 +5,7 @@ import { ethers } from 'ethers';
 
 /**
  * Proxy Service
- * 
+ *
  * Provides JSON-RPC compatible proxy endpoints for direct blockchain access.
  * Implements standard Ethereum JSON-RPC methods.
  */
@@ -164,9 +164,7 @@ export class ProxyService {
       hash: tx.hash,
       blockNumber: tx.blockNumber ? `0x${tx.blockNumber.toString(16)}` : null,
       blockHash: tx.blockHash || null,
-      transactionIndex: tx.index
-        ? `0x${tx.index.toString(16)}`
-        : null,
+      transactionIndex: tx.index ? `0x${tx.index.toString(16)}` : null,
       from: tx.from,
       to: tx.to || null,
       value: `0x${tx.value.toString(16)}`,
@@ -216,4 +214,3 @@ export class ProxyService {
     };
   }
 }
-

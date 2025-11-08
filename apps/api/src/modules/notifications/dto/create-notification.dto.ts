@@ -23,4 +23,3 @@ export class CreateNotificationDto {
   @IsObject()
   data?: any;
 }
-

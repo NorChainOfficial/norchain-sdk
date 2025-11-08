@@ -34,4 +34,3 @@ export class TokenMetadata {
   @CreateDateColumn()
   createdAt: Date;
 }
-
