@@ -22,7 +22,9 @@ export abstract class BaseRepository<T extends ObjectLiteral> {
 
   async create(entity: Partial<T>): Promise<T> {
     const newEntity = this.repository.create(entity as any);
-    return this.repository.save(newEntity);
+    const saved = await this.repository.save(newEntity);
+    // TypeORM save can return T or T[], ensure we return T
+    return Array.isArray(saved) ? saved[0] : (saved as T);
   }
 
   async update(id: any, entity: Partial<T>): Promise<T | null> {

@@ -114,7 +114,15 @@ describe('TransactionService', () => {
         gasUsed: BigInt('21000'),
         cumulativeGasUsed: BigInt('21000'),
         logs: [],
-      };
+        to: '0xto',
+        from: '0xfrom',
+        contractAddress: null,
+        blockNumber: 12345,
+        blockHash: '0xabc',
+        transactionIndex: 0,
+        type: 2,
+        toJSON: jest.fn(),
+      } as any;
 
       cacheService.getOrSet.mockImplementation(async (key, fn) => {
         transactionRepository.findOne.mockResolvedValue(null);
@@ -155,7 +163,18 @@ describe('TransactionService', () => {
       const mockReceipt = {
         hash: txHash,
         status: 1,
-      };
+        gasUsed: BigInt('21000'),
+        cumulativeGasUsed: BigInt('21000'),
+        logs: [],
+        to: '0xto',
+        from: '0xfrom',
+        contractAddress: null,
+        blockNumber: 12345,
+        blockHash: '0xabc',
+        transactionIndex: 0,
+        type: 2,
+        toJSON: jest.fn(),
+      } as any;
 
       cacheService.getOrSet.mockImplementation(async (key, fn) => {
         transactionRepository.findOne.mockResolvedValue(null);
@@ -176,7 +195,20 @@ describe('TransactionService', () => {
       const mockTx = {
         hash: txHash,
         blockNumber: null,
-      };
+        blockHash: null,
+        index: null,
+        from: '0xfrom',
+        to: '0xto',
+        value: BigInt('0'),
+        gasLimit: BigInt('21000'),
+        gasPrice: BigInt('20000000000'),
+        data: '0x',
+        nonce: 0,
+        type: 2,
+        toJSON: jest.fn(),
+        wait: jest.fn(),
+        provider: null,
+      } as any;
 
       rpcService.getTransaction.mockResolvedValue(mockTx);
 
@@ -191,12 +223,36 @@ describe('TransactionService', () => {
       const mockTx = {
         hash: txHash,
         blockNumber: 12345,
-      };
+        blockHash: '0xabc',
+        index: 0,
+        from: '0xfrom',
+        to: '0xto',
+        value: BigInt('0'),
+        gasLimit: BigInt('21000'),
+        gasPrice: BigInt('20000000000'),
+        data: '0x',
+        nonce: 0,
+        type: 2,
+        toJSON: jest.fn(),
+        wait: jest.fn(),
+        provider: null,
+      } as any;
 
       const mockReceipt = {
         hash: txHash,
         status: 1,
-      };
+        gasUsed: BigInt('21000'),
+        cumulativeGasUsed: BigInt('21000'),
+        logs: [],
+        to: '0xto',
+        from: '0xfrom',
+        contractAddress: null,
+        blockNumber: 12345,
+        blockHash: '0xabc',
+        transactionIndex: 0,
+        type: 2,
+        toJSON: jest.fn(),
+      } as any;
 
       rpcService.getTransaction.mockResolvedValue(mockTx);
       rpcService.getTransactionReceipt.mockResolvedValue(mockReceipt);

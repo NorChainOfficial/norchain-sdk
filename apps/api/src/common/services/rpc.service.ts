@@ -151,10 +151,14 @@ export class RpcService {
     transaction: ethers.TransactionRequest,
     blockTag?: string | number,
   ): Promise<string> {
+    // In ethers.js v6, blockTag is passed in the transaction request, not as separate param
+    const txRequest: ethers.TransactionRequest = {
+      ...transaction,
+    };
     if (blockTag !== undefined) {
-      return this.provider.call(transaction, blockTag);
+      txRequest.blockTag = blockTag;
     }
-    return this.provider.call(transaction);
+    return this.provider.call(txRequest);
   }
 
   /**

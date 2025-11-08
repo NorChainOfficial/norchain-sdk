@@ -25,6 +25,8 @@ describe('AnalyticsService', () => {
 
     const mockRpcService = {
       getBalance: jest.fn(),
+      getBlockNumber: jest.fn(),
+      getBlock: jest.fn(),
     };
 
     const mockCacheService = {

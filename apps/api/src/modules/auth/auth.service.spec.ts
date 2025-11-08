@@ -1,3 +1,10 @@
+// Mock bcrypt before any imports that use it
+jest.mock('bcrypt', () => ({
+  hash: jest.fn((password: string) => Promise.resolve(`hashed_${password}`)),
+  compare: jest.fn((password: string, hash: string) => Promise.resolve(hash === `hashed_${password}`)),
+  genSalt: jest.fn(() => Promise.resolve('salt')),
+}));
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -113,7 +120,7 @@ describe('AuthService', () => {
         password: 'password123',
       };
 
-      const hashedPassword = await bcrypt.hash(loginDto.password, 10);
+      const hashedPassword = `hashed_${loginDto.password}`;
       const user = {
         id: '1',
         email: loginDto.email,
@@ -137,7 +144,7 @@ describe('AuthService', () => {
         password: 'wrong-password',
       };
 
-      const hashedPassword = await bcrypt.hash('correct-password', 10);
+      const hashedPassword = 'hashed_correct-password';
       const user = {
         id: '1',
         email: loginDto.email,

@@ -48,18 +48,14 @@ describe('GasService', () => {
     it('should return gas oracle data', async () => {
       const mockFeeData = {
         gasPrice: BigInt('20000000000'),
-      };
+        maxFeePerGas: BigInt('20000000000'),
+        maxPriorityFeePerGas: BigInt('1000000000'),
+        toJSON: jest.fn(),
+      } as any;
 
       const mockBlock = {
         gasUsed: BigInt('500000'),
         gasLimit: BigInt('1000000'),
-      };
-
-      const mockFeeData = {
-        gasPrice: BigInt('20000000000'),
-        maxFeePerGas: BigInt('20000000000'),
-        maxPriorityFeePerGas: BigInt('1000000000'),
-        toJSON: jest.fn(),
       } as any;
 
       cacheService.getOrSet.mockImplementation(async (key, fn) => {
