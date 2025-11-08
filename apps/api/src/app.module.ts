@@ -33,6 +33,7 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { AIModule } from './modules/ai/ai.module';
 import { MonitoringModule } from './modules/monitoring/monitoring.module';
 import { BlockchainModule } from './modules/blockchain/blockchain.module';
+import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -113,6 +114,7 @@ import { BlockchainModule } from './modules/blockchain/blockchain.module';
     AIModule,
     MonitoringModule,
     BlockchainModule,
+    WalletModule,
   ],
   providers: [
     {

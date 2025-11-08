@@ -242,4 +242,21 @@ export class RpcService {
   formatAddress(address: string): string {
     return ethers.getAddress(address);
   }
+
+  /**
+   * Broadcasts a signed transaction to the network.
+   *
+   * @param {string} signedTransaction - Signed transaction hex string
+   * @returns {Promise<ethers.TransactionResponse>} Transaction response with hash
+   * @example
+   * ```typescript
+   * const response = await rpcService.broadcastTransaction('0xf86c...');
+   * console.log(response.hash);
+   * ```
+   */
+  async broadcastTransaction(
+    signedTransaction: string,
+  ): Promise<ethers.TransactionResponse> {
+    return this.provider.broadcastTransaction(signedTransaction);
+  }
 }

@@ -90,6 +90,7 @@ async function bootstrap() {
     .addTag('Stats', 'Network statistics')
     .addTag('Auth', 'Authentication endpoints')
     .addTag('Health', 'Health check endpoints')
+    .addTag('Wallet', 'Wallet management endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

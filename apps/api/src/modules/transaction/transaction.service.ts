@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
 import { RpcService } from '@/common/services/rpc.service';
 import { CacheService } from '@/common/services/cache.service';
 import { ResponseDto } from '@/common/interfaces/api-response.interface';
+import { BroadcastTransactionDto } from './dto/broadcast-transaction.dto';
 
 /**
  * Transaction Service
@@ -190,5 +191,35 @@ export class TransactionService {
       cumulativeGasUsed: receipt?.cumulativeGasUsed?.toString() || '0',
       confirmations: '0',
     };
+  }
+
+  /**
+   * Broadcasts a signed transaction to the network.
+   *
+   * @param {BroadcastTransactionDto} dto - DTO containing the signed transaction
+   * @returns {Promise<ResponseDto>} Transaction hash and status
+   */
+  async broadcastTransaction(dto: BroadcastTransactionDto) {
+    try {
+      const response = await this.rpcService.broadcastTransaction(
+        dto.signedTransaction,
+      );
+
+      return ResponseDto.success({
+        hash: response.hash,
+        from: response.from,
+        to: response.to,
+        value: response.value.toString(),
+        gasLimit: response.gasLimit.toString(),
+        gasPrice: response.gasPrice?.toString() || '0',
+        nonce: response.nonce,
+        status: 'pending',
+        message: 'Transaction broadcast successfully',
+      });
+    } catch (error: any) {
+      throw new BadRequestException(
+        error.message || 'Failed to broadcast transaction',
+      );
+    }
   }
 }
