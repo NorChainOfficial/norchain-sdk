@@ -30,6 +30,9 @@ import { BatchModule } from './modules/batch/batch.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SwapModule } from './modules/swap/swap.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { AIModule } from './modules/ai/ai.module';
+import { MonitoringModule } from './modules/monitoring/monitoring.module';
+import { BlockchainModule } from './modules/blockchain/blockchain.module';
 
 @Module({
   imports: [
@@ -105,6 +108,9 @@ import { OrdersModule } from './modules/orders/orders.module';
     AnalyticsModule,
     SwapModule,
     OrdersModule,
+    AIModule,
+    MonitoringModule,
+    BlockchainModule,
   ],
   providers: [
     {
