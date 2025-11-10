@@ -1,8 +1,15 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Validator, ValidatorStatus } from './entities/validator.entity';
-import { SlashingEvent, SlashingReason } from './entities/slashing-event.entity';
+import {
+  SlashingEvent,
+  SlashingReason,
+} from './entities/slashing-event.entity';
 import { FeatureFlag } from './entities/feature-flag.entity';
 import { AuditLog, AuditAction } from './entities/audit-log.entity';
 import { CreateValidatorDto } from './dto/create-validator.dto';
@@ -27,7 +34,11 @@ export class AdminService {
   /**
    * Get all validators
    */
-  async getValidators(limit: number = 50, offset: number = 0, status?: ValidatorStatus) {
+  async getValidators(
+    limit: number = 50,
+    offset: number = 0,
+    status?: ValidatorStatus,
+  ) {
     const where: any = {};
     if (status) {
       where.status = status;
@@ -131,9 +142,15 @@ export class AdminService {
     const savedValidator = await this.validatorRepository.save(validator);
 
     // Log audit
-    await this.logAudit(userId, AuditAction.CREATE, 'validator', savedValidator.id, {
-      after: { address: savedValidator.address, name: savedValidator.name },
-    });
+    await this.logAudit(
+      userId,
+      AuditAction.CREATE,
+      'validator',
+      savedValidator.id,
+      {
+        after: { address: savedValidator.address, name: savedValidator.name },
+      },
+    );
 
     return {
       validator_id: savedValidator.id,
@@ -188,7 +205,8 @@ export class AdminService {
       proposal_id: `prop_${Date.now()}`,
       parameters: dto.parameters,
       reason: dto.reason,
-      message: 'Parameter change proposal created. Requires governance approval.',
+      message:
+        'Parameter change proposal created. Requires governance approval.',
     };
   }
 
@@ -206,9 +224,15 @@ export class AdminService {
     const savedFlag = await this.featureFlagRepository.save(flag);
 
     // Log audit
-    await this.logAudit(userId, AuditAction.CREATE, 'feature_flag', savedFlag.id, {
-      after: { key: savedFlag.key, enabled: savedFlag.enabled },
-    });
+    await this.logAudit(
+      userId,
+      AuditAction.CREATE,
+      'feature_flag',
+      savedFlag.id,
+      {
+        after: { key: savedFlag.key, enabled: savedFlag.enabled },
+      },
+    );
 
     return {
       flag_id: savedFlag.id,
@@ -299,4 +323,3 @@ export class AdminService {
     await this.auditLogRepository.save(auditLog);
   }
 }
-

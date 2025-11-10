@@ -13,4 +13,3 @@ import { CommonModule } from '@/common/common.module';
   exports: [InsightsService],
 })
 export class V2Module {}
-

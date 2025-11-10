@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, IsEthereumAddress, IsNumberString, IsOptional } from 'class-validator';
+import {
+  IsEnum,
+  IsString,
+  IsEthereumAddress,
+  IsNumberString,
+  IsOptional,
+} from 'class-validator';
 import { BridgeChain } from '../entities/bridge-transfer.entity';
 
 export class CreateBridgeTransferDto {
@@ -49,4 +55,3 @@ export class CreateBridgeTransferDto {
   @IsString()
   idempotencyKey?: string;
 }
-

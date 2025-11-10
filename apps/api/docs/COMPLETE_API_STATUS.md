@@ -204,8 +204,13 @@ const transfer = await nor.bridge.createTransfer(
 | Chain & Accounts | 🟡 Partial | 20+ | 60% |
 | Tokens | 🟡 Partial | 10+ | 70% |
 | DEX | 🟡 Partial | 8+ | 40% |
-| Payments | ❌ Missing | 0 | 0% |
-| Admin | ❌ Missing | 0 | 0% |
+| Payments | ✅ Complete | 7+ | 100% |
+| Admin | ✅ Complete | 8+ | 100% |
+| RPC Extensions | ✅ Complete | 5+ | 100% |
+| Finality | ✅ Complete | 2+ | 100% |
+| Validators | ✅ Complete | 1+ | 100% |
+| Insights | ✅ Complete | 3+ | 100% |
+| Webhooks | ✅ Complete | 3+ | 100% |
 
 ---
 

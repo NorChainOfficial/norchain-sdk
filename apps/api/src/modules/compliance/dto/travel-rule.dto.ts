@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEthereumAddress, IsNumberString, IsOptional, IsEmail } from 'class-validator';
+import {
+  IsString,
+  IsEthereumAddress,
+  IsNumberString,
+  IsOptional,
+  IsEmail,
+} from 'class-validator';
 
 export class TravelRuleDto {
   @ApiProperty({
@@ -66,4 +72,3 @@ export class TravelRuleDto {
   @IsEmail()
   recipientEmail?: string;
 }
-

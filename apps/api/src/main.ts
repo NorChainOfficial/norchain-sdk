@@ -32,7 +32,7 @@ async function bootstrap() {
   // Global prefix
   app.setGlobalPrefix('api');
 
-  // API Versioning
+  // API Versioning (optional - supports both /api/... and /api/v1/...)
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
@@ -100,6 +100,19 @@ async function bootstrap() {
     .addTag('Bridge', 'Cross-chain bridge operations')
     .addTag('Compliance', 'Compliance and regulatory endpoints')
     .addTag('Governance', 'On-chain governance endpoints')
+    .addTag(
+      'Payments',
+      'Payment invoices, POS sessions, and merchant settlements',
+    )
+    .addTag(
+      'Admin',
+      'System administration endpoints (validators, params, audit)',
+    )
+    .addTag('RPC Extensions', 'NorChain-specific RPC extensions (nor_*)')
+    .addTag('Finality', 'Finality status endpoints')
+    .addTag('Validators', 'Validator set endpoints')
+    .addTag('Insights', 'Analytics and insights endpoints')
+    .addTag('Webhooks', 'Webhook subscription and delivery management')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

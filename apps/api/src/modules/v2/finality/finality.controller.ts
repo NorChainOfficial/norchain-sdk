@@ -4,8 +4,8 @@ import { RPCExtensionsService } from '../../rpc/rpc-extensions.service';
 import { Public } from '@/common/decorators/public.decorator';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 
-@ApiTags('V2 - Finality')
-@Controller('v2/finality')
+@ApiTags('Finality')
+@Controller('finality')
 @Public()
 export class FinalityController {
   constructor(private readonly rpcExtensionsService: RPCExtensionsService) {}
@@ -37,4 +37,3 @@ export class FinalityController {
     return this.rpcExtensionsService.getFinality(parseInt(blockNumber, 10));
   }
 }
-

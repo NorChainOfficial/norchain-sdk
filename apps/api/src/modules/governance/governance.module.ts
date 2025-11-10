@@ -7,10 +7,12 @@ import { GovernanceVote } from './entities/governance-vote.entity';
 import { CommonModule } from '@/common/common.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([GovernanceProposal, GovernanceVote]), CommonModule],
+  imports: [
+    TypeOrmModule.forFeature([GovernanceProposal, GovernanceVote]),
+    CommonModule,
+  ],
   controllers: [GovernanceController],
   providers: [GovernanceService],
   exports: [GovernanceService],
 })
 export class GovernanceModule {}
-

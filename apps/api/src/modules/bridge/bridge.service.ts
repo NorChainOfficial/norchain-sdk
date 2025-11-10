@@ -1,7 +1,15 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BridgeTransfer, BridgeTransferStatus, BridgeChain } from './entities/bridge-transfer.entity';
+import {
+  BridgeTransfer,
+  BridgeTransferStatus,
+  BridgeChain,
+} from './entities/bridge-transfer.entity';
 import { CreateBridgeQuoteDto } from './dto/create-bridge-quote.dto';
 import { CreateBridgeTransferDto } from './dto/create-bridge-transfer.dto';
 import { RpcService } from '@/common/services/rpc.service';
@@ -21,7 +29,9 @@ export class BridgeService {
   async getQuote(dto: CreateBridgeQuoteDto) {
     // Validate chain pair
     if (dto.srcChain === dto.dstChain) {
-      throw new BadRequestException('Source and destination chains must be different');
+      throw new BadRequestException(
+        'Source and destination chains must be different',
+      );
     }
 
     // Calculate fees (simplified - in production, this would query bridge contracts)
@@ -68,7 +78,9 @@ export class BridgeService {
 
     // Validate chain pair
     if (dto.srcChain === dto.dstChain) {
-      throw new BadRequestException('Source and destination chains must be different');
+      throw new BadRequestException(
+        'Source and destination chains must be different',
+      );
     }
 
     // Calculate fees
@@ -147,7 +159,9 @@ export class BridgeService {
     }
 
     if (!transfer.proof) {
-      throw new BadRequestException('Proof not yet available for this transfer');
+      throw new BadRequestException(
+        'Proof not yet available for this transfer',
+      );
     }
 
     return {
@@ -163,13 +177,19 @@ export class BridgeService {
   /**
    * List user's bridge transfers
    */
-  async getUserTransfers(userId: string, limit: number = 50, offset: number = 0) {
-    const [transfers, total] = await this.bridgeTransferRepository.findAndCount({
-      where: { userId },
-      order: { createdAt: 'DESC' },
-      take: limit,
-      skip: offset,
-    });
+  async getUserTransfers(
+    userId: string,
+    limit: number = 50,
+    offset: number = 0,
+  ) {
+    const [transfers, total] = await this.bridgeTransferRepository.findAndCount(
+      {
+        where: { userId },
+        order: { createdAt: 'DESC' },
+        take: limit,
+        skip: offset,
+      },
+    );
 
     return {
       transfers: transfers.map((t) => ({
@@ -191,7 +211,10 @@ export class BridgeService {
   /**
    * Estimate bridge time based on chain pair
    */
-  private estimateBridgeTime(srcChain: BridgeChain, dstChain: BridgeChain): number {
+  private estimateBridgeTime(
+    srcChain: BridgeChain,
+    dstChain: BridgeChain,
+  ): number {
     // Simplified estimates (in minutes)
     const estimates: Record<string, number> = {
       'NOR-BSC': 5,
@@ -206,4 +229,3 @@ export class BridgeService {
     return estimates[key] || 10; // Default 10 minutes
   }
 }
-

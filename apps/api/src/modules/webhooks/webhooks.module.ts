@@ -12,4 +12,3 @@ import { WebhookDelivery } from './entities/webhook-delivery.entity';
   exports: [WebhooksService],
 })
 export class WebhooksModule {}
-

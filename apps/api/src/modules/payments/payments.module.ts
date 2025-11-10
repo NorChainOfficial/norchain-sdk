@@ -17,4 +17,3 @@ import { CommonModule } from '@/common/common.module';
   exports: [PaymentsService],
 })
 export class PaymentsModule {}
-

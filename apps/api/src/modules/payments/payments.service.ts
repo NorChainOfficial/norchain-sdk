@@ -1,9 +1,21 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PaymentInvoice, InvoiceStatus, PaymentMethod } from './entities/payment-invoice.entity';
+import {
+  PaymentInvoice,
+  InvoiceStatus,
+  PaymentMethod,
+} from './entities/payment-invoice.entity';
 import { POSSession, POSSessionStatus } from './entities/pos-session.entity';
-import { MerchantSettlement, SettlementStatus, SettlementType } from './entities/merchant-settlement.entity';
+import {
+  MerchantSettlement,
+  SettlementStatus,
+  SettlementType,
+} from './entities/merchant-settlement.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { CreatePOSSessionDto } from './dto/create-pos-session.dto';
 import { RpcService } from '@/common/services/rpc.service';
@@ -101,7 +113,12 @@ export class PaymentsService {
   /**
    * List invoices
    */
-  async getInvoices(userId: string, limit: number = 50, offset: number = 0, status?: InvoiceStatus) {
+  async getInvoices(
+    userId: string,
+    limit: number = 50,
+    offset: number = 0,
+    status?: InvoiceStatus,
+  ) {
     const where: any = { userId };
     if (status) {
       where.status = status;
@@ -195,7 +212,11 @@ export class PaymentsService {
     }
 
     // Check if expired
-    if (session.status === POSSessionStatus.ACTIVE && session.expiresAt && new Date() > session.expiresAt) {
+    if (
+      session.status === POSSessionStatus.ACTIVE &&
+      session.expiresAt &&
+      new Date() > session.expiresAt
+    ) {
       session.status = POSSessionStatus.EXPIRED;
       await this.posSessionRepository.save(session);
     }
@@ -215,7 +236,11 @@ export class PaymentsService {
   /**
    * Get merchant settlements
    */
-  async getSettlements(merchantId: string, limit: number = 50, offset: number = 0) {
+  async getSettlements(
+    merchantId: string,
+    limit: number = 50,
+    offset: number = 0,
+  ) {
     const [settlements, total] = await this.settlementRepository.findAndCount({
       where: { merchantId },
       order: { createdAt: 'DESC' },
@@ -273,4 +298,3 @@ export class PaymentsService {
     };
   }
 }
-

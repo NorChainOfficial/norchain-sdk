@@ -55,7 +55,11 @@ export class BridgeTransfer {
   @Column()
   toAddress: string;
 
-  @Column({ type: 'enum', enum: BridgeTransferStatus, default: BridgeTransferStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: BridgeTransferStatus,
+    default: BridgeTransferStatus.PENDING,
+  })
   status: BridgeTransferStatus;
 
   @Column({ type: 'text', nullable: true })
@@ -85,4 +89,3 @@ export class BridgeTransfer {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

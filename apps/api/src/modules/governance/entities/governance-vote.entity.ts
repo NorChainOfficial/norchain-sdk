@@ -43,4 +43,3 @@ export class GovernanceVote {
   @CreateDateColumn()
   createdAt: Date;
 }
-

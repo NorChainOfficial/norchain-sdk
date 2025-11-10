@@ -1,10 +1,23 @@
-import { Controller, Get, Query, Param, ParseIntPipe, DefaultValuePipe } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Query,
+  Param,
+  ParseIntPipe,
+  DefaultValuePipe,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiParam,
+} from '@nestjs/swagger';
 import { InsightsService } from './insights.service';
 import { Public } from '@/common/decorators/public.decorator';
 
-@ApiTags('V2 - Insights')
-@Controller('v2/insights')
+@ApiTags('Insights')
+@Controller('insights')
 @Public()
 export class InsightsController {
   constructor(private readonly insightsService: InsightsService) {}
@@ -26,7 +39,11 @@ export class InsightsController {
 
   @Get('dex/tvl')
   @ApiOperation({ summary: 'Get DEX TVL over time range' })
-  @ApiQuery({ name: 'window', required: false, enum: ['1d', '7d', '30d', '1y'] })
+  @ApiQuery({
+    name: 'window',
+    required: false,
+    enum: ['1d', '7d', '30d', '1y'],
+  })
   @ApiResponse({
     status: 200,
     description: 'DEX TVL retrieved successfully',
@@ -42,8 +59,9 @@ export class InsightsController {
     status: 200,
     description: 'Gas heatmap retrieved successfully',
   })
-  async getGasHeatmap(@Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number) {
+  async getGasHeatmap(
+    @Query('days', new DefaultValuePipe(7), ParseIntPipe) days: number,
+  ) {
     return this.insightsService.getGasHeatmap(days);
   }
 }
-

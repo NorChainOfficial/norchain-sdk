@@ -38,7 +38,11 @@ export class MerchantSettlement {
   @Column({ type: 'enum', enum: SettlementType })
   type: SettlementType;
 
-  @Column({ type: 'enum', enum: SettlementStatus, default: SettlementStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: SettlementStatus,
+    default: SettlementStatus.PENDING,
+  })
   status: SettlementStatus;
 
   @Column({ type: 'decimal', precision: 36, scale: 18 })
@@ -77,4 +81,3 @@ export class MerchantSettlement {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

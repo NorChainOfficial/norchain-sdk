@@ -131,4 +131,3 @@ export class WalletController {
     return this.walletService.deleteWallet(req.user.id, address);
   }
 }
-

@@ -20,4 +20,3 @@ export class CreateWalletDto {
   @MinLength(8)
   password: string;
 }
-

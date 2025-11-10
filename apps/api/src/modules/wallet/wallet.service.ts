@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../auth/entities/user.entity';
@@ -222,7 +226,10 @@ export class WalletService {
     };
   }
 
-  private async verifyWalletOwnership(userId: string, address: string): Promise<Wallet> {
+  private async verifyWalletOwnership(
+    userId: string,
+    address: string,
+  ): Promise<Wallet> {
     const wallet = await this.walletRepository.findOne({
       where: { address: address.toLowerCase(), userId },
     });
@@ -252,4 +259,3 @@ export class WalletService {
     return Buffer.from(encryptedPrivateKey, 'base64').toString();
   }
 }
-

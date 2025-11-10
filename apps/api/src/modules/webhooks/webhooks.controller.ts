@@ -70,7 +70,11 @@ export class WebhooksController {
     @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number,
     @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number,
   ) {
-    return this.webhooksService.getDeliveries(req.user.id, webhookId, limit, offset);
+    return this.webhooksService.getDeliveries(
+      req.user.id,
+      webhookId,
+      limit,
+      offset,
+    );
   }
 }
-

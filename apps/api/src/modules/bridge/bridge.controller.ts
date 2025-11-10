@@ -67,12 +67,17 @@ export class BridgeController {
     description: 'Unauthorized',
     type: ErrorResponseDto,
   })
-  async createTransfer(@Request() req: any, @Body() dto: CreateBridgeTransferDto) {
+  async createTransfer(
+    @Request() req: any,
+    @Body() dto: CreateBridgeTransferDto,
+  ) {
     return this.bridgeService.createTransfer(req.user.id, dto);
   }
 
   @Get('transfers')
-  @ApiOperation({ summary: 'Get all bridge transfers for the authenticated user' })
+  @ApiOperation({
+    summary: 'Get all bridge transfers for the authenticated user',
+  })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiResponse({
@@ -109,4 +114,3 @@ export class BridgeController {
     return this.bridgeService.getTransferProof(req.user.id, transferId);
   }
 }
-

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString, IsObject, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsEnum,
+  IsString,
+  IsObject,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 import { ProposalType } from '../entities/governance-proposal.entity';
 
 export class CreateProposalDto {
@@ -11,7 +17,8 @@ export class CreateProposalDto {
   title: string;
 
   @ApiProperty({
-    example: 'This proposal aims to increase the minimum staking requirement for validators from 10,000 NOR to 50,000 NOR to improve network security.',
+    example:
+      'This proposal aims to increase the minimum staking requirement for validators from 10,000 NOR to 50,000 NOR to improve network security.',
     description: 'Proposal description',
   })
   @IsString()
@@ -50,4 +57,3 @@ export class CreateProposalDto {
   @IsDateString()
   endTime?: string;
 }
-

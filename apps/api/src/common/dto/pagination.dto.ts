@@ -64,4 +64,3 @@ export class PaginatedResponseDto<T> {
   @ApiProperty({ example: true, description: 'Whether there are more items' })
   hasMore: boolean;
 }
-

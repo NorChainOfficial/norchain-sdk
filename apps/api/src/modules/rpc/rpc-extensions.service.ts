@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { RpcService } from '@/common/services/rpc.service';
 import { ethers } from 'ethers';
+import { randomBytes } from 'crypto';
 
 export interface FinalityStatus {
   status: 'unsafe' | 'safe' | 'final';
@@ -105,11 +106,15 @@ export class RPCExtensionsService {
     rewardPercentiles: number[],
   ) {
     // Get standard fee history
-    const feeHistory = await this.rpcService.getProvider().send('eth_feeHistory', [
-      `0x${blockCount.toString(16)}`,
-      typeof newestBlock === 'string' ? newestBlock : `0x${newestBlock.toString(16)}`,
-      rewardPercentiles,
-    ]);
+    const feeHistory = await this.rpcService
+      .getProvider()
+      .send('eth_feeHistory', [
+        `0x${blockCount.toString(16)}`,
+        typeof newestBlock === 'string'
+          ? newestBlock
+          : `0x${newestBlock.toString(16)}`,
+        rewardPercentiles,
+      ]);
 
     // Calculate additional metrics
     const gasUsedRatios = feeHistory.gasUsedRatio || [];
@@ -119,23 +124,29 @@ export class RPCExtensionsService {
     // Calculate percentiles
     const percentileMap: Record<number, string[]> = {};
     rewardPercentiles.forEach((p) => {
-      percentileMap[p] = rewards.map((r: string[]) => r[rewardPercentiles.indexOf(p)] || '0x0');
+      percentileMap[p] = rewards.map(
+        (r: string[]) => r[rewardPercentiles.indexOf(p)] || '0x0',
+      );
     });
 
     // Calculate predictive fees (simplified)
-    const avgBaseFee = baseFees.length > 0
-      ? baseFees.reduce((sum: bigint, fee: string) => sum + BigInt(fee), 0n) / BigInt(baseFees.length)
-      : 0n;
+    const avgBaseFee =
+      baseFees.length > 0
+        ? baseFees.reduce((sum: bigint, fee: string) => sum + BigInt(fee), 0n) /
+          BigInt(baseFees.length)
+        : 0n;
 
-    const predictedFee = avgBaseFee + (avgBaseFee / 10n); // 10% buffer
+    const predictedFee = avgBaseFee + avgBaseFee / 10n; // 10% buffer
 
     return {
       ...feeHistory,
       predictedBaseFee: `0x${predictedFee.toString(16)}`,
       percentiles: percentileMap,
-      averageGasUsedRatio: gasUsedRatios.length > 0
-        ? gasUsedRatios.reduce((sum: number, r: number) => sum + r, 0) / gasUsedRatios.length
-        : 0,
+      averageGasUsedRatio:
+        gasUsedRatios.length > 0
+          ? gasUsedRatios.reduce((sum: number, r: number) => sum + r, 0) /
+            gasUsedRatios.length
+          : 0,
     };
   }
 
@@ -162,7 +173,10 @@ export class RPCExtensionsService {
   /**
    * Get state proof for multiple keys
    */
-  async getStateProof(keys: string[], blockNumber: number): Promise<StateProof> {
+  async getStateProof(
+    keys: string[],
+    blockNumber: number,
+  ): Promise<StateProof> {
     // In production, this would generate Merkle proofs
     // For now, return mock proof
     const values = await Promise.all(
@@ -183,7 +197,9 @@ export class RPCExtensionsService {
   /**
    * Get validator set information
    */
-  async getValidatorSet(tag: 'current' | 'next' = 'current'): Promise<ValidatorSetInfo> {
+  async getValidatorSet(
+    tag: 'current' | 'next' = 'current',
+  ): Promise<ValidatorSetInfo> {
     // In production, this would query validator registry
     // For now, return mock data
     return {
@@ -201,4 +217,3 @@ export class RPCExtensionsService {
     };
   }
 }
-

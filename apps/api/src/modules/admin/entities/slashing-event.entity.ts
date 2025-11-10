@@ -45,4 +45,3 @@ export class SlashingEvent {
   @CreateDateColumn()
   createdAt: Date;
 }
-

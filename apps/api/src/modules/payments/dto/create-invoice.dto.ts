@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumberString, IsOptional, IsEnum, IsDateString, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsNumberString,
+  IsOptional,
+  IsEnum,
+  IsDateString,
+  IsObject,
+  MaxLength,
+} from 'class-validator';
 import { PaymentMethod } from '../entities/payment-invoice.entity';
 
 export class CreateInvoiceDto {
@@ -41,6 +49,7 @@ export class CreateInvoiceDto {
   })
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   recipientAddress?: string;
 
   @ApiProperty({
@@ -61,4 +70,3 @@ export class CreateInvoiceDto {
   @IsObject()
   metadata?: Record<string, any>;
 }
-

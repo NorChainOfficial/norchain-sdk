@@ -1,7 +1,16 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { GovernanceProposal, ProposalStatus, ProposalType } from './entities/governance-proposal.entity';
+import {
+  GovernanceProposal,
+  ProposalStatus,
+  ProposalType,
+} from './entities/governance-proposal.entity';
 import { GovernanceVote, VoteChoice } from './entities/governance-vote.entity';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { CreateVoteDto } from './dto/create-vote.dto';
@@ -20,12 +29,18 @@ export class GovernanceService {
   /**
    * Create a governance proposal
    */
-  async createProposal(userId: string, proposerAddress: string, dto: CreateProposalDto) {
+  async createProposal(
+    userId: string,
+    proposerAddress: string,
+    dto: CreateProposalDto,
+  ) {
     // Check if user has enough voting power to create proposal
     // In production, this would check staked tokens or governance token balance
     const hasPermission = await this.checkProposalPermission(proposerAddress);
     if (!hasPermission) {
-      throw new ForbiddenException('Insufficient voting power to create proposal');
+      throw new ForbiddenException(
+        'Insufficient voting power to create proposal',
+      );
     }
 
     const proposal = this.proposalRepository.create({
@@ -55,7 +70,11 @@ export class GovernanceService {
   /**
    * Get all proposals
    */
-  async getProposals(limit: number = 50, offset: number = 0, status?: ProposalStatus) {
+  async getProposals(
+    limit: number = 50,
+    offset: number = 0,
+    status?: ProposalStatus,
+  ) {
     const where: any = {};
     if (status) {
       where.status = status;
@@ -117,13 +136,14 @@ export class GovernanceService {
       threshold: proposal.threshold,
       startTime: proposal.startTime,
       endTime: proposal.endTime,
-      votes: proposal.votes?.map((v) => ({
-        voter: v.voter,
-        choice: v.choice,
-        weight: v.weight,
-        reason: v.reason,
-        createdAt: v.createdAt,
-      })) || [],
+      votes:
+        proposal.votes?.map((v) => ({
+          voter: v.voter,
+          choice: v.choice,
+          weight: v.weight,
+          reason: v.reason,
+          createdAt: v.createdAt,
+        })) || [],
       createdAt: proposal.createdAt,
       executedAt: proposal.executedAt,
     };
@@ -132,7 +152,12 @@ export class GovernanceService {
   /**
    * Submit a vote on a proposal
    */
-  async submitVote(userId: string, voterAddress: string, proposalId: string, dto: CreateVoteDto) {
+  async submitVote(
+    userId: string,
+    voterAddress: string,
+    proposalId: string,
+    dto: CreateVoteDto,
+  ) {
     const proposal = await this.proposalRepository.findOne({
       where: { id: proposalId },
     });
@@ -183,13 +208,20 @@ export class GovernanceService {
     if (dto.choice === VoteChoice.FOR) {
       proposal.forVotes = (BigInt(proposal.forVotes) + voteValue).toString();
     } else if (dto.choice === VoteChoice.AGAINST) {
-      proposal.againstVotes = (BigInt(proposal.againstVotes) + voteValue).toString();
+      proposal.againstVotes = (
+        BigInt(proposal.againstVotes) + voteValue
+      ).toString();
     } else {
-      proposal.abstainVotes = (BigInt(proposal.abstainVotes) + voteValue).toString();
+      proposal.abstainVotes = (
+        BigInt(proposal.abstainVotes) + voteValue
+      ).toString();
     }
 
     // Check if proposal passed
-    const totalVotes = BigInt(proposal.forVotes) + BigInt(proposal.againstVotes) + BigInt(proposal.abstainVotes);
+    const totalVotes =
+      BigInt(proposal.forVotes) +
+      BigInt(proposal.againstVotes) +
+      BigInt(proposal.abstainVotes);
     if (totalVotes >= BigInt(proposal.quorum)) {
       const forVotes = BigInt(proposal.forVotes);
       if (forVotes >= BigInt(proposal.threshold)) {
@@ -223,9 +255,13 @@ export class GovernanceService {
       throw new NotFoundException('Proposal not found');
     }
 
-    const totalVotes = BigInt(proposal.forVotes) + BigInt(proposal.againstVotes) + BigInt(proposal.abstainVotes);
+    const totalVotes =
+      BigInt(proposal.forVotes) +
+      BigInt(proposal.againstVotes) +
+      BigInt(proposal.abstainVotes);
     const quorumMet = totalVotes >= BigInt(proposal.quorum);
-    const passed = quorumMet && BigInt(proposal.forVotes) >= BigInt(proposal.threshold);
+    const passed =
+      quorumMet && BigInt(proposal.forVotes) >= BigInt(proposal.threshold);
 
     return {
       proposal_id: proposalId,
@@ -274,4 +310,3 @@ export class GovernanceService {
     return balance; // Use balance as voting weight
   }
 }
-

@@ -1,16 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ErrorDetailDto {
-  @ApiProperty({ example: 'OFAC-XXXX', description: 'Specific error identifier' })
+  @ApiProperty({
+    example: 'OFAC-XXXX',
+    description: 'Specific error identifier',
+  })
   list?: string;
 
   @ApiProperty({ example: true, description: 'Additional error context' })
   matched?: boolean;
 
-  @ApiProperty({ example: 'field_name', description: 'Field that caused the error' })
+  @ApiProperty({
+    example: 'field_name',
+    description: 'Field that caused the error',
+  })
   field?: string;
 
-  @ApiProperty({ example: 'Invalid format', description: 'Field-specific error message' })
+  @ApiProperty({
+    example: 'Invalid format',
+    description: 'Field-specific error message',
+  })
   message?: string;
 
   [key: string]: any;
@@ -64,4 +73,3 @@ export class ErrorResponseDto {
   })
   timestamp: string;
 }
-

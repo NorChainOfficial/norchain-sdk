@@ -101,7 +101,9 @@ export class AdminController {
 
   @Post('params')
   @ApiScopes(ApiScope.ADMIN_PARAMS)
-  @ApiOperation({ summary: 'Update system parameters (creates governance proposal)' })
+  @ApiOperation({
+    summary: 'Update system parameters (creates governance proposal)',
+  })
   @ApiResponse({
     status: 201,
     description: 'Parameter change proposal created',
@@ -132,7 +134,10 @@ export class AdminController {
     status: 201,
     description: 'Feature flag created successfully',
   })
-  async createFeatureFlag(@Request() req: any, @Body() dto: CreateFeatureFlagDto) {
+  async createFeatureFlag(
+    @Request() req: any,
+    @Body() dto: CreateFeatureFlagDto,
+  ) {
     return this.adminService.createFeatureFlag(req.user.id, dto);
   }
 
@@ -155,4 +160,3 @@ export class AdminController {
     return this.adminService.getAuditLog(limit, offset, userId, resourceType);
   }
 }
-

@@ -37,7 +37,11 @@ export class POSSession {
   @Column()
   currency: string;
 
-  @Column({ type: 'enum', enum: POSSessionStatus, default: POSSessionStatus.ACTIVE })
+  @Column({
+    type: 'enum',
+    enum: POSSessionStatus,
+    default: POSSessionStatus.ACTIVE,
+  })
   status: POSSessionStatus;
 
   @Column({ nullable: true })
@@ -75,4 +79,3 @@ export class POSSession {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

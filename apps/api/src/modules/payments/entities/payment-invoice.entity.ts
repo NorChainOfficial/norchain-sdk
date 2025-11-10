@@ -92,4 +92,3 @@ export class PaymentInvoice {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

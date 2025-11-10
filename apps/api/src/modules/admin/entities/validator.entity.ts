@@ -24,7 +24,11 @@ export class Validator {
   @Column()
   name: string;
 
-  @Column({ type: 'enum', enum: ValidatorStatus, default: ValidatorStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: ValidatorStatus,
+    default: ValidatorStatus.PENDING,
+  })
   status: ValidatorStatus;
 
   @Column({ type: 'decimal', precision: 36, scale: 18 })
@@ -64,4 +68,3 @@ export class Validator {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

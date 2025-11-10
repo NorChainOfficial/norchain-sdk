@@ -90,4 +90,3 @@ export class ComplianceController {
     return this.complianceService.submitTravelRule(req.user.id, dto);
   }
 }
-

@@ -63,4 +63,3 @@ export class WebhookSubscription {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

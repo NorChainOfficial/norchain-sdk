@@ -12,4 +12,3 @@ import { ComplianceCase } from './entities/compliance-case.entity';
   exports: [ComplianceService],
 })
 export class ComplianceModule {}
-

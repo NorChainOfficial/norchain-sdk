@@ -36,7 +36,11 @@ export class WebhookDelivery {
   @Column({ type: 'jsonb' })
   payload: any; // CloudEvents 1.0 format
 
-  @Column({ type: 'enum', enum: DeliveryStatus, default: DeliveryStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: DeliveryStatus,
+    default: DeliveryStatus.PENDING,
+  })
   status: DeliveryStatus;
 
   @Column({ type: 'int', default: 0 })
@@ -60,4 +64,3 @@ export class WebhookDelivery {
   @CreateDateColumn()
   createdAt: Date;
 }
-

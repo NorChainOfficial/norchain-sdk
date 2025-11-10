@@ -86,4 +86,3 @@ export class GovernanceProposal {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

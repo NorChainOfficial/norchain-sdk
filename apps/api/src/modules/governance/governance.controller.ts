@@ -71,7 +71,11 @@ export class GovernanceController {
     @Query('proposer') proposerAddress: string,
   ) {
     // In production, proposerAddress would come from authenticated user's wallet
-    return this.governanceService.createProposal(req.user.id, proposerAddress || req.user.id, dto);
+    return this.governanceService.createProposal(
+      req.user.id,
+      proposerAddress || req.user.id,
+      dto,
+    );
   }
 
   @Post('proposals/:id/votes')
@@ -118,4 +122,3 @@ export class GovernanceController {
     return this.governanceService.getParameters();
   }
 }
-

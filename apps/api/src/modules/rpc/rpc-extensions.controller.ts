@@ -1,10 +1,5 @@
 import { Controller, Post, Body, Get, Param, Query } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { RPCExtensionsService } from './rpc-extensions.service';
 import { Public } from '@/common/decorators/public.decorator';
 
@@ -67,7 +62,9 @@ export class RPCExtensionsController {
   }
 
   @Post('nor_accountProfile')
-  @ApiOperation({ summary: 'Get account profile (risk flags, KYC tier, velocity limits)' })
+  @ApiOperation({
+    summary: 'Get account profile (risk flags, KYC tier, velocity limits)',
+  })
   @ApiBody({
     schema: {
       type: 'object',
@@ -99,9 +96,7 @@ export class RPCExtensionsController {
     status: 200,
     description: 'State proof retrieved successfully',
   })
-  async getStateProof(
-    @Body() body: { keys: string[]; blockNumber: number },
-  ) {
+  async getStateProof(@Body() body: { keys: string[]; blockNumber: number }) {
     return this.rpcExtensionsService.getStateProof(body.keys, body.blockNumber);
   }
 
@@ -123,4 +118,3 @@ export class RPCExtensionsController {
     return this.rpcExtensionsService.getValidatorSet(body.tag);
   }
 }
-

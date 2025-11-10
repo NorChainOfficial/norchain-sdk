@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumberString, IsOptional, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsNumberString,
+  IsOptional,
+  IsObject,
+} from 'class-validator';
 
 export class CreatePOSSessionDto {
   @ApiProperty({
@@ -46,4 +51,3 @@ export class CreatePOSSessionDto {
   @IsOptional()
   expiresIn?: number; // Seconds until expiration
 }
-

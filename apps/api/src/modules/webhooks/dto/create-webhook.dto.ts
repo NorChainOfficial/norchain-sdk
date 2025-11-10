@@ -20,4 +20,3 @@ export class CreateWebhookDto {
   @IsEnum(WebhookEventType, { each: true })
   events: WebhookEventType[];
 }
-

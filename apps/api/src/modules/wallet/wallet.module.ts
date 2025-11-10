@@ -13,4 +13,3 @@ import { CommonModule } from '@/common/common.module';
   exports: [WalletService],
 })
 export class WalletModule {}
-

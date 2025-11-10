@@ -1,8 +1,20 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ComplianceScreening, ScreeningStatus, ScreeningType } from './entities/compliance-screening.entity';
-import { ComplianceCase, CaseStatus, CaseSeverity } from './entities/compliance-case.entity';
+import {
+  ComplianceScreening,
+  ScreeningStatus,
+  ScreeningType,
+} from './entities/compliance-screening.entity';
+import {
+  ComplianceCase,
+  CaseStatus,
+  CaseSeverity,
+} from './entities/compliance-case.entity';
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { CreateCaseDto } from './dto/create-case.dto';
 import { TravelRuleDto } from './dto/travel-rule.dto';
@@ -28,7 +40,9 @@ export class ComplianceService {
       userId,
       type: dto.type,
       subject: dto.subject,
-      status: results.hasMatches ? ScreeningStatus.FLAGGED : ScreeningStatus.CLEARED,
+      status: results.hasMatches
+        ? ScreeningStatus.FLAGGED
+        : ScreeningStatus.CLEARED,
       results: {
         listsChecked: results.listsChecked,
         matches: results.matches,
@@ -198,8 +212,14 @@ export class ComplianceService {
    */
   private async performScreening(type: ScreeningType, subject: string) {
     // Simulate screening against various lists
-    const listsChecked = ['OFAC', 'EU_SANCTIONS', 'UN_SANCTIONS', 'INTERNAL_WATCHLIST'];
-    const matches: Array<{ list: string; matchType: string; details: any }> = [];
+    const listsChecked = [
+      'OFAC',
+      'EU_SANCTIONS',
+      'UN_SANCTIONS',
+      'INTERNAL_WATCHLIST',
+    ];
+    const matches: Array<{ list: string; matchType: string; details: any }> =
+      [];
     let riskScore = 0;
 
     // Simulate matches (in production, this would query real screening APIs)
@@ -223,4 +243,3 @@ export class ComplianceService {
     };
   }
 }
-

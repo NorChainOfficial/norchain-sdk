@@ -18,9 +18,11 @@ export class RateLimitInterceptor implements NestInterceptor {
     // These are example values - actual values come from ThrottlerGuard
     response.setHeader('X-RateLimit-Limit', '100');
     response.setHeader('X-RateLimit-Remaining', '99');
-    response.setHeader('X-RateLimit-Reset', new Date(Date.now() + 60000).toISOString());
+    response.setHeader(
+      'X-RateLimit-Reset',
+      new Date(Date.now() + 60000).toISOString(),
+    );
 
     return next.handle();
   }
 }
-

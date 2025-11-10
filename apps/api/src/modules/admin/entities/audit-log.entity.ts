@@ -56,4 +56,3 @@ export class AuditLog {
   @CreateDateColumn()
   createdAt: Date;
 }
-

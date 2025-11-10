@@ -82,7 +82,10 @@ export class PaymentsController {
     status: 201,
     description: 'POS session created successfully',
   })
-  async createPOSSession(@Request() req: any, @Body() dto: CreatePOSSessionDto) {
+  async createPOSSession(
+    @Request() req: any,
+    @Body() dto: CreatePOSSessionDto,
+  ) {
     return this.paymentsService.createPOSSession(req.user.id, dto);
   }
 
@@ -138,4 +141,3 @@ export class PaymentsController {
     return this.paymentsService.getSettlement(merchantId, settlementId);
   }
 }
-

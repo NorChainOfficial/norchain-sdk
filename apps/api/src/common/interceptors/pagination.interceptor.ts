@@ -28,7 +28,7 @@ export class PaginationInterceptor implements NestInterceptor {
         // If data already has pagination structure, use it
         if (data && typeof data === 'object' && 'data' in data) {
           const paginated = data as PaginatedResponse<any>;
-          
+
           // Set next cursor header if available
           if (paginated.nextCursor) {
             response.setHeader('X-Next-Cursor', paginated.nextCursor);
@@ -48,4 +48,3 @@ export class PaginationInterceptor implements NestInterceptor {
     );
   }
 }
-

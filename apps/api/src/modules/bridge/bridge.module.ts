@@ -12,4 +12,3 @@ import { CommonModule } from '@/common/common.module';
   exports: [BridgeService],
 })
 export class BridgeModule {}
-

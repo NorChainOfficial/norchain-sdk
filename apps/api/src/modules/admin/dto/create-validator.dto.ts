@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumberString, IsOptional, IsObject } from 'class-validator';
+import {
+  IsString,
+  IsNumberString,
+  IsOptional,
+  IsObject,
+} from 'class-validator';
 
 export class CreateValidatorDto {
   @ApiProperty({
@@ -42,7 +47,10 @@ export class CreateValidatorDto {
   location?: string;
 
   @ApiProperty({
-    example: { organization: 'NorChain Foundation', website: 'https://norchain.org' },
+    example: {
+      organization: 'NorChain Foundation',
+      website: 'https://norchain.org',
+    },
     description: 'Additional metadata',
     required: false,
   })
@@ -50,4 +58,3 @@ export class CreateValidatorDto {
   @IsObject()
   metadata?: Record<string, any>;
 }
-

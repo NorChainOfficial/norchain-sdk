@@ -20,4 +20,3 @@ export class CreateVoteDto {
   @IsString()
   reason?: string;
 }
-

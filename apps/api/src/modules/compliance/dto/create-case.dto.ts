@@ -36,4 +36,3 @@ export class CreateCaseDto {
   @IsString({ each: true })
   relatedScreenings?: string[];
 }
-

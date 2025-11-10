@@ -1,7 +1,8 @@
 import { SetMetadata } from '@nestjs/common';
 
 export const SCOPES_KEY = 'scopes';
-export const ApiScopes = (...scopes: string[]) => SetMetadata(SCOPES_KEY, scopes);
+export const ApiScopes = (...scopes: string[]) =>
+  SetMetadata(SCOPES_KEY, scopes);
 
 // Standard scope definitions
 export enum ApiScope {
@@ -29,5 +30,10 @@ export enum ApiScope {
   ADMIN_VALIDATOR = 'admin:validator',
   ADMIN_PARAMS = 'admin:params',
   ADMIN_COMPLIANCE = 'admin:compliance',
-}
+  ADMIN_AUDIT = 'admin:audit',
+  ADMIN_FEATURE_FLAGS = 'admin:feature_flags',
 
+  // Payment scopes
+  READ_PAYMENT = 'read:payment',
+  WRITE_PAYMENT = 'write:payment',
+}

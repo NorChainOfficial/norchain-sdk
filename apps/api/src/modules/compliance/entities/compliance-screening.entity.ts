@@ -41,7 +41,11 @@ export class ComplianceScreening {
   @Column()
   subject: string; // Address, email, or other identifier
 
-  @Column({ type: 'enum', enum: ScreeningStatus, default: ScreeningStatus.PENDING })
+  @Column({
+    type: 'enum',
+    enum: ScreeningStatus,
+    default: ScreeningStatus.PENDING,
+  })
   status: ScreeningStatus;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -64,4 +68,3 @@ export class ComplianceScreening {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-
