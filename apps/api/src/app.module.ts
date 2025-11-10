@@ -19,6 +19,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 import { IndexerModule } from './modules/indexer/indexer.module';
 import { LedgerModule } from './modules/ledger/ledger.module';
+import { MessagingModule } from './modules/messaging/messaging.module';
 import { WebSocketModule } from './modules/websocket/websocket.module';
 import { SupabaseModule } from './modules/supabase/supabase.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -144,6 +145,8 @@ import { CommonModule } from './common/common.module';
     StreamingModule,
     MetadataModule,
     GraphQLApiModule,
+    LedgerModule,
+    MessagingModule,
   ],
   providers: [
     {

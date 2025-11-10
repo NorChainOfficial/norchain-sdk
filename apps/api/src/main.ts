@@ -148,6 +148,11 @@ async function bootstrap() {
       'Server-Sent Events (SSE) for real-time event streaming',
     )
     .addTag('Metadata', 'Self-service token/contract metadata management')
+    .addTag('Analytics', 'Advanced analytics and metrics')
+    .addTag('Monitoring', 'Performance and system health monitoring')
+    .addTag('GraphQL', 'GraphQL API endpoints')
+    .addTag('Ledger', 'Double-entry accounting and journal entries')
+    .addTag('Messaging', 'End-to-end encrypted messaging')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
