@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Delete,
   Body,
   Param,
   Query,
@@ -23,6 +24,8 @@ import { MessagingService } from './messaging.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
+import { AddReactionDto } from './dto/add-reaction.dto';
+import { UploadMediaDto } from './dto/upload-media.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { Idempotent } from '@/common/decorators/idempotency.decorator';
 
@@ -151,6 +154,54 @@ export class MessagingController {
     const readerDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
     await this.messagingService.markRead(id, readerDid);
     return { success: true };
+  }
+
+  @Post('messages/:id/reactions')
+  @Idempotent()
+  @ApiOperation({ summary: 'Add reaction to a message' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Reaction added successfully' })
+  async addReaction(@Request() req: any, @Param('id', ParseUUIDPipe) id: string, @Body() dto: AddReactionDto) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    return this.messagingService.addReaction(id, userDid, dto.emoji);
+  }
+
+  @Delete('messages/:id/reactions')
+  @ApiOperation({ summary: 'Remove reaction from a message' })
+  @ApiResponse({ status: 200, description: 'Reaction removed successfully' })
+  async removeReaction(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AddReactionDto,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    await this.messagingService.removeReaction(id, userDid, dto.emoji);
+    return { success: true };
+  }
+
+  @Get('messages/:id/reactions')
+  @ApiOperation({ summary: 'Get reactions for a message' })
+  @ApiResponse({ status: 200, description: 'Reactions retrieved successfully' })
+  async getReactions(@Param('id', ParseUUIDPipe) id: string) {
+    return this.messagingService.getReactions(id);
+  }
+
+  @Post('media/upload-url')
+  @Idempotent()
+  @ApiOperation({ summary: 'Generate signed upload URL for media' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Upload URL generated successfully' })
+  async generateMediaUploadUrl(@Request() req: any, @Body() dto: UploadMediaDto) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    return this.messagingService.generateMediaUploadUrl(userDid, dto.contentType, dto.kind);
   }
 }
 

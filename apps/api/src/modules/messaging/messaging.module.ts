@@ -6,11 +6,18 @@ import { MessagingProfile } from './entities/profile.entity';
 import { Conversation } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { DeviceKey } from './entities/device-key.entity';
+import { MessageReaction } from './entities/reaction.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([MessagingProfile, Conversation, Message, DeviceKey]),
+    TypeOrmModule.forFeature([
+      MessagingProfile,
+      Conversation,
+      Message,
+      DeviceKey,
+      MessageReaction,
+    ]),
     EventEmitterModule,
   ],
   controllers: [MessagingController],

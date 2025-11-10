@@ -18,6 +18,7 @@ import {
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { CreateCaseDto } from './dto/create-case.dto';
 import { TravelRuleDto } from './dto/travel-rule.dto';
+import { TravelRulePrecheckDto } from './dto/travel-rule-precheck.dto';
 
 @Injectable()
 export class ComplianceService {
@@ -175,6 +176,42 @@ export class ComplianceService {
       createdAt: case_.createdAt,
       resolvedAt: case_.resolvedAt,
     };
+  }
+
+  /**
+   * Precheck Travel Rule requirements before payment
+   */
+  async precheckTravelRule(dto: TravelRulePrecheckDto) {
+    // Check if Travel Rule is required (typically for amounts above threshold)
+    const amount = parseFloat(dto.amount);
+    const TRAVEL_RULE_THRESHOLD = 1000; // Example threshold in native currency
+
+    const requiresTravelRule = amount >= TRAVEL_RULE_THRESHOLD;
+
+    // Check if both addresses are VASPs (would query VASP registry)
+    const senderIsVASP = await this.checkIfVASP(dto.senderAddress);
+    const recipientIsVASP = await this.checkIfVASP(dto.recipientAddress);
+
+    const isVASPToVASP = senderIsVASP && recipientIsVASP;
+
+    return {
+      requiresTravelRule,
+      isVASPToVASP,
+      threshold: TRAVEL_RULE_THRESHOLD.toString(),
+      amount: dto.amount,
+      recommendation: requiresTravelRule && isVASPToVASP
+        ? 'Travel Rule compliance required'
+        : 'No Travel Rule required',
+    };
+  }
+
+  /**
+   * Check if address belongs to a VASP
+   */
+  private async checkIfVASP(address: string): Promise<boolean> {
+    // In production, query VASP registry
+    // For now, simulate check
+    return false; // Default: not a VASP
   }
 
   /**

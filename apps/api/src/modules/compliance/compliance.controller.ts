@@ -20,6 +20,7 @@ import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { CreateCaseDto } from './dto/create-case.dto';
 import { TravelRuleDto } from './dto/travel-rule.dto';
+import { TravelRulePrecheckDto } from './dto/travel-rule-precheck.dto';
 
 @ApiTags('Compliance')
 @Controller('compliance')
@@ -81,6 +82,19 @@ export class ComplianceController {
   })
   async getCase(@Request() req: any, @Param('id') caseId: string) {
     return this.complianceService.getCase(req.user.id, caseId);
+  }
+
+  @Post('travel-rule/precheck')
+  @ApiOperation({
+    summary: 'Precheck Travel Rule requirements before payment',
+    description: 'Checks if Travel Rule compliance is required for a VASP-to-VASP transfer',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Travel Rule precheck completed',
+  })
+  async precheckTravelRule(@Body() dto: TravelRulePrecheckDto) {
+    return this.complianceService.precheckTravelRule(dto);
   }
 
   @Post('travel-rule')

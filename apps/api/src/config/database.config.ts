@@ -36,6 +36,25 @@ import { AssetProfileVersion } from '../modules/metadata/entities/asset-profile-
 import { OwnershipChallenge } from '../modules/metadata/entities/ownership-challenge.entity';
 import { CommunityAttestation } from '../modules/metadata/entities/community-attestation.entity';
 import { AssetReport } from '../modules/metadata/entities/asset-report.entity';
+import { LedgerAccount } from '../modules/ledger/entities/ledger-account.entity';
+import { JournalEntry } from '../modules/ledger/entities/journal-entry.entity';
+import { JournalLine } from '../modules/ledger/entities/journal-line.entity';
+import { PeriodClosure } from '../modules/ledger/entities/period-closure.entity';
+import { Merchant } from '../modules/payments/entities/merchant.entity';
+import { CheckoutSession } from '../modules/payments/entities/checkout-session.entity';
+import { Payment } from '../modules/payments/entities/payment.entity';
+import { Refund } from '../modules/payments/entities/refund.entity';
+import { Product } from '../modules/payments/entities/product.entity';
+import { Price } from '../modules/payments/entities/price.entity';
+import { Customer } from '../modules/payments/entities/customer.entity';
+import { PaymentMethod } from '../modules/payments/entities/payment-method.entity';
+import { Subscription } from '../modules/payments/entities/subscription.entity';
+import { Dispute } from '../modules/payments/entities/dispute.entity';
+import { WebhookEndpoint } from '../modules/payments/entities/webhook-endpoint.entity';
+import { MessagingProfile } from '../modules/messaging/entities/profile.entity';
+import { Conversation } from '../modules/messaging/entities/conversation.entity';
+import { Message } from '../modules/messaging/entities/message.entity';
+import { DeviceKey } from '../modules/messaging/entities/device-key.entity';
 
 /**
  * Database Configuration
@@ -84,6 +103,29 @@ export const databaseConfig = (
     OwnershipChallenge,
     CommunityAttestation,
     AssetReport,
+    // Ledger Module
+    LedgerAccount,
+    JournalEntry,
+    JournalLine,
+    PeriodClosure,
+    // Payments v2 Module
+    Merchant,
+    CheckoutSession,
+    Payment,
+    Refund,
+    Product,
+    Price,
+    Customer,
+    PaymentMethod,
+    Subscription,
+    Dispute,
+    WebhookEndpoint,
+    // Messaging Module
+    MessagingProfile,
+    Conversation,
+    Message,
+    DeviceKey,
+    MessageReaction,
   ];
 
   // Check if Supabase is configured

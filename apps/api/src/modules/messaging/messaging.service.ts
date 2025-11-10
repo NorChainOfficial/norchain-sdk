@@ -11,11 +11,12 @@ import { MessagingProfile } from './entities/profile.entity';
 import { Conversation, ConversationKind } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { DeviceKey } from './entities/device-key.entity';
+import { MessageReaction } from './entities/reaction.entity';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { createHash } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 
 @Injectable()
 export class MessagingService {
@@ -30,6 +31,8 @@ export class MessagingService {
     private readonly messageRepository: Repository<Message>,
     @InjectRepository(DeviceKey)
     private readonly deviceKeyRepository: Repository<DeviceKey>,
+    @InjectRepository(MessageReaction)
+    private readonly reactionRepository: Repository<MessageReaction>,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -368,6 +371,97 @@ export class MessagingService {
       where: { did },
       order: { lastUsedAt: 'DESC' },
     });
+  }
+
+  /**
+   * Add reaction to a message
+   */
+  async addReaction(
+    messageId: string,
+    userDid: string,
+    emoji: string,
+  ): Promise<MessageReaction> {
+    // Verify message exists
+    const message = await this.messageRepository.findOne({
+      where: { id: messageId },
+    });
+
+    if (!message) {
+      throw new NotFoundException(`Message ${messageId} not found`);
+    }
+
+    // Check if reaction already exists
+    const existing = await this.reactionRepository.findOne({
+      where: { messageId, userDid, emoji },
+    });
+
+    if (existing) {
+      return existing; // Idempotent
+    }
+
+    const reaction = this.reactionRepository.create({
+      messageId,
+      userDid,
+      emoji,
+    });
+
+    const saved = await this.reactionRepository.save(reaction);
+
+    // Emit event
+    this.eventEmitter.emit('messaging.reaction.added', {
+      messageId,
+      userDid,
+      emoji,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Remove reaction from a message
+   */
+  async removeReaction(messageId: string, userDid: string, emoji: string): Promise<void> {
+    const reaction = await this.reactionRepository.findOne({
+      where: { messageId, userDid, emoji },
+    });
+
+    if (reaction) {
+      await this.reactionRepository.remove(reaction);
+      this.eventEmitter.emit('messaging.reaction.removed', {
+        messageId,
+        userDid,
+        emoji,
+      });
+    }
+  }
+
+  /**
+   * Get reactions for a message
+   */
+  async getReactions(messageId: string): Promise<MessageReaction[]> {
+    return this.reactionRepository.find({
+      where: { messageId },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  /**
+   * Generate signed upload URL for media
+   */
+  async generateMediaUploadUrl(
+    userDid: string,
+    contentType: string,
+    kind?: string,
+  ): Promise<{ uploadUrl: string; mediaRef: string }> {
+    // In production, use Supabase Storage to generate signed URL
+    // For now, return a placeholder
+    const mediaRef = `media_${Date.now()}_${randomBytes(8).toString('hex')}`;
+    const uploadUrl = `https://storage.norchain.org/chat-media/${mediaRef}`;
+
+    return {
+      uploadUrl,
+      mediaRef,
+    };
   }
 }
 
