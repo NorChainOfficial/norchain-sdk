@@ -9,6 +9,9 @@ import { CommunityAttestation } from './entities/community-attestation.entity';
 import { AssetReport } from './entities/asset-report.entity';
 import { CommonModule } from '@/common/common.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { SupabaseModule } from '../supabase/supabase.module';
+import { MetadataStorageService } from './metadata-storage.service';
+import { IPFSService } from './ipfs.service';
 
 @Module({
   imports: [
@@ -21,9 +24,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ]),
     CommonModule,
     EventEmitterModule,
+    SupabaseModule,
   ],
   controllers: [MetadataController],
-  providers: [MetadataService],
-  exports: [MetadataService],
+  providers: [MetadataService, MetadataStorageService, IPFSService],
+  exports: [MetadataService, MetadataStorageService, IPFSService],
 })
 export class MetadataModule {}

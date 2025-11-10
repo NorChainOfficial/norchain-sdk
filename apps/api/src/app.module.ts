@@ -44,6 +44,7 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { PolicyModule } from './modules/policy/policy.module';
 import { StreamingModule } from './modules/streaming/streaming.module';
 import { MetadataModule } from './modules/metadata/metadata.module';
+import { GraphQLApiModule } from './modules/graphql/graphql.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
@@ -142,6 +143,7 @@ import { CommonModule } from './common/common.module';
     PolicyModule,
     StreamingModule,
     MetadataModule,
+    GraphQLApiModule,
   ],
   providers: [
     {

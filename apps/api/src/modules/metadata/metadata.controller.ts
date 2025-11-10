@@ -24,6 +24,7 @@ import {
   ApiConsumes,
 } from '@nestjs/swagger';
 import { MetadataService } from './metadata.service';
+import { MetadataStorageService } from './metadata-storage.service';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { SubmitProfileDto } from './dto/submit-profile.dto';
 import { UploadMediaDto, MediaKind } from './dto/upload-media.dto';
@@ -31,12 +32,15 @@ import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { TrustLevel } from './entities/asset-profile.entity';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 @ApiTags('Metadata')
 @Controller('v2/metadata')
 export class MetadataController {
-  constructor(private readonly metadataService: MetadataService) {}
+  constructor(
+    private readonly metadataService: MetadataService,
+    private readonly storageService: MetadataStorageService,
+  ) {}
 
   @Post('challenges')
   @UseGuards(JwtAuthGuard)
@@ -224,19 +228,11 @@ export class MetadataController {
     @Body() dto: UploadMediaDto,
     @UploadedFile() file: any,
   ) {
-    // In production, this would:
-    // 1. Validate file (size, MIME type)
-    // 2. Upload to Supabase Storage
-    // 3. Generate variants (512, 256, 64)
-    // 4. Pin to IPFS (optional)
-    // 5. Return CDN URLs
+    if (!file) {
+      throw new BadRequestException('No file provided');
+    }
 
-    // For now, return mock response
-    return {
-      url: `https://cdn.norchain.org/metadata/${file.originalname}`,
-      ipfsCid: null, // Would be IPFS CID if pinned
-      message: 'Media upload endpoint - Supabase Storage integration pending',
-    };
+    return this.storageService.uploadMedia(file, dto.kind, req.user.id);
   }
 }
 

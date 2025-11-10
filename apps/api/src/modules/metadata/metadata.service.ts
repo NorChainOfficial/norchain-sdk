@@ -24,6 +24,7 @@ import { AssetReport } from './entities/asset-report.entity';
 import { CreateChallengeDto } from './dto/create-challenge.dto';
 import { SubmitProfileDto } from './dto/submit-profile.dto';
 import { RpcService } from '@/common/services/rpc.service';
+import { SupabaseStorageService } from '../supabase/supabase-storage.service';
 
 @Injectable()
 export class MetadataService {
@@ -42,6 +43,7 @@ export class MetadataService {
     private readonly reportRepository: Repository<AssetReport>,
     private readonly rpcService: RpcService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly storageService: SupabaseStorageService,
   ) {}
 
   /**
