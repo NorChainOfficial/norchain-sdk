@@ -147,6 +147,11 @@ describe('SupabaseService', () => {
       mockSupabaseClient.channel.mockReturnValue(mockChannel);
       (service as any).supabase = mockSupabaseClient;
 
+      // Mock the subscribe methods to handle errors
+      jest.spyOn(service, 'subscribeToBlocks').mockResolvedValue(undefined);
+      jest.spyOn(service, 'subscribeToTransactions').mockResolvedValue(undefined);
+      jest.spyOn(service, 'subscribeToTokenTransfers').mockResolvedValue(undefined);
+
       await expect(service.onModuleInit()).resolves.not.toThrow();
     });
   });

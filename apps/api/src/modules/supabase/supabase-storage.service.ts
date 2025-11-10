@@ -228,4 +228,3 @@ export class SupabaseStorageService {
     this.logger.log(`Bucket created: ${name}`);
   }
 }
-

@@ -110,10 +110,11 @@ export class SupabaseAuthService {
     }
 
     try {
-      const { data: authData, error } = await this.supabase.auth.signInWithPassword({
-        email: credentials.email,
-        password: credentials.password,
-      });
+      const { data: authData, error } =
+        await this.supabase.auth.signInWithPassword({
+          email: credentials.email,
+          password: credentials.password,
+        });
 
       if (error) {
         this.logger.error(`Supabase signin error: ${error.message}`);
@@ -196,7 +197,9 @@ export class SupabaseAuthService {
    * @param {string} refreshToken - Refresh token
    * @returns {Promise<{ user: any; session: any }>} New user and session
    */
-  async refreshSession(refreshToken: string): Promise<{ user: any; session: any }> {
+  async refreshSession(
+    refreshToken: string,
+  ): Promise<{ user: any; session: any }> {
     if (!this.supabase) {
       throw new UnauthorizedException('Supabase not configured');
     }
@@ -378,4 +381,3 @@ export class SupabaseAuthService {
     return data.user;
   }
 }
-

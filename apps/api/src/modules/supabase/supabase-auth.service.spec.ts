@@ -102,7 +102,7 @@ describe('SupabaseAuthService', () => {
     });
 
     it('should throw UnauthorizedException if Supabase not configured', async () => {
-      supabaseService.getClient.mockReturnValue(null);
+      (service as any).supabase = null;
 
       await expect(
         service.signUp({
@@ -162,7 +162,7 @@ describe('SupabaseAuthService', () => {
     });
 
     it('should handle signout gracefully if Supabase not configured', async () => {
-      supabaseService.getClient.mockReturnValue(null);
+      (service as any).supabase = null;
 
       await expect(service.signOut()).resolves.not.toThrow();
     });

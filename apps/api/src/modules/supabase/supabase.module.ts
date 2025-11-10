@@ -7,15 +7,7 @@ import { WebSocketModule } from '../websocket/websocket.module';
 
 @Module({
   imports: [ConfigModule, WebSocketModule],
-  providers: [
-    SupabaseService,
-    SupabaseAuthService,
-    SupabaseStorageService,
-  ],
-  exports: [
-    SupabaseService,
-    SupabaseAuthService,
-    SupabaseStorageService,
-  ],
+  providers: [SupabaseService, SupabaseAuthService, SupabaseStorageService],
+  exports: [SupabaseService, SupabaseAuthService, SupabaseStorageService],
 })
 export class SupabaseModule {}

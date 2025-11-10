@@ -299,7 +299,9 @@ export class SupabaseService implements OnModuleInit, OnModuleDestroy {
     },
   ): Promise<void> {
     if (!this.supabase) {
-      this.logger.warn(`Cannot subscribe to ${channelName}: Supabase not configured`);
+      this.logger.warn(
+        `Cannot subscribe to ${channelName}: Supabase not configured`,
+      );
       return;
     }
 
@@ -364,7 +366,9 @@ export class SupabaseService implements OnModuleInit, OnModuleDestroy {
     payload: any,
   ): Promise<void> {
     if (!this.supabase) {
-      this.logger.warn(`Cannot broadcast to ${channelName}: Supabase not configured`);
+      this.logger.warn(
+        `Cannot broadcast to ${channelName}: Supabase not configured`,
+      );
       return;
     }
 
@@ -386,7 +390,9 @@ export class SupabaseService implements OnModuleInit, OnModuleDestroy {
     if (status === 'ok') {
       this.logger.debug(`Broadcasted ${event} to ${channelName}`);
     } else {
-      this.logger.error(`Failed to broadcast ${event} to ${channelName}: ${status}`);
+      this.logger.error(
+        `Failed to broadcast ${event} to ${channelName}: ${status}`,
+      );
     }
   }
 
@@ -469,7 +475,9 @@ export class SupabaseService implements OnModuleInit, OnModuleDestroy {
         await this.supabase.removeChannel(channel);
         this.logger.log(`Unsubscribed from custom channel: ${name}`);
       } catch (error) {
-        this.logger.error(`Error unsubscribing from custom channel ${name}: ${error.message}`);
+        this.logger.error(
+          `Error unsubscribing from custom channel ${name}: ${error.message}`,
+        );
       }
     }
     this.customChannels.clear();

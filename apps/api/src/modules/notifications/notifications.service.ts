@@ -62,7 +62,9 @@ export class NotificationsService {
           'new-notification',
           saved,
         );
-        this.logger.debug(`Notification broadcasted via Supabase for user ${dto.userId}`);
+        this.logger.debug(
+          `Notification broadcasted via Supabase for user ${dto.userId}`,
+        );
       } catch (error) {
         this.logger.warn(`Failed to broadcast via Supabase: ${error.message}`);
       }

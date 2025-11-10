@@ -110,7 +110,7 @@ describe('SupabaseStorageService', () => {
     });
 
     it('should throw error if Supabase not configured', async () => {
-      supabaseService.getClient.mockReturnValue(null);
+      (service as any).supabase = null;
 
       await expect(
         service.upload('avatars', 'user-123.jpg', Buffer.from('test')),
@@ -192,7 +192,7 @@ describe('SupabaseStorageService', () => {
     });
 
     it('should throw error if Supabase not configured', () => {
-      supabaseService.getClient.mockReturnValue(null);
+      (service as any).supabase = null;
 
       expect(() => {
         service.getPublicUrl('avatars', 'user-123.jpg');
