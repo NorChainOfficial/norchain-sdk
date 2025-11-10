@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { BridgeService } from './bridge.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateBridgeQuoteDto } from './dto/create-bridge-quote.dto';
 import { CreateBridgeTransferDto } from './dto/create-bridge-transfer.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
@@ -52,6 +53,7 @@ export class BridgeController {
   }
 
   @Post('transfers')
+  @Idempotent()
   @ApiOperation({ summary: 'Create a bridge transfer' })
   @ApiResponse({
     status: 201,

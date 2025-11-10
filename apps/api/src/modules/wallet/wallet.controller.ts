@@ -17,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { WalletService } from './wallet.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { ImportWalletDto } from './dto/import-wallet.dto';
 import { SendTransactionDto } from './dto/send-transaction.dto';
@@ -29,6 +30,7 @@ export class WalletController {
   constructor(private readonly walletService: WalletService) {}
 
   @Post()
+  @Idempotent()
   @ApiOperation({ summary: 'Create a new wallet' })
   @ApiResponse({
     status: 201,
@@ -39,6 +41,7 @@ export class WalletController {
   }
 
   @Post('import')
+  @Idempotent()
   @ApiOperation({ summary: 'Import an existing wallet' })
   @ApiResponse({
     status: 201,
@@ -106,6 +109,7 @@ export class WalletController {
   }
 
   @Post(':address/send')
+  @Idempotent()
   @ApiOperation({ summary: 'Send transaction from wallet' })
   @ApiParam({ name: 'address', description: 'Wallet address' })
   @ApiResponse({

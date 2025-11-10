@@ -16,6 +16,7 @@ import {
 } from '@nestjs/swagger';
 import { ComplianceService } from './compliance.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { CreateCaseDto } from './dto/create-case.dto';
 import { TravelRuleDto } from './dto/travel-rule.dto';
@@ -28,6 +29,7 @@ export class ComplianceController {
   constructor(private readonly complianceService: ComplianceService) {}
 
   @Post('screenings')
+  @Idempotent()
   @ApiOperation({ summary: 'Create a compliance screening' })
   @ApiResponse({
     status: 201,
@@ -60,6 +62,7 @@ export class ComplianceController {
   }
 
   @Post('cases')
+  @Idempotent()
   @ApiOperation({ summary: 'Create a compliance case' })
   @ApiResponse({
     status: 201,

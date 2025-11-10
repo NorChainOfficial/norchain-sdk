@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { PaymentsService } from './payments.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { CreatePOSSessionDto } from './dto/create-pos-session.dto';
 import { InvoiceStatus } from './entities/payment-invoice.entity';
@@ -33,6 +34,7 @@ export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
   @Post('invoices')
+  @Idempotent()
   @ApiOperation({ summary: 'Create a payment invoice' })
   @ApiResponse({
     status: 201,
@@ -77,6 +79,7 @@ export class PaymentsController {
   }
 
   @Post('pos/sessions')
+  @Idempotent()
   @ApiOperation({ summary: 'Create a POS payment session' })
   @ApiResponse({
     status: 201,

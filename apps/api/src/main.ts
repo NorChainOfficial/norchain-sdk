@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
@@ -10,6 +10,8 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { PaginationInterceptor } from './common/interceptors/pagination.interceptor';
 import { RateLimitInterceptor } from './common/interceptors/rate-limit.interceptor';
+import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
+import { CacheService } from './common/services/cache.service';
 import { WinstonLogger } from './common/logger/winston.logger';
 
 async function bootstrap() {
@@ -59,6 +61,10 @@ async function bootstrap() {
     new LoggingInterceptor(),
     new PaginationInterceptor(),
     new RateLimitInterceptor(),
+    new IdempotencyInterceptor(
+      app.get(Reflector),
+      app.get(CacheService),
+    ),
   );
 
   // Swagger documentation

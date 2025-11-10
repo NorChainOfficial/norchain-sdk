@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { WebhooksService } from './webhooks.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateWebhookDto } from './dto/create-webhook.dto';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 
@@ -31,6 +32,7 @@ export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
   @Post()
+  @Idempotent()
   @ApiOperation({ summary: 'Create a webhook subscription' })
   @ApiResponse({
     status: 201,

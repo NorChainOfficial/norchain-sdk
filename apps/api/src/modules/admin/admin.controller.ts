@@ -26,6 +26,7 @@ import { CreateFeatureFlagDto } from './dto/create-feature-flag.dto';
 import { ValidatorStatus } from './entities/validator.entity';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { ApiScopes, ApiScope } from '@/common/decorators/api-scopes.decorator';
+import { Idempotent } from '@/common/decorators/idempotency.decorator';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -69,6 +70,7 @@ export class AdminController {
   }
 
   @Post('validators')
+  @Idempotent()
   @ApiScopes(ApiScope.ADMIN_VALIDATOR)
   @ApiOperation({ summary: 'Create a new validator (admin only)' })
   @ApiResponse({
@@ -100,6 +102,7 @@ export class AdminController {
   }
 
   @Post('params')
+  @Idempotent()
   @ApiScopes(ApiScope.ADMIN_PARAMS)
   @ApiOperation({
     summary: 'Update system parameters (creates governance proposal)',

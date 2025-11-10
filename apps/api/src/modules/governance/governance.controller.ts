@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { GovernanceService } from './governance.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
+import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateProposalDto } from './dto/create-proposal.dto';
 import { CreateVoteDto } from './dto/create-vote.dto';
 import { ProposalStatus } from './entities/governance-proposal.entity';
@@ -58,6 +59,7 @@ export class GovernanceController {
   }
 
   @Post('proposals')
+  @Idempotent()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Create a governance proposal' })
@@ -79,6 +81,7 @@ export class GovernanceController {
   }
 
   @Post('proposals/:id/votes')
+  @Idempotent()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Submit a vote on a proposal' })
