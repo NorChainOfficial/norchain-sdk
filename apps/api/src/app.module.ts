@@ -7,8 +7,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TerminusModule } from '@nestjs/terminus';
 import * as redisStore from 'cache-manager-redis-store';
-// Config validation schema (optional)
-const configValidationSchema = undefined;
 import { databaseConfig } from './config/database.config';
 import { AccountModule } from './modules/account/account.module';
 import { TransactionModule } from './modules/transaction/transaction.module';
@@ -33,7 +31,6 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { AIModule } from './modules/ai/ai.module';
 import { MonitoringModule } from './modules/monitoring/monitoring.module';
 import { BlockchainModule } from './modules/blockchain/blockchain.module';
-import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -114,7 +111,6 @@ import { WalletModule } from './modules/wallet/wallet.module';
     AIModule,
     MonitoringModule,
     BlockchainModule,
-    WalletModule,
   ],
   providers: [
     {

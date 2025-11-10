@@ -75,9 +75,18 @@ describe('TransactionAnalysisService', () => {
         status: '1',
         message: 'OK',
         result: {
+          transactionHash: '0xabc123',
+          blockNumber: '0x12345',
+          blockHash: '0xdef456',
+          transactionIndex: '0x0',
+          from: '0xfrom',
+          to: '0xto',
           gasUsed: '0x5208',
-          status: '0x1',
+          cumulativeGasUsed: '0x5208',
+          contractAddress: null,
           logs: [],
+          logsBloom: '0x0',
+          status: '0x1',
         },
       });
       configService.get.mockReturnValue(''); // No AI key
@@ -113,12 +122,31 @@ describe('TransactionAnalysisService', () => {
         status: '1',
         message: 'OK',
         result: {
+          transactionHash: '0xabc123',
+          blockNumber: '0x12345',
+          blockHash: '0xdef456',
+          transactionIndex: '0x0',
+          from: '0xfrom',
+          to: '0xto',
           gasUsed: '0x5208',
-          status: '0x1',
+          cumulativeGasUsed: '0x5208',
+          contractAddress: null,
           logs: [],
+          logsBloom: '0x0',
+          status: '0x1',
         },
       });
+      // Mock configService.get to return API key (called in constructor)
       configService.get.mockReturnValue('test-api-key');
+      
+      // Create a new service instance to pick up the mocked API key
+      const serviceWithKey = new (await import('./transaction-analysis.service')).TransactionAnalysisService(
+        httpService as any,
+        configService as any,
+        proxyService as any,
+      );
+      
+      // Mock the Observable properly for firstValueFrom
       httpService.post.mockReturnValue(
         of({
           data: {
@@ -136,10 +164,14 @@ describe('TransactionAnalysisService', () => {
               },
             ],
           },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: {},
         } as any),
       );
 
-      const result = await service.analyze(txHash);
+      const result = await serviceWithKey.analyze(txHash);
 
       expect(result).toHaveProperty('summary');
       expect(httpService.post).toHaveBeenCalled();

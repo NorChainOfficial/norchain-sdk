@@ -70,7 +70,8 @@ describe('ContractAuditService', () => {
       proxyService.eth_getCode.mockResolvedValue({
         status: '1',
         result: '0x6080604052...',
-      });
+        message: 'OK',
+      } as any);
       configService.get.mockReturnValue(''); // No AI key
 
       const result = await service.audit(address);
@@ -85,8 +86,34 @@ describe('ContractAuditService', () => {
       proxyService.eth_getCode.mockResolvedValue({
         status: '1',
         result: '0x6080604052...',
-      });
+        message: 'OK',
+      } as any);
+      // Mock configService.get to return API key (called in constructor)
       configService.get.mockReturnValue('test-api-key');
+      
+      // Create a new service instance to pick up the mocked API key
+      const serviceWithKey = new (await import('./contract-audit.service')).ContractAuditService(
+        httpService as any,
+        configService as any,
+        proxyService as any,
+      );
+      
+      // Mock the Observable properly for firstValueFrom
+      httpService.post.mockReturnValue(
+        of({
+          data: {
+            content: [
+              {
+                text: 'This contract appears secure with no major vulnerabilities.',
+              },
+            ],
+          },
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: {},
+        } as any),
+      );
       httpService.post.mockReturnValue(
         of({
           data: {
@@ -105,7 +132,7 @@ describe('ContractAuditService', () => {
         } as any),
       );
 
-      const result = await service.audit(address);
+      const result = await serviceWithKey.audit(address);
 
       expect(result.securityScore).toBe(85);
       expect(httpService.post).toHaveBeenCalled();

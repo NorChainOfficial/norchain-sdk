@@ -64,7 +64,8 @@ describe('StateRootService', () => {
       proxyService.eth_getBlockByNumber.mockResolvedValue({
         status: '0',
         result: null,
-      });
+        message: 'Not found',
+      } as any);
 
       const result = await service.getStateRoot(blockNumber);
 

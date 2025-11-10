@@ -21,7 +21,8 @@ export class GasPredictionService {
   async predict(): Promise<GasPrediction> {
     try {
       const gasPriceResponse = await this.proxyService.eth_gasPrice();
-      const currentGasPrice = (gasPriceResponse as any).result || gasPriceResponse || '0x0';
+      const currentGasPrice =
+        (gasPriceResponse as any).result || gasPriceResponse || '0x0';
       const currentPrice = parseInt(currentGasPrice, 16);
 
       // Simple prediction based on recent trends
