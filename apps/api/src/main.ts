@@ -14,6 +14,7 @@ import { IdempotencyInterceptor } from './common/interceptors/idempotency.interc
 import { CacheService } from './common/services/cache.service';
 import { WinstonLogger } from './common/logger/winston.logger';
 import { PerformanceMonitorInterceptor } from './modules/monitoring/performance-monitor.interceptor';
+import { RegionInterceptor } from './common/interceptors/region.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -62,20 +63,29 @@ async function bootstrap() {
     new LoggingInterceptor(),
     new PaginationInterceptor(),
     new RateLimitInterceptor(),
-    new IdempotencyInterceptor(
-      app.get(Reflector),
-      app.get(CacheService),
-    ),
+    new IdempotencyInterceptor(app.get(Reflector), app.get(CacheService)),
   ];
 
   // Add performance monitor interceptor if available
   try {
-    const performanceMonitor = app.get(PerformanceMonitorInterceptor, { strict: false });
+    const performanceMonitor = app.get(PerformanceMonitorInterceptor, {
+      strict: false,
+    });
     if (performanceMonitor) {
       interceptors.push(performanceMonitor);
     }
   } catch (e) {
     // Performance monitor not available, skip
+  }
+
+  // Add region interceptor if available
+  try {
+    const regionInterceptor = app.get(RegionInterceptor, { strict: false });
+    if (regionInterceptor) {
+      interceptors.push(regionInterceptor);
+    }
+  } catch (e) {
+    // Region interceptor not available, skip
   }
 
   app.useGlobalInterceptors(...interceptors);
@@ -133,7 +143,10 @@ async function bootstrap() {
     .addTag('Insights', 'Analytics and insights endpoints')
     .addTag('Webhooks', 'Webhook subscription and delivery management')
     .addTag('Policy', 'Policy gateway and compliance checks')
-    .addTag('Streaming', 'Server-Sent Events (SSE) for real-time event streaming')
+    .addTag(
+      'Streaming',
+      'Server-Sent Events (SSE) for real-time event streaming',
+    )
     .addTag('Metadata', 'Self-service token/contract metadata management')
     .build();
 

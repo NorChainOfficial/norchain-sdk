@@ -84,4 +84,3 @@ export class PolicyCheck {
   @CreateDateColumn()
   createdAt: Date;
 }
-

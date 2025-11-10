@@ -149,4 +149,3 @@ export class AssetProfile {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-

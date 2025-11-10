@@ -10,7 +10,7 @@ export class TokenResolver {
   async token(@Args('address') address: string) {
     const result = await this.tokenService.getTokenInfo(address);
     if (!result || !result.result) return null;
-    
+
     const info = result.result;
     return {
       address,
@@ -26,7 +26,10 @@ export class TokenResolver {
     @Args('tokenAddress') tokenAddress: string,
     @Args('accountAddress') accountAddress: string,
   ) {
-    const result = await this.tokenService.getTokenAccountBalance(tokenAddress, accountAddress);
+    const result = await this.tokenService.getTokenAccountBalance(
+      tokenAddress,
+      accountAddress,
+    );
     return result?.result || '0';
   }
 
@@ -36,4 +39,3 @@ export class TokenResolver {
     return result?.result || '0';
   }
 }
-

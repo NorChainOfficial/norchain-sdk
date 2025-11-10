@@ -29,4 +29,3 @@ export class Transaction {
   @Field({ nullable: true })
   status?: string;
 }
-

@@ -29,4 +29,3 @@ export class AssetProfile {
   @Field()
   trustLevel: string;
 }
-

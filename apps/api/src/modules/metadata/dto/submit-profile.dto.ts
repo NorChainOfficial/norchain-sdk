@@ -160,4 +160,3 @@ export class SubmitProfileDto {
   @Type(() => AttestationDto)
   attestation: AttestationDto;
 }
-

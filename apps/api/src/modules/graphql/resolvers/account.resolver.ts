@@ -16,7 +16,7 @@ export class AccountResolver {
   async account(@Args('address') address: string) {
     const summaryResult = await this.accountService.getAccountSummary(address);
     if (!summaryResult || !summaryResult.result) return null;
-    
+
     const summary = summaryResult.result;
     return {
       address,
@@ -26,4 +26,3 @@ export class AccountResolver {
     };
   }
 }
-

@@ -21,7 +21,15 @@ export class MetadataResolver {
     @Args('limit', { defaultValue: 10 }) limit?: number,
     @Args('offset', { defaultValue: 0 }) offset?: number,
   ) {
-    return this.metadataService.searchProfiles(query, tags || [], limit, offset);
+    // MetadataService.searchProfiles expects tag (singular) not tags (array)
+    // For now, use first tag if provided
+    const tag = tags && tags.length > 0 ? tags[0] : undefined;
+    return this.metadataService.searchProfiles(
+      query,
+      tag,
+      undefined,
+      limit,
+      offset,
+    );
   }
 }
-

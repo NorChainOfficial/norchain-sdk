@@ -7,4 +7,3 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
   controllers: [StreamingController],
 })
 export class StreamingModule {}
-

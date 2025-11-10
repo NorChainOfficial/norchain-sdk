@@ -7,7 +7,11 @@ import { CommonModule } from '@/common/common.module';
 import { PolicyModule } from '../policy/policy.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([BridgeTransfer]), CommonModule, PolicyModule],
+  imports: [
+    TypeOrmModule.forFeature([BridgeTransfer]),
+    CommonModule,
+    PolicyModule,
+  ],
   controllers: [BridgeController],
   providers: [BridgeService],
   exports: [BridgeService],

@@ -235,4 +235,3 @@ export class MetadataController {
     return this.storageService.uploadMedia(file, dto.kind, req.user.id);
   }
 }
-

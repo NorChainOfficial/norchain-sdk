@@ -11,4 +11,3 @@ export class UploadMediaDto {
   @IsEnum(MediaKind)
   kind: MediaKind;
 }
-

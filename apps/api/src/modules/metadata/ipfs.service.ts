@@ -10,7 +10,12 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class IPFSService {
   private readonly logger = new Logger(IPFSService.name);
-  private readonly provider: 'pinata' | 'web3storage' | 'infura' | 'local' | 'none';
+  private readonly provider:
+    | 'pinata'
+    | 'web3storage'
+    | 'infura'
+    | 'local'
+    | 'none';
   private readonly apiKey?: string;
   private readonly apiSecret?: string;
 
@@ -52,7 +57,10 @@ export class IPFSService {
   /**
    * Pin to Pinata
    */
-  private async pinToPinata(buffer: Buffer, filename: string): Promise<string | null> {
+  private async pinToPinata(
+    buffer: Buffer,
+    filename: string,
+  ): Promise<string | null> {
     if (!this.apiKey || !this.apiSecret) {
       this.logger.warn('Pinata API credentials not configured');
       return null;
@@ -70,7 +78,10 @@ export class IPFSService {
   /**
    * Pin to web3.storage
    */
-  private async pinToWeb3Storage(buffer: Buffer, filename: string): Promise<string | null> {
+  private async pinToWeb3Storage(
+    buffer: Buffer,
+    filename: string,
+  ): Promise<string | null> {
     if (!this.apiKey) {
       this.logger.warn('web3.storage API key not configured');
       return null;
@@ -89,7 +100,10 @@ export class IPFSService {
   /**
    * Pin to Infura IPFS
    */
-  private async pinToInfura(buffer: Buffer, filename: string): Promise<string | null> {
+  private async pinToInfura(
+    buffer: Buffer,
+    filename: string,
+  ): Promise<string | null> {
     if (!this.apiKey || !this.apiSecret) {
       this.logger.warn('Infura IPFS credentials not configured');
       return null;
@@ -113,7 +127,10 @@ export class IPFSService {
   /**
    * Pin to local IPFS node
    */
-  private async pinToLocalNode(buffer: Buffer, filename: string): Promise<string | null> {
+  private async pinToLocalNode(
+    buffer: Buffer,
+    filename: string,
+  ): Promise<string | null> {
     // In production, use ipfs-http-client
     // const ipfs = create({ url: 'http://localhost:5001' });
     // const result = await ipfs.add({ content: buffer, path: filename });
@@ -127,8 +144,10 @@ export class IPFSService {
    * Get IPFS gateway URL for a CID
    */
   getGatewayUrl(cid: string): string {
-    const gateway = this.configService.get('IPFS_GATEWAY', 'https://ipfs.io/ipfs/');
+    const gateway = this.configService.get(
+      'IPFS_GATEWAY',
+      'https://ipfs.io/ipfs/',
+    );
     return `${gateway}${cid}`;
   }
 }
-

@@ -36,4 +36,3 @@ export class CommunityAttestation {
   @CreateDateColumn()
   createdAt: Date;
 }
-

@@ -145,7 +145,9 @@ export class NorChainWebSocketGateway
       case 'user':
         // User-specific events (requires authentication)
         if (!client.data.userId) {
-          client.emit('error', { message: 'Authentication required for user subscriptions' });
+          client.emit('error', {
+            message: 'Authentication required for user subscriptions',
+          });
           return;
         }
         room = `user:${client.data.userId}`;

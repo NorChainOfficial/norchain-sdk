@@ -42,7 +42,7 @@ export class PerformanceMonitorService {
    */
   recordMetric(metric: PerformanceMetric) {
     this.metrics.push(metric);
-    
+
     // Keep only last maxMetrics
     if (this.metrics.length > this.maxMetrics) {
       this.metrics.shift();
@@ -62,15 +62,17 @@ export class PerformanceMonitorService {
   /**
    * Get performance statistics for an endpoint
    */
-  getStats(endpoint: string, method: string, timeWindow?: number): PerformanceStats {
+  getStats(
+    endpoint: string,
+    method: string,
+    timeWindow?: number,
+  ): PerformanceStats {
     const window = timeWindow || 60 * 60 * 1000; // Default: 1 hour
     const cutoff = new Date(Date.now() - window);
-    
+
     const relevantMetrics = this.metrics.filter(
       (m) =>
-        m.endpoint === endpoint &&
-        m.method === method &&
-        m.timestamp >= cutoff,
+        m.endpoint === endpoint && m.method === method && m.timestamp >= cutoff,
     );
 
     if (relevantMetrics.length === 0) {
@@ -88,12 +90,14 @@ export class PerformanceMonitorService {
       };
     }
 
-    const durations = relevantMetrics.map((m) => m.duration).sort((a, b) => a - b);
+    const durations = relevantMetrics
+      .map((m) => m.duration)
+      .sort((a, b) => a - b);
     const errors = relevantMetrics.filter((m) => m.statusCode >= 400).length;
-    
+
     const sum = durations.reduce((a, b) => a + b, 0);
     const average = sum / durations.length;
-    
+
     const p50 = durations[Math.floor(durations.length * 0.5)];
     const p95 = durations[Math.floor(durations.length * 0.95)];
     const p99 = durations[Math.floor(durations.length * 0.99)];
@@ -133,12 +137,14 @@ export class PerformanceMonitorService {
   getHealthMetrics() {
     const last5min = new Date(Date.now() - 5 * 60 * 1000);
     const recentMetrics = this.metrics.filter((m) => m.timestamp >= last5min);
-    
+
     const totalRequests = recentMetrics.length;
     const errors = recentMetrics.filter((m) => m.statusCode >= 400).length;
-    const avgDuration = recentMetrics.length > 0
-      ? recentMetrics.reduce((sum, m) => sum + m.duration, 0) / recentMetrics.length
-      : 0;
+    const avgDuration =
+      recentMetrics.length > 0
+        ? recentMetrics.reduce((sum, m) => sum + m.duration, 0) /
+          recentMetrics.length
+        : 0;
 
     return {
       totalRequests,
@@ -150,4 +156,3 @@ export class PerformanceMonitorService {
     };
   }
 }
-

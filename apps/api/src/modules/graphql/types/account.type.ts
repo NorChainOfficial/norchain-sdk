@@ -14,4 +14,3 @@ export class Account {
   @Field({ nullable: true })
   codeHash?: string;
 }
-

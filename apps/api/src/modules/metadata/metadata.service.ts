@@ -128,9 +128,7 @@ export class MetadataService {
         existing.ownerAddress?.toLowerCase() !==
         dto.attestation.signer.toLowerCase()
       ) {
-        throw new ForbiddenException(
-          'Only the owner can update this profile',
-        );
+        throw new ForbiddenException('Only the owner can update this profile');
       }
     } else {
       // Create new profile
@@ -378,7 +376,9 @@ export class MetadataService {
         this.logger.warn('EIP-1271 verification not fully implemented');
         return true;
       } else {
-        throw new BadRequestException(`Unsupported verification method: ${method}`);
+        throw new BadRequestException(
+          `Unsupported verification method: ${method}`,
+        );
       }
     } catch (error) {
       this.logger.error(`Signature verification failed: ${error.message}`);
@@ -428,4 +428,3 @@ export class MetadataService {
     await this.versionRepository.save(version);
   }
 }
-

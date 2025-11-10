@@ -51,20 +51,15 @@ export class MetadataStorageService {
 
     // Upload original
     const fileBuffer = Buffer.from(file.buffer);
-    await this.storageService.upload(
-      this.BUCKET_NAME,
-      path,
-      fileBuffer,
-      {
-        contentType: file.mimetype,
-        upsert: false,
-        metadata: {
-          originalName: file.originalname,
-          kind,
-          uploadedBy: userId,
-        },
+    await this.storageService.upload(this.BUCKET_NAME, path, fileBuffer, {
+      contentType: file.mimetype,
+      upsert: false,
+      metadata: {
+        originalName: file.originalname,
+        kind,
+        uploadedBy: userId,
       },
-    );
+    });
 
     const baseUrl = this.storageService.getPublicUrl(this.BUCKET_NAME, path);
 
@@ -115,7 +110,10 @@ export class MetadataStorageService {
   ): Promise<MediaUploadResult['variants']> {
     const basePath = originalPath.replace(/\.[^/.]+$/, '');
     const variants: MediaUploadResult['variants'] = {
-      original: this.storageService.getPublicUrl(this.BUCKET_NAME, originalPath),
+      original: this.storageService.getPublicUrl(
+        this.BUCKET_NAME,
+        originalPath,
+      ),
       '512': '',
       '256': '',
       '64': '',
@@ -123,7 +121,10 @@ export class MetadataStorageService {
 
     // Generate 512x512
     const size512 = await sharp(originalBuffer)
-      .resize(512, 512, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+      .resize(512, 512, {
+        fit: 'contain',
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+      })
       .png()
       .toBuffer();
     await this.storageService.upload(
@@ -139,7 +140,10 @@ export class MetadataStorageService {
 
     // Generate 256x256
     const size256 = await sharp(originalBuffer)
-      .resize(256, 256, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+      .resize(256, 256, {
+        fit: 'contain',
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+      })
       .png()
       .toBuffer();
     await this.storageService.upload(
@@ -155,7 +159,10 @@ export class MetadataStorageService {
 
     // Generate 64x64
     const size64 = await sharp(originalBuffer)
-      .resize(64, 64, { fit: 'contain', background: { r: 255, g: 255, b: 255, alpha: 0 } })
+      .resize(64, 64, {
+        fit: 'contain',
+        background: { r: 255, g: 255, b: 255, alpha: 0 },
+      })
       .png()
       .toBuffer();
     await this.storageService.upload(
@@ -189,4 +196,3 @@ export class MetadataStorageService {
   //   return null;
   // }
 }
-

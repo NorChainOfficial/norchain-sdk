@@ -40,4 +40,3 @@ export class OwnershipChallenge {
   @CreateDateColumn()
   createdAt: Date;
 }
-

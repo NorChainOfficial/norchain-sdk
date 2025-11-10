@@ -45,7 +45,7 @@ export class PerformanceMonitorInterceptor implements NestInterceptor {
         error: (error) => {
           const duration = Date.now() - startTime;
           const statusCode = error.status || 500;
-          
+
           const metric = {
             endpoint: request.path,
             method: request.method,
@@ -63,4 +63,3 @@ export class PerformanceMonitorInterceptor implements NestInterceptor {
     );
   }
 }
-

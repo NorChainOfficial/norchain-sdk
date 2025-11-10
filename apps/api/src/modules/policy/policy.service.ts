@@ -1,7 +1,11 @@
 import { Injectable, ForbiddenException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { PolicyCheck, PolicyCheckStatus, PolicyCheckType } from './entities/policy-check.entity';
+import {
+  PolicyCheck,
+  PolicyCheckStatus,
+  PolicyCheckType,
+} from './entities/policy-check.entity';
 import { PolicyCheckDto } from './dto/policy-check.dto';
 import { CacheService } from '@/common/services/cache.service';
 import { createHash } from 'crypto';
@@ -46,7 +50,10 @@ export class PolicyService {
     let requiresReview = false;
 
     // 1. Sanctions Check
-    const sanctionsCheck = await this.checkSanctions(dto.fromAddress, dto.toAddress);
+    const sanctionsCheck = await this.checkSanctions(
+      dto.fromAddress,
+      dto.toAddress,
+    );
     checks.push(sanctionsCheck);
     if (!sanctionsCheck.passed) {
       riskScore += 50;
@@ -68,7 +75,11 @@ export class PolicyService {
     }
 
     // 4. Velocity Check
-    const velocityCheck = await this.checkVelocity(userId, dto.fromAddress, dto.amount);
+    const velocityCheck = await this.checkVelocity(
+      userId,
+      dto.fromAddress,
+      dto.amount,
+    );
     checks.push(velocityCheck);
     if (!velocityCheck.passed) {
       riskScore += 25;
@@ -98,7 +109,9 @@ export class PolicyService {
     riskScore += complianceCheck.details?.score || 0;
 
     // Determine final status
-    const blockedChecks = checks.filter((c) => !c.passed && c.type !== PolicyCheckType.COMPLIANCE_SCORE);
+    const blockedChecks = checks.filter(
+      (c) => !c.passed && c.type !== PolicyCheckType.COMPLIANCE_SCORE,
+    );
     const allowed = blockedChecks.length === 0 && riskScore < 70;
 
     let status: PolicyCheckStatus;
@@ -109,7 +122,9 @@ export class PolicyService {
         ? PolicyCheckStatus.BLOCKED
         : PolicyCheckStatus.PENDING_REVIEW;
     } else {
-      status = requiresReview ? PolicyCheckStatus.PENDING_REVIEW : PolicyCheckStatus.ALLOWED;
+      status = requiresReview
+        ? PolicyCheckStatus.PENDING_REVIEW
+        : PolicyCheckStatus.ALLOWED;
     }
 
     // Log policy decision
@@ -212,7 +227,10 @@ export class PolicyService {
   /**
    * Check KYC tier requirements
    */
-  private async checkKYCTier(userId: string, amount?: string): Promise<PolicyResult['checks'][0]> {
+  private async checkKYCTier(
+    userId: string,
+    amount?: string,
+  ): Promise<PolicyResult['checks'][0]> {
     // In production, this would query user's KYC status
     // Mock: Assume basic tier for now
     const kycTier = 'basic'; // Would come from user profile
@@ -242,7 +260,9 @@ export class PolicyService {
   /**
    * Check geo-fencing restrictions
    */
-  private async checkGeoFence(ipAddress?: string): Promise<PolicyResult['checks'][0]> {
+  private async checkGeoFence(
+    ipAddress?: string,
+  ): Promise<PolicyResult['checks'][0]> {
     // In production, this would use IP geolocation service
     // Mock: Allow all for now
     const blockedCountries: string[] = []; // Would be from config
@@ -272,10 +292,10 @@ export class PolicyService {
   ): Promise<PolicyResult['checks'][0]> {
     // Check daily transaction count and value
     const cacheKey = `velocity:${userId}:${new Date().toISOString().split('T')[0]}`;
-    const velocityData = await this.cacheService.get<{
+    const velocityData = (await this.cacheService.get<{
       txCount: number;
       totalValue: string;
-    }>(cacheKey) || { txCount: 0, totalValue: '0' };
+    }>(cacheKey)) || { txCount: 0, totalValue: '0' };
 
     const dailyTxLimit = 100;
     const dailyValueLimit = BigInt('10000000000000000000000'); // 10,000 tokens
@@ -289,10 +309,16 @@ export class PolicyService {
 
     // Update cache
     if (passed) {
-      await this.cacheService.set(cacheKey, {
-        txCount: velocityData.txCount + 1,
-        totalValue: (BigInt(velocityData.totalValue) + amountValue).toString(),
-      }, 86400); // 24 hours
+      await this.cacheService.set(
+        cacheKey,
+        {
+          txCount: velocityData.txCount + 1,
+          totalValue: (
+            BigInt(velocityData.totalValue) + amountValue
+          ).toString(),
+        },
+        86400,
+      ); // 24 hours
     }
 
     return {
@@ -313,7 +339,10 @@ export class PolicyService {
   /**
    * Check RWA (Real-World Asset) supply caps
    */
-  private async checkRWACap(asset: string, amount?: string): Promise<PolicyResult['checks'][0]> {
+  private async checkRWACap(
+    asset: string,
+    amount?: string,
+  ): Promise<PolicyResult['checks'][0]> {
     // In production, this would check token supply caps
     // Mock: Assume unlimited for now
     const caps: Record<string, string> = {
@@ -347,7 +376,9 @@ export class PolicyService {
   /**
    * Check AML heuristics (pattern detection)
    */
-  private async checkAMLHeuristics(dto: PolicyCheckDto): Promise<PolicyResult['checks'][0]> {
+  private async checkAMLHeuristics(
+    dto: PolicyCheckDto,
+  ): Promise<PolicyResult['checks'][0]> {
     // In production, this would use ML models or rule-based detection
     // Check for suspicious patterns:
     // - Round numbers (often used in money laundering)
@@ -358,12 +389,15 @@ export class PolicyService {
     const isRoundNumber = amountValue % BigInt('1000000000000000000') === 0n; // Round to 1 token
 
     // Mock: Flag round numbers above threshold as suspicious
-    const suspicious = isRoundNumber && amountValue > BigInt('100000000000000000000'); // > 100 tokens
+    const suspicious =
+      isRoundNumber && amountValue > BigInt('100000000000000000000'); // > 100 tokens
 
     return {
       type: PolicyCheckType.AML_HEURISTIC,
       passed: !suspicious,
-      reason: suspicious ? 'Suspicious transaction pattern detected' : undefined,
+      reason: suspicious
+        ? 'Suspicious transaction pattern detected'
+        : undefined,
       details: {
         isRoundNumber,
         amount: dto.amount || '0',
@@ -374,7 +408,9 @@ export class PolicyService {
   /**
    * Check user's compliance score
    */
-  private async checkComplianceScore(userId: string): Promise<PolicyResult['checks'][0]> {
+  private async checkComplianceScore(
+    userId: string,
+  ): Promise<PolicyResult['checks'][0]> {
     // In production, this would calculate from user's transaction history
     // Mock: Return neutral score
     const score = 50; // 0-100, higher is better
@@ -447,4 +483,3 @@ export class PolicyService {
     };
   }
 }
-

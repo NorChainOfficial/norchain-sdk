@@ -1,5 +1,11 @@
 import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AdvancedAnalyticsService } from './advanced-analytics.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { Public } from '@/common/decorators/public.decorator';
@@ -12,8 +18,18 @@ export class AdvancedAnalyticsController {
   @Get('network')
   @Public()
   @ApiOperation({ summary: 'Get comprehensive network analytics' })
-  @ApiQuery({ name: 'startDate', required: false, type: String, description: 'ISO date string' })
-  @ApiQuery({ name: 'endDate', required: false, type: String, description: 'ISO date string' })
+  @ApiQuery({
+    name: 'startDate',
+    required: false,
+    type: String,
+    description: 'ISO date string',
+  })
+  @ApiQuery({
+    name: 'endDate',
+    required: false,
+    type: String,
+    description: 'ISO date string',
+  })
   @ApiResponse({
     status: 200,
     description: 'Network analytics retrieved successfully',
@@ -50,4 +66,3 @@ export class AdvancedAnalyticsController {
     return this.analyticsService.getRealTimeMetrics();
   }
 }
-

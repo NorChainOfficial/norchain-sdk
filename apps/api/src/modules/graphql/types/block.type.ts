@@ -24,4 +24,3 @@ export class Block {
   @Field()
   gasLimit: string;
 }
-

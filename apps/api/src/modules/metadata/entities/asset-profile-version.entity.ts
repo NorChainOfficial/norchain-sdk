@@ -49,4 +49,3 @@ export class AssetProfileVersion {
   @CreateDateColumn()
   createdAt: Date;
 }
-

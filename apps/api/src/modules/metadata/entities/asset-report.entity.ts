@@ -34,4 +34,3 @@ export class AssetReport {
   @CreateDateColumn()
   createdAt: Date;
 }
-

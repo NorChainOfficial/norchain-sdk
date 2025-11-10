@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumberString, IsEthereumAddress } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsNumberString,
+  IsEthereumAddress,
+} from 'class-validator';
 
 export class PolicyCheckDto {
   @ApiProperty({
@@ -47,4 +52,3 @@ export class PolicyCheckDto {
   @IsString()
   requestId?: string;
 }
-

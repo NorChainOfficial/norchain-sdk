@@ -16,4 +16,3 @@ export class CreateChallengeDto {
   @IsEthereumAddress()
   address: string;
 }
-

@@ -184,28 +184,28 @@ export class WalletService {
     };
   }
 
-    async sendTransaction(
-      userId: string,
-      address: string,
-      dto: SendTransactionDto,
-    ) {
-      const wallet = await this.verifyWalletOwnership(userId, address);
+  async sendTransaction(
+    userId: string,
+    address: string,
+    dto: SendTransactionDto,
+  ) {
+    const wallet = await this.verifyWalletOwnership(userId, address);
 
-      // Policy check before sending transaction
-      // PolicyService throws ForbiddenException if blocked, so if we get here, it's allowed
-      await this.policyService.checkPolicy(userId, {
-        fromAddress: wallet.address,
-        toAddress: dto.to,
-        amount: ethers.parseEther(dto.amount).toString(),
-        asset: 'NOR',
-        requestId: `wallet_send_${Date.now()}`,
-      });
+    // Policy check before sending transaction
+    // PolicyService throws ForbiddenException if blocked, so if we get here, it's allowed
+    await this.policyService.checkPolicy(userId, {
+      fromAddress: wallet.address,
+      toAddress: dto.to,
+      amount: ethers.parseEther(dto.amount).toString(),
+      asset: 'NOR',
+      requestId: `wallet_send_${Date.now()}`,
+    });
 
-      // Decrypt private key (in production, use proper encryption)
-      const privateKey = await this.decryptPrivateKey(
-        wallet.encryptedPrivateKey,
-        dto.password,
-      );
+    // Decrypt private key (in production, use proper encryption)
+    const privateKey = await this.decryptPrivateKey(
+      wallet.encryptedPrivateKey,
+      dto.password,
+    );
 
     // Create transaction
     const walletInstance = new ethers.Wallet(privateKey);

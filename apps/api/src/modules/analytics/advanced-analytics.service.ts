@@ -44,11 +44,12 @@ export class AdvancedAnalyticsService {
     endDate?: Date,
   ): Promise<AnalyticsMetrics> {
     const cacheKey = `analytics:network:${startDate?.toISOString() || 'all'}:${endDate?.toISOString() || 'all'}`;
-    
+
     return this.cacheService.getOrSet(
       cacheKey,
       async () => {
-        const start = startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Default: 30 days
+        const start =
+          startDate || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000); // Default: 30 days
         const end = endDate || new Date();
 
         // Total transactions
@@ -74,7 +75,10 @@ export class AdvancedAnalyticsService {
           .where('tx.createdAt >= :start', { start })
           .andWhere('tx.createdAt <= :end', { end })
           .getRawOne();
-        const activeAddresses = parseInt(activeAddressesResult?.count || '0', 10);
+        const activeAddresses = parseInt(
+          activeAddressesResult?.count || '0',
+          10,
+        );
 
         // Average gas price
         const gasPriceResult = await this.transactionRepository
@@ -97,10 +101,12 @@ export class AdvancedAnalyticsService {
         if (blocks.length > 1) {
           const timeDiffs = [];
           for (let i = 1; i < blocks.length; i++) {
-            const diff = blocks[i].createdAt.getTime() - blocks[i - 1].createdAt.getTime();
+            const diff =
+              blocks[i].createdAt.getTime() - blocks[i - 1].createdAt.getTime();
             timeDiffs.push(diff / 1000); // Convert to seconds
           }
-          averageBlockTime = timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
+          averageBlockTime =
+            timeDiffs.reduce((a, b) => a + b, 0) / timeDiffs.length;
         }
 
         // Top tokens (simplified - would need token transfer aggregation)
@@ -108,23 +114,25 @@ export class AdvancedAnalyticsService {
 
         // Network growth (daily aggregation)
         const networkGrowth: AnalyticsMetrics['networkGrowth'] = [];
-        const days = Math.ceil((end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000));
+        const days = Math.ceil(
+          (end.getTime() - start.getTime()) / (24 * 60 * 60 * 1000),
+        );
         for (let i = 0; i < days; i++) {
           const dayStart = new Date(start.getTime() + i * 24 * 60 * 60 * 1000);
           const dayEnd = new Date(dayStart.getTime() + 24 * 60 * 60 * 1000);
-          
+
           const dayBlocks = await this.blockRepository
             .createQueryBuilder('block')
             .where('block.createdAt >= :dayStart', { dayStart })
             .andWhere('block.createdAt < :dayEnd', { dayEnd })
             .getCount();
-          
+
           const dayTxs = await this.transactionRepository
             .createQueryBuilder('tx')
             .where('tx.createdAt >= :dayStart', { dayStart })
             .andWhere('tx.createdAt < :dayEnd', { dayEnd })
             .getCount();
-          
+
           networkGrowth.push({
             date: dayStart.toISOString().split('T')[0],
             blocks: dayBlocks,
@@ -151,7 +159,7 @@ export class AdvancedAnalyticsService {
    */
   async getUserAnalytics(userId: string): Promise<UserAnalytics> {
     const cacheKey = `analytics:user:${userId}`;
-    
+
     return this.cacheService.getOrSet(
       cacheKey,
       async () => {
@@ -175,22 +183,22 @@ export class AdvancedAnalyticsService {
    */
   async getRealTimeMetrics() {
     const cacheKey = 'analytics:realtime';
-    
+
     return this.cacheService.getOrSet(
       cacheKey,
       async () => {
         const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
-        
+
         const txCount24h = await this.transactionRepository
           .createQueryBuilder('tx')
           .where('tx.createdAt >= :last24h', { last24h })
           .getCount();
-        
+
         const blockCount24h = await this.blockRepository
           .createQueryBuilder('block')
           .where('block.createdAt >= :last24h', { last24h })
           .getCount();
-        
+
         return {
           transactions24h: txCount24h,
           blocks24h: blockCount24h,
@@ -203,4 +211,3 @@ export class AdvancedAnalyticsService {
     );
   }
 }
-

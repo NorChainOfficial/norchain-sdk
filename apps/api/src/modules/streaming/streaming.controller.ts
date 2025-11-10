@@ -8,7 +8,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
@@ -66,7 +71,9 @@ export class StreamingController {
     this.logger.log(`SSE client connected: ${clientId} (user: ${userId})`);
 
     // Send initial connection message
-    res.write(`data: ${JSON.stringify({ type: 'connected', clientId, eventTypes })}\n\n`);
+    res.write(
+      `data: ${JSON.stringify({ type: 'connected', clientId, eventTypes })}\n\n`,
+    );
 
     // Handle client disconnect
     req.on('close', () => {
@@ -105,10 +112,11 @@ export class StreamingController {
       try {
         res.write(message);
       } catch (error) {
-        this.logger.warn(`Failed to send to SSE client ${clientId}: ${error.message}`);
+        this.logger.warn(
+          `Failed to send to SSE client ${clientId}: ${error.message}`,
+        );
         this.clients.delete(clientId);
       }
     }
   }
 }
-

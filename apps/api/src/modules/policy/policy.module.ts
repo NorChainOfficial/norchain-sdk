@@ -7,10 +7,13 @@ import { CommonModule } from '@/common/common.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PolicyCheck]), CommonModule, EventEmitterModule],
+  imports: [
+    TypeOrmModule.forFeature([PolicyCheck]),
+    CommonModule,
+    EventEmitterModule,
+  ],
   controllers: [PolicyController],
   providers: [PolicyService],
   exports: [PolicyService],
 })
 export class PolicyModule {}
-

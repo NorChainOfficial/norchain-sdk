@@ -44,7 +44,10 @@ export class PolicyController {
       type: 'object',
       properties: {
         allowed: { type: 'boolean' },
-        status: { type: 'string', enum: ['allowed', 'blocked', 'pending_review'] },
+        status: {
+          type: 'string',
+          enum: ['allowed', 'blocked', 'pending_review'],
+        },
         checks: {
           type: 'array',
           items: {
@@ -105,4 +108,3 @@ export class PolicyController {
     return this.policyService.getPolicyCheckHistory(req.user.id, limit, offset);
   }
 }
-

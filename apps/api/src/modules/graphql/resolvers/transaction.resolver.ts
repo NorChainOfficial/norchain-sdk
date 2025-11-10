@@ -14,7 +14,7 @@ export class TransactionResolver {
   async transaction(@Args('hash') hash: string) {
     const result = await this.transactionService.getTransaction(hash);
     if (!result || !result.result) return null;
-    
+
     const tx = result.result;
     return {
       hash: tx.hash || hash,
@@ -25,7 +25,8 @@ export class TransactionResolver {
       gasPrice: tx.gasPrice,
       blockNumber: tx.blockNumber,
       blockHash: tx.blockHash,
-      status: tx.txreceipt_status || (tx.isError === '0' ? 'success' : 'failed'),
+      status:
+        tx.txreceipt_status || (tx.isError === '0' ? 'success' : 'failed'),
     };
   }
 
@@ -38,18 +39,18 @@ export class TransactionResolver {
     if (!address) {
       return []; // Can't list all transactions without address
     }
-    
+
     const result = await this.accountService.getTransactions({
       address,
       page: page || 1,
       limit: limit || 10,
     });
-    
+
     if (!result || !result.result) return [];
-    
+
     const transactions = result.result.data || result.result;
     const txArray = Array.isArray(transactions) ? transactions : [];
-    
+
     return txArray.map((tx: any) => ({
       hash: tx.hash,
       from: tx.from,
@@ -59,8 +60,8 @@ export class TransactionResolver {
       gasPrice: tx.gasPrice,
       blockNumber: tx.blockNumber,
       blockHash: tx.blockHash,
-      status: tx.txreceipt_status || (tx.isError === '0' ? 'success' : 'failed'),
+      status:
+        tx.txreceipt_status || (tx.isError === '0' ? 'success' : 'failed'),
     }));
   }
 }
-

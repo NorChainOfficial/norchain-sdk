@@ -17,4 +17,3 @@ export class Token {
   @Field()
   totalSupply: string;
 }
-

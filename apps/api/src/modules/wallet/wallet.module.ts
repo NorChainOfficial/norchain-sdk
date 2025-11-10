@@ -8,7 +8,11 @@ import { CommonModule } from '@/common/common.module';
 import { PolicyModule } from '../policy/policy.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Wallet, User]), CommonModule, PolicyModule],
+  imports: [
+    TypeOrmModule.forFeature([Wallet, User]),
+    CommonModule,
+    PolicyModule,
+  ],
   controllers: [WalletController],
   providers: [WalletService],
   exports: [WalletService],

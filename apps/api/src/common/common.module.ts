@@ -4,6 +4,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as redisStore from 'cache-manager-redis-store';
 import { RpcService } from './services/rpc.service';
 import { CacheService } from './services/cache.service';
+import { AdvancedCacheService } from './services/advanced-cache.service';
+import { AdvancedCacheController } from './services/advanced-cache.controller';
+import { MultiRegionConfig } from '../config/multi-region.config';
+import { RegionInterceptor } from './interceptors/region.interceptor';
 
 /**
  * Common Module
@@ -45,7 +49,20 @@ import { CacheService } from './services/cache.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [RpcService, CacheService],
-  exports: [RpcService, CacheService],
+  providers: [
+    RpcService,
+    CacheService,
+    AdvancedCacheService,
+    MultiRegionConfig,
+    RegionInterceptor,
+  ],
+  controllers: [AdvancedCacheController],
+  exports: [
+    RpcService,
+    CacheService,
+    AdvancedCacheService,
+    MultiRegionConfig,
+    RegionInterceptor,
+  ],
 })
 export class CommonModule {}
