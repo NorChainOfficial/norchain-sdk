@@ -43,6 +43,7 @@ import { V2Module } from './modules/v2/v2.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { PolicyModule } from './modules/policy/policy.module';
 import { StreamingModule } from './modules/streaming/streaming.module';
+import { MetadataModule } from './modules/metadata/metadata.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
@@ -140,6 +141,7 @@ import { CommonModule } from './common/common.module';
     WebhooksModule,
     PolicyModule,
     StreamingModule,
+    MetadataModule,
   ],
   providers: [
     {

@@ -213,21 +213,22 @@ const transfer = await nor.bridge.createTransfer(
 | Webhooks | ✅ Complete | 3+ | 100% |
 | Policy Gateway | ✅ Complete | 2+ | 100% |
 | Streaming (SSE) | ✅ Complete | 1+ | 100% |
+| Metadata | ✅ Complete | 8+ | 100% |
 
 ---
 
 ## 🔍 Missing Features (From Overview)
 
 ### High Priority
-1. **Policy Gateway** - Pre-transaction policy checks
-2. **Extended Idempotency** - Apply to Swap, Orders, Wallet send, Governance
-3. **Scope Enforcement** - Apply ScopeGuard to all secured routes
-4. **Webhooks** - Event notification system
+1. ~~**Policy Gateway**~~ ✅ **COMPLETE** - Pre-transaction policy checks
+2. ~~**Extended Idempotency**~~ ✅ **COMPLETE** - Applied to all write endpoints
+3. **Scope Enforcement** - Apply ScopeGuard to all secured routes (partially implemented)
+4. ~~**Webhooks**~~ ✅ **COMPLETE** - Event notification system
 
 ### Medium Priority
-5. **Payments Module** - Invoice and POS integration
-6. **Admin Module** - Validator and system management
-7. **Cursor Pagination** - For large datasets
+5. ~~**Payments Module**~~ ✅ **COMPLETE** - Invoice and POS integration
+6. ~~**Admin Module**~~ ✅ **COMPLETE** - Validator and system management
+7. **Cursor Pagination** - For large datasets (offset-based implemented)
 8. **SLA Tiers** - Different rate limits per tier
 
 ### Low Priority

@@ -121,6 +121,7 @@ async function bootstrap() {
     .addTag('Webhooks', 'Webhook subscription and delivery management')
     .addTag('Policy', 'Policy gateway and compliance checks')
     .addTag('Streaming', 'Server-Sent Events (SSE) for real-time event streaming')
+    .addTag('Metadata', 'Self-service token/contract metadata management')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

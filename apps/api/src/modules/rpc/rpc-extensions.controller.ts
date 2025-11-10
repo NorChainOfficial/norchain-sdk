@@ -117,4 +117,40 @@ export class RPCExtensionsController {
   async getValidatorSet(@Body() body: { tag?: 'current' | 'next' }) {
     return this.rpcExtensionsService.getValidatorSet(body.tag);
   }
+
+  @Post('nor_tokenProfile')
+  @ApiOperation({ summary: 'Get token profile metadata' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        address: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Token profile retrieved successfully',
+  })
+  async norTokenProfile(@Body() body: { address: string }) {
+    return this.rpcExtensionsService.norTokenProfile(body.address);
+  }
+
+  @Post('nor_contractProfile')
+  @ApiOperation({ summary: 'Get contract profile metadata' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        address: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Contract profile retrieved successfully',
+  })
+  async norContractProfile(@Body() body: { address: string }) {
+    return this.rpcExtensionsService.norContractProfile(body.address);
+  }
 }

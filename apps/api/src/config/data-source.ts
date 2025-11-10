@@ -32,6 +32,11 @@ import { AuditLog } from '../modules/admin/entities/audit-log.entity';
 import { WebhookSubscription } from '../modules/webhooks/entities/webhook-subscription.entity';
 import { WebhookDelivery } from '../modules/webhooks/entities/webhook-delivery.entity';
 import { PolicyCheck } from '../modules/policy/entities/policy-check.entity';
+import { AssetProfile } from '../modules/metadata/entities/asset-profile.entity';
+import { AssetProfileVersion } from '../modules/metadata/entities/asset-profile-version.entity';
+import { OwnershipChallenge } from '../modules/metadata/entities/ownership-challenge.entity';
+import { CommunityAttestation } from '../modules/metadata/entities/community-attestation.entity';
+import { AssetReport } from '../modules/metadata/entities/asset-report.entity';
 
 // Load environment variables
 config();
@@ -75,6 +80,11 @@ const entities = [
     WebhookSubscription,
     WebhookDelivery,
     PolicyCheck,
+    AssetProfile,
+    AssetProfileVersion,
+    OwnershipChallenge,
+    CommunityAttestation,
+    AssetReport,
 ];
 
 export const AppDataSource = new DataSource({

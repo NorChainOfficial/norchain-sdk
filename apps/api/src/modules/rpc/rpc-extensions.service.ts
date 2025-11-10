@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { RpcService } from '@/common/services/rpc.service';
 import { ethers } from 'ethers';
 import { randomBytes } from 'crypto';
+import { MetadataService } from '../metadata/metadata.service';
 
 export interface FinalityStatus {
   status: 'unsafe' | 'safe' | 'final';
@@ -44,7 +45,11 @@ export interface AccountProfile {
 
 @Injectable()
 export class RPCExtensionsService {
-  constructor(private readonly rpcService: RpcService) {}
+  constructor(
+    private readonly rpcService: RpcService,
+    @Inject(forwardRef(() => MetadataService))
+    private readonly metadataService: MetadataService,
+  ) {}
 
   /**
    * Get finality status for a block or transaction
@@ -214,6 +219,51 @@ export class RPCExtensionsService {
       ],
       totalStake: '10000000000000000000000',
       activeCount: 1,
+    };
+  }
+
+  /**
+   * Get token profile metadata
+   * RPC: nor_tokenProfile(address)
+   */
+  async norTokenProfile(address: string): Promise<any> {
+    const chainId = '65001'; // NorChain mainnet
+    const profile = await this.metadataService.getProfile(chainId, address);
+
+    if (!profile) {
+      return null;
+    }
+
+    // Return minimal, cacheable struct for wallets
+    return {
+      name: profile.displayName,
+      symbol: profile.symbol,
+      logoUrl: profile.logoUrl,
+      trustLevel: profile.trustLevel,
+      version: profile.profileVersion,
+    };
+  }
+
+  /**
+   * Get contract profile metadata
+   * RPC: nor_contractProfile(address)
+   */
+  async norContractProfile(address: string): Promise<any> {
+    const chainId = '65001'; // NorChain mainnet
+    const profile = await this.metadataService.getProfile(chainId, address);
+
+    if (!profile) {
+      return null;
+    }
+
+    return {
+      name: profile.displayName,
+      description: profile.shortDescription,
+      logoUrl: profile.logoUrl,
+      website: profile.website,
+      docsUrl: profile.docsUrl,
+      trustLevel: profile.trustLevel,
+      version: profile.profileVersion,
     };
   }
 }
