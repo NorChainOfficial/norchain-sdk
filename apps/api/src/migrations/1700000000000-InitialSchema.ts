@@ -2,7 +2,7 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
  * Initial Database Schema Migration
- * 
+ *
  * This migration creates all initial tables for the NorChain API.
  * Note: If using synchronize=true, this migration may be skipped.
  * Run this migration if you want explicit control over schema changes.
@@ -14,7 +14,7 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     // This migration is optional if using synchronize=true
     // Tables are created via TypeORM entities
     // Run this only if you want explicit migration control
-    
+
     // Check if tables already exist
     const tables = await queryRunner.query(`
       SELECT table_name 
@@ -37,7 +37,9 @@ export class InitialSchema1700000000000 implements MigrationInterface {
 
     // If tables don't exist, they will be created by synchronize=true
     // or by running db:setup:simple
-    console.log('📋 Tables will be created via TypeORM synchronize or db:setup:simple');
+    console.log(
+      '📋 Tables will be created via TypeORM synchronize or db:setup:simple',
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -65,4 +67,3 @@ export class InitialSchema1700000000000 implements MigrationInterface {
     }
   }
 }
-

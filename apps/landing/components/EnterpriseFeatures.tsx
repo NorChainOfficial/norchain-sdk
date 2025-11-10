@@ -66,35 +66,43 @@ export default function EnterpriseFeatures(): JSX.Element {
   ] as const;
 
   return (
-    <section className="py-24 bg-gradient-to-br from-gray-50 via-slate-50 to-blue-50">
-      <div className="container mx-auto px-6">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Enterprise Solutions
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Production-ready blockchain infrastructure designed for enterprises, 
-            institutions, and high-growth applications requiring maximum reliability.
+    <section id="enterprise" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
+      {/* Background elements inspired by Dribbble designs */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 right-20 w-[600px] h-[600px] bg-gradient-to-br from-indigo-500/10 via-purple-500/15 to-violet-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-20 w-[500px] h-[500px] bg-gradient-to-tl from-blue-500/10 via-indigo-500/15 to-purple-500/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
+      </div>
+
+      <div className="container mx-auto px-6 relative z-10">
+        {/* Bold Dribbble-inspired section header */}
+        <div className="text-center mb-24">
+          <div className="relative inline-block mb-8">
+            <h2 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
+              Enterprise
+            </h2>
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-violet-500 rounded-full" />
+          </div>
+          <p className="text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed mb-8">
+            Production-ready blockchain infrastructure designed for enterprises and institutions
           </p>
-          <div className="inline-flex items-center gap-3 bg-blue-100 text-blue-700 px-6 py-3 rounded-full font-medium">
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-            </svg>
-            Trusted by 127+ Development Teams
+          <div className="inline-flex items-center gap-4 bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 px-8 py-5 rounded-3xl shadow-2xl">
+            <div className="relative">
+              <div className="h-4 w-4 bg-emerald-400 rounded-full animate-pulse" />
+              <div className="absolute inset-0 h-4 w-4 bg-emerald-400 rounded-full animate-ping opacity-30" />
+            </div>
+            <span className="text-gray-200 font-medium text-xl">
+              Trusted by 127+ Development Teams
+            </span>
           </div>
         </div>
 
-        {/* Enterprise Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        {/* Dribbble-style enterprise features grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-16 sm:mb-24">
           {enterpriseFeatures.map((feature, index) => (
             <div
               key={feature.title}
-              className={`bg-white rounded-2xl p-8 shadow-lg border-2 transition-all duration-300 cursor-pointer ${
-                activeFeature === index 
-                  ? 'border-blue-500 scale-105 shadow-2xl' 
-                  : 'border-gray-200 hover:border-blue-300 hover:shadow-xl'
-              }`}
+              className="group relative"
               onClick={() => setActiveFeature(activeFeature === index ? null : index)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -106,149 +114,114 @@ export default function EnterpriseFeatures(): JSX.Element {
               aria-expanded={activeFeature === index}
               aria-label={`Learn more about ${feature.title}`}
             >
-              {/* Category Badge */}
-              <div className="inline-block px-3 py-1 bg-gray-100 text-gray-600 text-sm font-medium rounded-full mb-4">
-                {feature.category}
-              </div>
-
-              {/* Icon */}
-              <div className={`h-16 w-16 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6`}>
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={feature.iconPath}/>
-                </svg>
-              </div>
-
-              {/* Content */}
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed mb-6">
-                {feature.description}
-              </p>
-
-              {/* Benefits - Show when active */}
-              <div className={`transition-all duration-300 ${
-                activeFeature === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+              {/* Modern glassmorphism card */}
+              <div className={`relative bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8 h-full transition-all duration-500 hover:bg-gray-900/60 hover:border-gray-600/70 hover:transform hover:scale-105 hover:-translate-y-2 shadow-2xl hover:shadow-3xl cursor-pointer ${
+                activeFeature === index ? 'scale-105 -translate-y-2 bg-gray-900/60 border-gray-600/70' : ''
               }`}>
-                <div className="border-t border-gray-200 pt-4">
-                  <h4 className="font-semibold text-gray-900 mb-3">Key Benefits:</h4>
-                  <ul className="space-y-2">
-                    {feature.benefits.map((benefit, benefitIndex) => (
-                      <li key={benefitIndex} className="flex items-center gap-3 text-sm text-gray-600">
-                        <svg className="h-4 w-4 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/>
-                        </svg>
-                        {benefit}
-                      </li>
-                    ))}
-                  </ul>
+                
+                {/* Dynamic gradient overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl ${
+                  activeFeature === index ? 'opacity-5' : ''
+                }`} />
+                
+                {/* Enhanced category badge */}
+                <div className="relative mb-6">
+                  <div className="inline-flex items-center px-4 py-2 bg-gray-800/60 backdrop-blur-sm border border-gray-600/40 text-gray-300 text-sm font-medium rounded-2xl shadow-lg">
+                    {feature.category}
+                  </div>
                 </div>
+
+                {/* Icon with enhanced depth and glow */}
+                <div className="relative mb-8">
+                  <div className={`absolute -inset-2 bg-gradient-to-br ${feature.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+                  <div className={`relative h-20 w-20 bg-gradient-to-br ${feature.color} rounded-3xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-500`}>
+                    <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={feature.iconPath}/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Enhanced typography */}
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-300 transition-colors duration-300">
+                  {feature.title}
+                </h3>
+                
+                <p className="text-gray-400 text-base font-normal leading-relaxed mb-6 group-hover:text-gray-300 transition-colors duration-300">
+                  {feature.description}
+                </p>
+
+                {/* Benefits - Enhanced with glassmorphism */}
+                <div className={`transition-all duration-500 ${
+                  activeFeature === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+                }`}>
+                  <div className="border-t border-gray-600/50 pt-6">
+                    <h4 className="font-semibold text-cyan-300 mb-4">Key Benefits:</h4>
+                    <ul className="space-y-3">
+                      {feature.benefits.map((benefit, benefitIndex) => (
+                        <li key={benefitIndex} className="flex items-center gap-3 text-sm text-gray-300">
+                          <div className="h-2 w-2 bg-emerald-400 rounded-full flex-shrink-0" />
+                          {benefit}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                {/* Modern expand/collapse indicator */}
+                <div className="flex items-center justify-center mt-6">
+                  <div className="h-8 w-8 bg-gray-800/60 backdrop-blur-sm border border-gray-600/40 rounded-2xl flex items-center justify-center">
+                    <svg 
+                      className={`h-4 w-4 text-gray-400 transition-transform duration-300 ${
+                        activeFeature === index ? 'rotate-180' : ''
+                      }`} 
+                      fill="none" 
+                      stroke="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Bottom accent line */}
+                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl ${
+                  activeFeature === index ? 'scale-x-100' : ''
+                }`} />
               </div>
 
-              {/* Expand/Collapse Indicator */}
-              <div className="flex items-center justify-center mt-4">
-                <svg 
-                  className={`h-5 w-5 text-gray-400 transition-transform duration-300 ${
-                    activeFeature === index ? 'rotate-180' : ''
-                  }`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
-                </svg>
-              </div>
+              {/* Floating elements around card */}
+              <div className={`absolute -top-2 -right-2 w-3 h-3 bg-gradient-to-r ${feature.color} rounded-full opacity-0 group-hover:opacity-60 transition-opacity duration-700 animate-pulse`} />
+              <div className={`absolute -bottom-2 -left-2 w-2 h-2 bg-gradient-to-r ${feature.color} rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-700 animate-pulse`} />
             </div>
           ))}
         </div>
 
-        {/* Enterprise Metrics */}
-        <div className="bg-white rounded-2xl p-8 shadow-xl mb-16">
-          <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Enterprise Performance Metrics
-          </h3>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                </svg>
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">99.99%</div>
-              <div className="text-sm text-gray-600">Enterprise Uptime</div>
-            </div>
-
-            <div className="text-center">
-              <div className="h-16 w-16 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">&lt;50ms</div>
-              <div className="text-sm text-gray-600">Enterprise Response</div>
-            </div>
-
-            <div className="text-center">
-              <div className="h-16 w-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                </svg>
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">24/7</div>
-              <div className="text-sm text-gray-600">Priority Support</div>
-            </div>
-
-            <div className="text-center">
-              <div className="h-16 w-16 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9"/>
-                </svg>
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">Global</div>
-              <div className="text-sm text-gray-600">Edge Network</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Call to Action */}
+        {/* Modern CTA Section */}
         <div className="text-center">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white">
-            <h3 className="text-3xl font-bold mb-4">
-              Ready for Enterprise-Grade Infrastructure?
-            </h3>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join leading organizations building the future of decentralized applications 
-              with our enterprise blockchain infrastructure.
-            </p>
-            
-            <div className="flex flex-wrap justify-center gap-6">
-              <a
-                href="https://enterprise.norchain.org/contact"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-white text-blue-600 font-bold text-lg rounded-2xl hover:bg-blue-50 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-              >
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-                Schedule Consultation
-              </a>
+          <div className="relative inline-block">
+            <div className="absolute -inset-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 rounded-3xl blur-xl opacity-20" />
+            <a
+              href="https://enterprise.norchain.org/contact"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative group inline-flex items-center gap-4 px-16 py-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-violet-600 text-white rounded-3xl font-bold text-xl tracking-wide hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 hover:scale-105"
+            >
+              <span className="relative">Schedule Consultation</span>
+              <svg className="w-6 h-6 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
               
-              <a
-                href="https://docs.norchain.org/enterprise"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-blue-700 text-white font-bold text-lg rounded-2xl hover:bg-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-blue-500"
-              >
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                </svg>
-                Enterprise Documentation
-              </a>
-            </div>
+              {/* Button overlay effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
+            </a>
           </div>
         </div>
+
+        {/* Enhanced floating elements */}
+        <div className="absolute top-40 left-40 w-3 h-3 bg-indigo-400 rounded-full animate-pulse opacity-60" />
+        <div className="absolute top-60 right-32 w-2 h-2 bg-purple-400 rounded-full animate-pulse opacity-50" style={{animationDelay: '1s'}} />
+        <div className="absolute bottom-40 left-20 w-4 h-4 bg-violet-400 rounded-lg rotate-45 animate-pulse opacity-40" style={{animationDelay: '2s'}} />
+        <div className="absolute bottom-60 right-40 w-2 h-2 bg-blue-400 rounded-full animate-pulse opacity-60" style={{animationDelay: '3s'}} />
       </div>
     </section>
   );

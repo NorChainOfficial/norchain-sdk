@@ -50,7 +50,7 @@ export const databaseConfig = (
 
   const nodeEnv = configService.get('NODE_ENV', 'development');
   const isTest = nodeEnv === 'test';
-  
+
   // Use Supabase if configured
   if (useSupabase && supabaseDbUrl) {
     return {
@@ -63,7 +63,7 @@ export const databaseConfig = (
       ssl: {
         rejectUnauthorized: false,
       },
-      migrations: isTest ? [] : ['dist/migrations/*.js'],
+      migrations: isTest ? [] : [],
       migrationsRun: false,
       cache: false,
       dropSchema: false,

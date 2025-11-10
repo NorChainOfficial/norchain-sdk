@@ -2,21 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-// Add ethereum type to Window
-declare global {
-  interface Window {
-    ethereum?: {
-      request: (args: { method: string; params?: any[] }) => Promise<any>;
-      isMetaMask?: boolean;
-    };
-  }
-}
-
 export default function Hero() {
   const [blockHeight, setBlockHeight] = useState(7542);
   const [apiUptime, setApiUptime] = useState(99.9);
   const [apiResponseTime, setApiResponseTime] = useState(85);
   const [activeDevs, setActiveDevs] = useState(127);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const updateInfrastructureStats = async () => {
@@ -35,7 +26,6 @@ export default function Hero() {
         const height = parseInt(data.result, 16);
         setBlockHeight(height);
         
-        // Simulate infrastructure metrics (in production, fetch from monitoring API)
         setApiUptime(99.9 + Math.random() * 0.09);
         setApiResponseTime(80 + Math.random() * 20);
         setActiveDevs(120 + Math.floor(Math.random() * 15));
@@ -46,7 +36,20 @@ export default function Hero() {
 
     updateInfrastructureStats();
     const interval = setInterval(updateInfrastructureStats, 5000);
-    return () => clearInterval(interval);
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ 
+        x: e.clientX / window.innerWidth, 
+        y: e.clientY / window.innerHeight 
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
   }, []);
 
   const scrollToSection = (sectionId: string) => {
@@ -57,184 +60,139 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white overflow-hidden">
-      {/* Animated background elements */}
+    <section className="relative min-h-screen bg-black text-white overflow-hidden">
+      {/* Dribbble-inspired background with advanced gradients */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        {/* Large gradient orbs inspired by Web3 designs */}
+        <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-gradient-to-br from-violet-600/20 via-blue-600/30 to-cyan-500/20 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-tl from-emerald-500/25 via-blue-500/20 to-purple-600/30 rounded-full blur-3xl transform translate-x-1/3 translate-y-1/3" />
+        
+        {/* Interactive mesh gradient */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-violet-600/10 to-cyan-500/5"
+          style={{
+            transform: `translateX(${mousePosition.x * 30}px) translateY(${mousePosition.y * 30}px)`,
+            transition: 'transform 0.4s ease-out'
+          }}
+        />
+        
+        {/* Modern geometric grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.05)_1px,transparent_1px)] bg-[size:80px_80px]" />
+        
+        {/* Floating geometric elements */}
+        <div className="absolute top-20 right-20 w-4 h-4 bg-cyan-400 rounded-full animate-pulse opacity-60" />
+        <div className="absolute top-40 left-40 w-6 h-6 bg-violet-500 rounded-lg rotate-45 animate-pulse opacity-40" style={{animationDelay: '1s'}} />
+        <div className="absolute bottom-32 left-32 w-3 h-3 bg-emerald-400 rounded-full animate-pulse opacity-50" style={{animationDelay: '2s'}} />
+        
+        {/* Noise texture overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
 
-      <div className="container mx-auto px-6 py-20 relative z-10">
-        <div className="text-center">
-          {/* Logo */}
-          <div className="mb-8 flex justify-center">
-            <div className="h-24 w-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl hover:scale-105 transition-transform">
-              <span className="text-white font-bold text-5xl">N</span>
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          
+
+          {/* Bold Dribbble-style typography */}
+          <div className="text-center mb-12 sm:mb-20">
+            <div className="relative mb-6 sm:mb-8">
+              <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[12rem] font-black tracking-tighter leading-none mb-4">
+                <span className="bg-gradient-to-r from-white via-blue-100 to-cyan-200 bg-clip-text text-transparent">
+                  NorChain
+                </span>
+              </h1>
+              
+              {/* Accent line under title */}
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full opacity-80" />
             </div>
-          </div>
-
-          {/* Main Tagline */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
-            NorChain
-            <br />
-            <span className="text-blue-300">Infrastructure</span>
-          </h1>
-
-          {/* Enterprise Badge */}
-          <div className="inline-flex items-center gap-3 bg-blue-500/20 backdrop-blur-md border-2 border-blue-400 px-6 py-3 rounded-full mb-6">
-            <span className="text-3xl">🏗️</span>
-            <span className="text-lg font-bold text-blue-100">
-              Enterprise-Grade Blockchain Infrastructure
-            </span>
-          </div>
-
-          {/* Key Infrastructure Features */}
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg">
-              <span className="text-blue-300 font-bold">✓ 99.9% API Uptime</span>
+            
+            <div className="relative mb-8 sm:mb-12">
+              <h2 className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-light tracking-wide text-gray-300 mb-4 sm:mb-6">
+                Next-Generation
+                <span className="block text-xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent mt-1 sm:mt-2">
+                  Blockchain Infrastructure
+                </span>
+              </h2>
             </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg">
-              <span className="text-blue-300 font-bold">✓ &lt;100ms Response Time</span>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg">
-              <span className="text-blue-300 font-bold">✓ Enterprise SLAs</span>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2 rounded-lg">
-              <span className="text-blue-300 font-bold">✓ Regulatory Compliant</span>
-            </div>
-          </div>
 
-          {/* Mission */}
-          <div className="mb-6 bg-white/10 backdrop-blur-md rounded-2xl p-6 max-w-4xl mx-auto border border-white/20">
-            <h2 className="text-sm uppercase tracking-wide text-blue-200 mb-2">
-              Our Mission
-            </h2>
-            <p className="text-xl md:text-2xl text-white font-medium">
-              Power the next generation of decentralized applications with 
-              enterprise-grade blockchain infrastructure. Secure, scalable, 
-              and compliant infrastructure for developers and institutions.
-            </p>
-          </div>
-
-          {/* Vision */}
-          <p className="text-lg md:text-xl mb-8 text-blue-100 max-w-4xl mx-auto leading-relaxed">
-            Building the foundation for institutional blockchain adoption with 
-            professional-grade APIs, comprehensive tools, and enterprise support.
-          </p>
-
-          {/* Live Infrastructure Stats */}
-          <div className="flex flex-wrap justify-center gap-8 mb-10">
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold">
-                {blockHeight.toLocaleString()}+
+            {/* Status badge with modern styling */}
+            <div className="inline-flex items-center gap-2 sm:gap-4 bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 px-4 sm:px-8 py-3 sm:py-5 rounded-3xl mb-10 sm:mb-16 hover:bg-gray-900/80 transition-all duration-300 shadow-2xl">
+              <div className="relative">
+                <div className="h-4 w-4 bg-emerald-400 rounded-full animate-pulse" />
+                <div className="absolute inset-0 h-4 w-4 bg-emerald-400 rounded-full animate-ping opacity-30" />
               </div>
-              <div className="text-blue-200 text-sm md:text-base">Blocks</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-green-300">
+              <span className="text-gray-200 font-medium text-sm sm:text-xl">
+                Live Network
+              </span>
+              <div className="text-cyan-400 font-bold text-sm sm:text-xl">
                 {apiUptime.toFixed(1)}%
               </div>
-              <div className="text-blue-200 text-sm md:text-base">
-                API Uptime
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold">
-                {Math.round(apiResponseTime)}ms
-              </div>
-              <div className="text-blue-200 text-sm md:text-base">Response Time</div>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl md:text-5xl font-bold text-purple-300">
-                {activeDevs}+
-              </div>
-              <div className="text-blue-200 text-sm md:text-base">
-                Active Developers
-              </div>
             </div>
           </div>
 
-          {/* Primary CTA: Developer Documentation */}
-          <button
-            onClick={() => scrollToSection('developer-tools')}
-            className="bg-white text-blue-700 px-10 py-4 rounded-lg text-xl font-bold hover:bg-blue-50 transition-all shadow-2xl hover:scale-105 inline-flex items-center gap-3 mb-6"
-          >
-            <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m18 4l4 4-4 4M6 16l-4-4 4-4"/>
-            </svg>
-            Start Building
-          </button>
+          {/* Modern stats grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mb-12 sm:mb-20">
+            {[
+              { value: blockHeight.toLocaleString(), label: "Blocks Processed", color: "from-cyan-400 to-blue-500", icon: "📦" },
+              { value: `${apiUptime.toFixed(1)}%`, label: "Network Uptime", color: "from-emerald-400 to-green-500", icon: "⚡" },
+              { value: `${Math.round(apiResponseTime)}ms`, label: "API Response", color: "from-blue-400 to-violet-500", icon: "🚀" },
+              { value: `${activeDevs}+`, label: "Active Builders", color: "from-violet-400 to-purple-500", icon: "👨‍💻" }
+            ].map((stat, index) => (
+              <div key={index} className="group text-center hover:scale-105 transition-all duration-300">
+                <div className="relative mb-4">
+                  <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`} />
+                  <div className={`relative bg-gradient-to-r ${stat.color} bg-clip-text text-transparent text-2xl sm:text-4xl md:text-5xl font-black mb-2`}>
+                    {stat.value}
+                  </div>
+                </div>
+                <div className="text-gray-400 text-xs sm:text-sm font-medium tracking-wider uppercase">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
 
-          {/* Secondary CTAs */}
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://docs.norchain.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-blue-800/50 backdrop-blur-sm text-white rounded-lg hover:bg-blue-700/50 transition-all border border-blue-400/30 hover:scale-105 inline-flex items-center gap-2"
-            >
-              Documentation
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-            </a>
-            <a
-              href="https://api.norchain.org/api-docs"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-blue-800/50 backdrop-blur-sm text-white rounded-lg hover:bg-blue-700/50 transition-all border border-blue-400/30 hover:scale-105 inline-flex items-center gap-2"
-            >
-              API Reference
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-            </a>
-            <a
-              href="https://explorer.norchain.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-blue-800/50 backdrop-blur-sm text-white rounded-lg hover:bg-blue-700/50 transition-all border border-blue-400/30 hover:scale-105 inline-flex items-center gap-2"
-            >
-              Explorer
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-            </a>
-            <a
-              href="https://github.com/norchain"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-3 bg-blue-800/50 backdrop-blur-sm text-white rounded-lg hover:bg-blue-700/50 transition-all border border-blue-400/30 hover:scale-105 inline-flex items-center gap-2"
-            >
-              GitHub
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd"/>
-              </svg>
-            </a>
+          {/* Dribbble-inspired CTA section */}
+          <div className="text-center space-y-10">
+            <p className="text-lg sm:text-2xl md:text-3xl font-light text-gray-300 max-w-4xl mx-auto leading-relaxed">
+              Enterprise-ready blockchain infrastructure
+              <span className="block mt-2 sm:mt-3 text-base sm:text-xl text-gray-400 font-light">
+                Powering the next generation of decentralized applications
+              </span>
+            </p>
+
+            {/* Modern button group */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+              <button
+                onClick={() => scrollToSection('features')}
+                className="group relative bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-600 text-white px-8 sm:px-12 py-4 sm:py-5 rounded-2xl font-semibold text-base sm:text-lg tracking-wide hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-500 hover:scale-105 w-full sm:w-auto"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
+                <span className="relative flex items-center gap-3">
+                  Start Building
+                  <svg className="w-6 h-6 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </span>
+              </button>
+
+              <a
+                href="https://docs.norchain.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group px-8 sm:px-12 py-4 sm:py-5 text-gray-300 hover:text-white font-semibold text-base sm:text-lg tracking-wide border-2 border-gray-600 hover:border-gray-400 rounded-2xl transition-all duration-300 hover:bg-gray-800/30 backdrop-blur-sm w-full sm:w-auto"
+              >
+                <span className="flex items-center gap-3">
+                  Documentation
+                  <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes blob {
-          0%,
-          100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-      `}</style>
     </section>
   );
 }

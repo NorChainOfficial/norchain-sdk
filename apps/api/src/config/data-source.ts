@@ -52,14 +52,18 @@ export const AppDataSource = new DataSource({
   port: !useSupabase ? parseInt(process.env.DB_PORT || '5432') : undefined,
   username: !useSupabase ? process.env.DB_USER || 'postgres' : undefined,
   password: !useSupabase ? process.env.DB_PASSWORD || 'postgres' : undefined,
-  database: !useSupabase ? process.env.DB_NAME || 'norchain_explorer' : undefined,
+  database: !useSupabase
+    ? process.env.DB_NAME || 'norchain_explorer'
+    : undefined,
   entities,
   migrations: [path.join(__dirname, '../migrations/*.ts')],
   migrationsTableName: 'migrations',
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  ssl: useSupabase && supabaseDbUrl
-    ? { rejectUnauthorized: false }
-    : process.env.DB_SSL ? { rejectUnauthorized: false } : false,
+  ssl:
+    useSupabase && supabaseDbUrl
+      ? { rejectUnauthorized: false }
+      : process.env.DB_SSL
+        ? { rejectUnauthorized: false }
+        : false,
 });
-

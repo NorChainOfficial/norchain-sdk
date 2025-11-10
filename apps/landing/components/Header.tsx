@@ -1,36 +1,52 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navLinks = [
     { name: "Features", href: "#features", scroll: true },
-    { name: "DEX", href: "/dex" },
-    { name: "Bridge", href: "/bridge" },
-    { name: "Charity", href: "#charity", scroll: true },
-    { name: "Roadmap", href: "#roadmap", scroll: true },
+    { name: "APIs", href: "#ecosystem", scroll: true },
+    { name: "Enterprise", href: "#enterprise", scroll: true },
+    { name: "Stats", href: "#network-stats", scroll: true },
+    { name: "Tech", href: "#technology", scroll: true },
+    { name: "Community", href: "#community", scroll: true },
     { name: "Docs", href: "https://docs.norchain.org", external: true },
   ];
 
   return (
-    <nav className="fixed w-full bg-white/95 backdrop-blur-lg border-b border-gray-200 z-50 shadow-sm">
+    <nav className={`fixed w-full z-50 transition-all duration-300 ${
+      scrolled 
+        ? 'bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50' 
+        : 'bg-transparent'
+    }`}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group">
-            <div className="h-10 w-10 bg-gradient-primary rounded-lg flex items-center justify-center transition-transform group-hover:scale-105 shadow-lg">
-              <span className="text-white font-bold text-2xl">N</span>
+          {/* Ultra-minimal logo */}
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-300" />
+              <div className="relative h-10 w-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
+                <span className="text-white font-bold text-lg">N</span>
+              </div>
             </div>
-            <div>
-              <span className="text-gray-900 dark:text-white text-2xl font-bold">NorChain</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400 ml-2 font-medium">نور</span>
+            <div className="flex items-center">
+              <span className="text-white text-xl font-light tracking-wide">NorChain</span>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Ultra-clean desktop navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) =>
               link.external ? (
@@ -39,7 +55,7 @@ export default function Header() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  className="text-slate-300 hover:text-white transition-colors font-light text-sm tracking-wide hover:underline underline-offset-4"
                 >
                   {link.name}
                 </a>
@@ -47,14 +63,40 @@ export default function Header() {
                 <a
                   key={link.name}
                   href={link.href}
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-medium cursor-pointer"
+                  className="text-slate-300 hover:text-white transition-colors font-light text-sm tracking-wide cursor-pointer hover:underline underline-offset-4"
                   onClick={(e) => {
                     e.preventDefault();
                     const element = document.querySelector(link.href);
-                    element?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
+                    if (element) {
+                      // Add spring scroll animation
+                      const startPosition = window.pageYOffset;
+                      const targetPosition = element.getBoundingClientRect().top + startPosition - 32; // 2rem offset
+                      const distance = targetPosition - startPosition;
+                      const duration = Math.min(Math.abs(distance) / 2, 1200); // Dynamic duration, max 1200ms
+                      
+                      let start: number | null = null;
+                      
+                      function animation(currentTime: number) {
+                        if (start === null) start = currentTime;
+                        const timeElapsed = currentTime - start;
+                        const progress = Math.min(timeElapsed / duration, 1);
+                        
+                        // Cubic bezier spring easing
+                        const easeOutBounce = (t: number): number => {
+                          if (t < 1 / 2.75) return 7.5625 * t * t;
+                          else if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+                          else if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+                          else return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+                        };
+                        
+                        const easedProgress = easeOutBounce(progress);
+                        window.scrollTo(0, startPosition + distance * easedProgress);
+                        
+                        if (progress < 1) requestAnimationFrame(animation);
+                      }
+                      
+                      requestAnimationFrame(animation);
+                    }
                   }}
                 >
                   {link.name}
@@ -63,29 +105,33 @@ export default function Header() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  className="text-slate-300 hover:text-white transition-colors font-light text-sm tracking-wide hover:underline underline-offset-4"
                 >
                   {link.name}
                 </Link>
               )
             )}
-            <a
-              href="https://explorer.norchain.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-2 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl font-semibold"
-            >
-              Launch Explorer
-            </a>
+            
+            {/* Minimal CTA button */}
+            <div className="flex items-center space-x-4">
+              <a
+                href="https://explorer.norchain.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-light rounded-xl hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 hover:scale-105"
+              >
+                Explorer
+              </a>
+            </div>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Modern mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="md:hidden p-2 text-white hover:text-cyan-400 transition-colors"
           >
             <svg
-              className="w-6 h-6 text-gray-700"
+              className="w-6 h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -94,14 +140,14 @@ export default function Header() {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                   d="M6 18L18 6M6 6l12 12"
                 />
               ) : (
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth={2}
+                  strokeWidth={1.5}
                   d="M4 6h16M4 12h16M4 18h16"
                 />
               )}
@@ -109,9 +155,9 @@ export default function Header() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Modern mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-3 border-t border-gray-200 pt-4 animate-slideDown">
+          <div className="md:hidden mt-6 pb-6 space-y-4 border-t border-slate-700/50 pt-6 bg-slate-900/95 backdrop-blur-xl rounded-2xl mx-4 px-6">
             {navLinks.map((link) =>
               link.external ? (
                 <a
@@ -119,7 +165,7 @@ export default function Header() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-gray-700 hover:text-blue-600 transition-colors font-medium py-2"
+                  className="block text-slate-300 hover:text-white transition-colors font-light text-lg py-3"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.name}
@@ -128,15 +174,40 @@ export default function Header() {
                 <a
                   key={link.name}
                   href={link.href}
-                  className="block text-gray-700 hover:text-blue-600 transition-colors font-medium py-2 cursor-pointer"
+                  className="block text-slate-300 hover:text-white transition-colors font-light text-lg py-3 cursor-pointer"
                   onClick={(e) => {
                     e.preventDefault();
                     setIsMenuOpen(false);
                     const element = document.querySelector(link.href);
-                    element?.scrollIntoView({
-                      behavior: "smooth",
-                      block: "start",
-                    });
+                    if (element) {
+                      // Add spring scroll animation for mobile
+                      const startPosition = window.pageYOffset;
+                      const targetPosition = element.getBoundingClientRect().top + startPosition - 32;
+                      const distance = targetPosition - startPosition;
+                      const duration = Math.min(Math.abs(distance) / 2, 1200);
+                      
+                      let start: number | null = null;
+                      
+                      function animation(currentTime: number) {
+                        if (start === null) start = currentTime;
+                        const timeElapsed = currentTime - start;
+                        const progress = Math.min(timeElapsed / duration, 1);
+                        
+                        const easeOutBounce = (t: number): number => {
+                          if (t < 1 / 2.75) return 7.5625 * t * t;
+                          else if (t < 2 / 2.75) return 7.5625 * (t -= 1.5 / 2.75) * t + 0.75;
+                          else if (t < 2.5 / 2.75) return 7.5625 * (t -= 2.25 / 2.75) * t + 0.9375;
+                          else return 7.5625 * (t -= 2.625 / 2.75) * t + 0.984375;
+                        };
+                        
+                        const easedProgress = easeOutBounce(progress);
+                        window.scrollTo(0, startPosition + distance * easedProgress);
+                        
+                        if (progress < 1) requestAnimationFrame(animation);
+                      }
+                      
+                      requestAnimationFrame(animation);
+                    }
                   }}
                 >
                   {link.name}
@@ -145,7 +216,7 @@ export default function Header() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="block text-gray-700 hover:text-blue-600 transition-colors font-medium py-2"
+                  className="block text-slate-300 hover:text-white transition-colors font-light text-lg py-3"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {link.name}
@@ -156,7 +227,7 @@ export default function Header() {
               href="https://explorer.norchain.org"
               target="_blank"
               rel="noopener noreferrer"
-              className="block px-6 py-3 bg-gradient-primary text-white rounded-lg hover:opacity-90 transition-all shadow-lg text-center font-semibold"
+              className="block w-full text-center px-6 py-3 mt-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl font-light transition-all"
               onClick={() => setIsMenuOpen(false)}
             >
               Launch Explorer

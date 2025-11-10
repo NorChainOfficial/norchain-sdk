@@ -7,4 +7,3 @@ import { AppDataSource } from '../config/data-source';
 
 // Export for TypeORM CLI
 export default AppDataSource;
-

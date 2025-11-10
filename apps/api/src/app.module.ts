@@ -31,13 +31,14 @@ import { OrdersModule } from './modules/orders/orders.module';
 import { AIModule } from './modules/ai/ai.module';
 import { MonitoringModule } from './modules/monitoring/monitoring.module';
 import { BlockchainModule } from './modules/blockchain/blockchain.module';
+import { WalletModule } from './modules/wallet/wallet.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
     // Global Common Services
     CommonModule,
-    
+
     // Configuration
     ConfigModule.forRoot({
       isGlobal: true,
@@ -115,6 +116,7 @@ import { CommonModule } from './common/common.module';
     AIModule,
     MonitoringModule,
     BlockchainModule,
+    WalletModule,
   ],
   providers: [
     {

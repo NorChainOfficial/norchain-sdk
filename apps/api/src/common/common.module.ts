@@ -7,7 +7,7 @@ import { CacheService } from './services/cache.service';
 
 /**
  * Common Module
- * 
+ *
  * Provides global services that are used across multiple modules:
  * - RpcService: Blockchain RPC interaction
  * - CacheService: Redis caching
@@ -23,7 +23,7 @@ import { CacheService } from './services/cache.service';
         const isTest = nodeEnv === 'test';
         const redisHost = configService.get('REDIS_HOST', 'localhost');
         const redisPort = configService.get('REDIS_PORT', 6379);
-        
+
         // Use in-memory cache for tests or if Redis is not available
         if (isTest || !redisHost || redisHost === 'localhost') {
           return {
@@ -31,7 +31,7 @@ import { CacheService } from './services/cache.service';
             max: 100,
           } as any;
         }
-        
+
         // Use Redis for production/development
         return {
           store: redisStore as any,
@@ -49,4 +49,3 @@ import { CacheService } from './services/cache.service';
   exports: [RpcService, CacheService],
 })
 export class CommonModule {}
-

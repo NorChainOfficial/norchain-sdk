@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
+
 export default function Features() {
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
+
   const infrastructureFeatures = [
     {
       iconPath: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
@@ -8,7 +12,8 @@ export default function Features() {
       description:
         "Multi-layer security architecture with HSM validators, formal verification, and regular third-party audits.",
       metric: "Bank-Grade",
-      color: "from-red-400 to-pink-500",
+      color: "from-cyan-400 to-blue-500",
+      accent: "cyan",
     },
     {
       iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
@@ -16,15 +21,17 @@ export default function Features() {
       description:
         "3-second block times, 10,000+ TPS capacity, and sub-100ms API response times for demanding applications.",
       metric: "Ultra Fast",
-      color: "from-yellow-400 to-orange-500",
+      color: "from-blue-400 to-purple-500",
+      accent: "blue",
     },
     {
       iconPath: "M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9",
-      title: "Global Accessibility",
+      title: "Global Scale",
       description:
-        "99.9% uptime SLA, global CDN distribution, and 24/7 monitoring across multiple regions worldwide.",
+        "99.9% uptime SLA, global infrastructure, and enterprise-grade monitoring across multiple regions.",
       metric: "Always On",
-      color: "from-cyan-400 to-blue-500",
+      color: "from-purple-400 to-pink-500",
+      accent: "purple",
     },
     {
       iconPath: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
@@ -32,15 +39,8 @@ export default function Features() {
       description:
         "Built-in compliance frameworks for GDPR, SOC 2, and regional regulations. Audit trails included.",
       metric: "Compliant",
-      color: "from-blue-400 to-indigo-500",
-    },
-    {
-      iconPath: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.722a8.014 8.014 0 00.962-3.428L10 16.5l.316 1.072A8.014 8.014 0 0011.278 21H16a8.014 8.014 0 00-.244-5.572z",
-      title: "Developer First",
-      description:
-        "Comprehensive APIs, SDKs, testing environments, and extensive documentation for rapid development.",
-      metric: "Dev Ready",
-      color: "from-purple-400 to-pink-500",
+      color: "from-green-400 to-cyan-500",
+      accent: "green",
     },
   ];
 
@@ -80,109 +80,112 @@ export default function Features() {
   ];
 
   return (
-    <section id="features" className="py-20 bg-white scroll-mt-20">
-      <div className="container mx-auto px-6">
-        {/* Infrastructure Features Section */}
-        <div className="mb-20">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-gray-900">
-            Enterprise Infrastructure
-          </h2>
-          <p className="text-center text-gray-600 mb-16 text-lg max-w-3xl mx-auto">
-            Production-ready blockchain infrastructure built for demanding enterprise applications
-          </p>
+    <section id="features" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-20 relative overflow-hidden">
+      {/* Background elements inspired by Dribbble designs */}
+      <div className="absolute inset-0">
+        <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-gradient-to-br from-blue-500/10 via-violet-500/15 to-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-gradient-to-tl from-purple-500/10 via-blue-500/15 to-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
+      </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {infrastructureFeatures.map((feature, index) => (
-              <div
-                key={feature.title}
-                className="group bg-white border-2 border-gray-200 rounded-2xl p-6 text-center transition-all duration-300 hover:border-blue-600 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="h-16 w-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={feature.iconPath}/>
-                  </svg>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-sm leading-relaxed mb-4">
-                  {feature.description}
-                </p>
-                <div
-                  className={`bg-gradient-to-r ${feature.color} text-white font-bold px-3 py-2 rounded-lg text-sm inline-block shadow-md group-hover:shadow-lg transition-shadow`}
-                >
-                  {feature.metric}
-                </div>
-              </div>
-            ))}
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+        {/* Bold Dribbble-inspired section header */}
+        <div className="text-center mb-16 sm:mb-24">
+          <div className="relative inline-block mb-6 sm:mb-8">
+            <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
+              Infrastructure
+            </h2>
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500 rounded-full" />
           </div>
+          <p className="text-lg sm:text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed">
+            Enterprise-grade blockchain infrastructure engineered for the future
+          </p>
         </div>
 
-        {/* API Features Section */}
-        <div>
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-gray-900">
-            Developer APIs & Tools
-          </h2>
-          <p className="text-center text-gray-600 mb-16 text-lg max-w-3xl mx-auto">
-            Comprehensive API suite and developer tools designed for modern blockchain applications
-          </p>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {apiFeatures.map((feature, index) => (
-              <div
-                key={feature.title}
-                className="group bg-white border-2 border-gray-200 rounded-2xl p-8 text-center transition-all duration-300 hover:border-blue-600 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="h-20 w-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={feature.iconPath}/>
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600 text-base leading-relaxed mb-4">
-                  {feature.description}
-                </p>
-                <div
-                  className={`bg-gradient-to-r ${feature.color} text-white font-bold px-4 py-2 rounded-lg inline-block shadow-md group-hover:shadow-lg transition-shadow`}
-                >
-                  {feature.metric}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-16 text-center">
-          <a
-            href="#developer-tools"
-            onClick={(e) => {
-              e.preventDefault();
-              document
-                .querySelector("#developer-tools")
-                ?.scrollIntoView({ behavior: "smooth" });
-            }}
-            className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-          >
-            Start Building
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+        {/* Dribbble-style feature grid with depth */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-16 sm:mb-24">
+          {infrastructureFeatures.map((feature, index) => (
+            <div
+              key={feature.title}
+              className="group relative"
+              onMouseEnter={() => setHoveredFeature(index)}
+              onMouseLeave={() => setHoveredFeature(null)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7"
-              />
-            </svg>
-          </a>
+              {/* Modern card with depth */}
+              <div className="relative bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8 h-full transition-all duration-500 hover:bg-gray-900/60 hover:border-gray-600/70 hover:transform hover:scale-105 hover:-translate-y-2 shadow-2xl hover:shadow-3xl">
+                
+                {/* Dynamic gradient overlay */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-3xl`} />
+                
+                {/* Icon with enhanced depth and glow */}
+                <div className="relative mb-8">
+                  <div className={`absolute -inset-2 bg-gradient-to-br ${feature.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+                  <div className={`relative h-20 w-20 bg-gradient-to-br ${feature.color} rounded-3xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-500`}>
+                    <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={feature.iconPath}/>
+                    </svg>
+                  </div>
+                  
+                  {/* Floating indicator */}
+                  <div className={`absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r ${feature.color} rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-pulse`} />
+                </div>
+
+                {/* Enhanced typography */}
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-300 transition-colors duration-300">
+                  {feature.title}
+                </h3>
+                
+                <p className="text-gray-400 text-base font-normal leading-relaxed mb-8 group-hover:text-gray-300 transition-colors duration-300">
+                  {feature.description}
+                </p>
+
+                {/* Modern badge with glow */}
+                <div className={`inline-flex items-center text-sm font-bold text-white bg-gradient-to-r ${feature.color} px-4 py-2 rounded-2xl shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                  {feature.metric}
+                </div>
+
+                {/* Progressive reveal border */}
+                <div className={`absolute inset-0 rounded-3xl border-2 border-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                
+                {/* Bottom accent line */}
+                <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${feature.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-b-3xl`} />
+              </div>
+
+              {/* Floating elements around card */}
+              <div className={`absolute -top-2 -right-2 w-3 h-3 bg-gradient-to-r ${feature.color} rounded-full opacity-0 group-hover:opacity-60 transition-opacity duration-700 animate-pulse`} style={{animationDelay: `${index * 200}ms`}} />
+              <div className={`absolute -bottom-2 -left-2 w-2 h-2 bg-gradient-to-r ${feature.color} rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-700 animate-pulse`} style={{animationDelay: `${index * 300}ms`}} />
+            </div>
+          ))}
         </div>
+
+        {/* Bold CTA section */}
+        <div className="text-center">
+          <div className="relative inline-block">
+            <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-600 rounded-3xl blur-xl opacity-20" />
+            <a
+              href="#developer-tools"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#developer-tools")?.scrollIntoView({ behavior: "smooth" });
+              }}
+              className="relative group inline-flex items-center gap-4 px-16 py-6 bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-600 text-white rounded-3xl font-bold text-xl tracking-wide hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-500 hover:scale-105"
+            >
+              <span className="relative">Explore Developer APIs</span>
+              <svg className="w-6 h-6 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+              
+              {/* Button overlay effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
+            </a>
+          </div>
+        </div>
+
+        {/* Enhanced floating elements */}
+        <div className="absolute top-20 left-20 w-3 h-3 bg-cyan-400 rounded-full animate-pulse opacity-60" />
+        <div className="absolute top-40 right-32 w-2 h-2 bg-violet-400 rounded-full animate-pulse opacity-50" style={{animationDelay: '1s'}} />
+        <div className="absolute bottom-32 left-32 w-4 h-4 bg-blue-400 rounded-lg rotate-45 animate-pulse opacity-40" style={{animationDelay: '2s'}} />
+        <div className="absolute bottom-20 right-20 w-2 h-2 bg-emerald-400 rounded-full animate-pulse opacity-60" style={{animationDelay: '3s'}} />
       </div>
     </section>
   );

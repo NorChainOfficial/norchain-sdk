@@ -112,66 +112,83 @@ export default function NetworkStats() {
   ];
 
   return (
-    <section className="py-20 bg-gray-50 scroll-mt-20">
-      <div className="container mx-auto px-6">
-        <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-gray-900">
-          Infrastructure Performance
-        </h2>
-        <p className="text-center text-gray-600 mb-12 text-lg">
-          Real-time metrics from our blockchain infrastructure and developer APIs
-        </p>
+    <section id="network-stats" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
+      {/* Background elements inspired by Dribbble designs */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-br from-green-500/10 via-emerald-500/15 to-cyan-500/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-gradient-to-tl from-blue-500/10 via-green-500/15 to-emerald-500/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
+      </div>
 
-        <div className="grid md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
-          {stats.map((stat) => (
+      <div className="container mx-auto px-6 relative z-10">
+        {/* Bold Dribbble-inspired section header */}
+        <div className="text-center mb-24">
+          <div className="relative inline-block mb-8">
+            <h2 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
+              Network Stats
+            </h2>
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-green-500 via-emerald-500 to-cyan-500 rounded-full" />
+          </div>
+          <p className="text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed">
+            Real-time metrics from our blockchain infrastructure and developer APIs
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-16">
+          {stats.map((stat, index) => (
             <div
               key={stat.label}
-              className={`bg-white rounded-xl p-6 shadow-lg transition-all hover:shadow-xl hover:scale-105 ${
-                stat.highlight ? "ring-2 ring-green-500 shadow-green-200" : ""
-              }`}
+              className="group text-center hover:scale-105 transition-all duration-300"
             >
-              {/* Icon */}
-              <div className="flex justify-center mb-4">
-                <div className={`h-12 w-12 rounded-lg flex items-center justify-center ${
-                  stat.highlight ? "bg-green-100" : "bg-blue-100"
-                }`}>
-                  <svg className={`h-6 w-6 ${
-                    stat.highlight ? "text-green-600" : "text-blue-600"
-                  }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon}/>
-                  </svg>
+              <div className="relative mb-6">
+                <div className={`absolute inset-0 ${
+                  stat.highlight ? 'bg-gradient-to-r from-emerald-400 to-green-500' : 'bg-gradient-to-r from-cyan-400 to-blue-500'
+                } rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`} />
+                <div className="relative bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-6 hover:bg-gray-900/60 hover:border-gray-600/70 transition-all duration-300 shadow-2xl">
+                  <div className="flex justify-center mb-4">
+                    <div className={`h-16 w-16 ${
+                      stat.highlight ? 'bg-gradient-to-br from-emerald-400 to-green-500' : 'bg-gradient-to-br from-cyan-400 to-blue-500'
+                    } rounded-2xl flex items-center justify-center shadow-lg`}>
+                      <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon}/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="text-sm text-gray-400 mb-3 font-medium tracking-wider uppercase text-center">
+                    {stat.label}
+                  </div>
+                  <div
+                    className={`text-2xl font-black mb-2 flex items-center justify-center ${
+                      stat.highlight 
+                        ? 'bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent' 
+                        : 'bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent'
+                    }`}
+                  >
+                    {stat.isStatus && (
+                      <span className="inline-block w-3 h-3 bg-emerald-400 rounded-full mr-2 animate-pulse"></span>
+                    )}
+                    {stat.value}
+                  </div>
+                  <div className="text-xs text-gray-500 text-center">{stat.subtext}</div>
                 </div>
               </div>
-              
-              <div className="text-sm text-gray-600 mb-2 font-medium text-center">
-                {stat.label}
-              </div>
-              <div
-                className={`text-2xl font-bold mb-2 flex items-center justify-center ${
-                  stat.highlight ? "text-green-600" : "text-gray-900"
-                }`}
-              >
-                {stat.isStatus && (
-                  <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-2 animate-pulse"></span>
-                )}
-                {stat.value}
-              </div>
-              <div className="text-xs text-gray-500 text-center">{stat.subtext}</div>
             </div>
           ))}
         </div>
 
-        {/* Network Info */}
-        <div className="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-          <h3 className="text-2xl font-bold text-center mb-6 text-gray-900">
+        {/* Modern developer endpoints section */}
+        <div className="bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8 shadow-2xl hover:bg-gray-900/60 hover:border-gray-600/70 transition-all duration-300">
+          <h3 className="text-3xl font-bold text-center mb-8 text-white">
             Developer Endpoints
           </h3>
           <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div>
-              <div className="text-sm text-gray-600 mb-2 font-medium">
+            <div className="group">
+              <div className="text-sm text-gray-400 mb-3 font-medium tracking-wider uppercase">
                 JSON-RPC Endpoint
               </div>
               <code
-                className="bg-gray-100 px-4 py-2 rounded text-sm text-gray-900 font-mono hover:bg-gray-200 transition-colors cursor-pointer"
+                className="block bg-gray-800/60 backdrop-blur-sm border border-gray-600/40 px-6 py-4 rounded-2xl text-sm text-cyan-300 font-mono hover:bg-gray-700/60 hover:border-gray-500/50 transition-all duration-300 cursor-pointer shadow-lg group-hover:scale-105"
                 onClick={() =>
                   navigator.clipboard.writeText("https://rpc.norchain.org")
                 }
@@ -180,24 +197,24 @@ export default function NetworkStats() {
                 https://rpc.norchain.org
               </code>
             </div>
-            <div>
-              <div className="text-sm text-gray-600 mb-2 font-medium">
+            <div className="group">
+              <div className="text-sm text-gray-400 mb-3 font-medium tracking-wider uppercase">
                 REST API Base
               </div>
               <code
-                className="bg-gray-100 px-4 py-2 rounded text-sm text-gray-900 font-mono hover:bg-gray-200 transition-colors cursor-pointer"
+                className="block bg-gray-800/60 backdrop-blur-sm border border-gray-600/40 px-6 py-4 rounded-2xl text-sm text-cyan-300 font-mono hover:bg-gray-700/60 hover:border-gray-500/50 transition-all duration-300 cursor-pointer shadow-lg group-hover:scale-105"
                 onClick={() => navigator.clipboard.writeText("https://api.norchain.org/v1")}
                 title="Click to copy"
               >
                 https://api.norchain.org/v1
               </code>
             </div>
-            <div>
-              <div className="text-sm text-gray-600 mb-2 font-medium">
+            <div className="group">
+              <div className="text-sm text-gray-400 mb-3 font-medium tracking-wider uppercase">
                 WebSocket Stream
               </div>
               <code
-                className="bg-gray-100 px-4 py-2 rounded text-sm text-gray-900 font-mono hover:bg-gray-200 transition-colors cursor-pointer"
+                className="block bg-gray-800/60 backdrop-blur-sm border border-gray-600/40 px-6 py-4 rounded-2xl text-sm text-cyan-300 font-mono hover:bg-gray-700/60 hover:border-gray-500/50 transition-all duration-300 cursor-pointer shadow-lg group-hover:scale-105"
                 onClick={() => navigator.clipboard.writeText("wss://ws.norchain.org")}
                 title="Click to copy"
               >
@@ -206,25 +223,25 @@ export default function NetworkStats() {
             </div>
           </div>
           
-          <div className="mt-8 grid md:grid-cols-2 gap-8 text-center">
-            <div>
-              <div className="text-sm text-gray-600 mb-2 font-medium">
+          <div className="mt-10 grid md:grid-cols-2 gap-8 text-center">
+            <div className="group">
+              <div className="text-sm text-gray-400 mb-3 font-medium tracking-wider uppercase">
                 Chain ID
               </div>
               <code
-                className="bg-blue-100 px-4 py-2 rounded text-sm text-blue-900 font-mono hover:bg-blue-200 transition-colors cursor-pointer"
+                className="block bg-gradient-to-r from-blue-800/60 to-cyan-800/60 backdrop-blur-sm border border-blue-600/40 px-6 py-4 rounded-2xl text-sm text-blue-300 font-mono hover:from-blue-700/60 hover:to-cyan-700/60 hover:border-blue-500/50 transition-all duration-300 cursor-pointer shadow-lg group-hover:scale-105"
                 onClick={() => navigator.clipboard.writeText("65001")}
                 title="Click to copy"
               >
                 65001
               </code>
             </div>
-            <div>
-              <div className="text-sm text-gray-600 mb-2 font-medium">
+            <div className="group">
+              <div className="text-sm text-gray-400 mb-3 font-medium tracking-wider uppercase">
                 Native Token
               </div>
               <code
-                className="bg-purple-100 px-4 py-2 rounded text-sm text-purple-900 font-mono hover:bg-purple-200 transition-colors cursor-pointer"
+                className="block bg-gradient-to-r from-purple-800/60 to-violet-800/60 backdrop-blur-sm border border-purple-600/40 px-6 py-4 rounded-2xl text-sm text-purple-300 font-mono hover:from-purple-700/60 hover:to-violet-700/60 hover:border-purple-500/50 transition-all duration-300 cursor-pointer shadow-lg group-hover:scale-105"
                 onClick={() => navigator.clipboard.writeText("NOR")}
                 title="Click to copy"
               >
@@ -233,6 +250,12 @@ export default function NetworkStats() {
             </div>
           </div>
         </div>
+
+        {/* Enhanced floating elements */}
+        <div className="absolute top-40 left-40 w-3 h-3 bg-emerald-400 rounded-full animate-pulse opacity-60" />
+        <div className="absolute top-60 right-32 w-2 h-2 bg-green-400 rounded-full animate-pulse opacity-50" style={{animationDelay: '1s'}} />
+        <div className="absolute bottom-40 left-20 w-4 h-4 bg-cyan-400 rounded-lg rotate-45 animate-pulse opacity-40" style={{animationDelay: '2s'}} />
+        <div className="absolute bottom-60 right-40 w-2 h-2 bg-blue-400 rounded-full animate-pulse opacity-60" style={{animationDelay: '3s'}} />
       </div>
     </section>
   );
