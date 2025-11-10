@@ -13,16 +13,17 @@ import { User } from '../modules/auth/entities/user.entity';
 import { ApiKey } from '../modules/auth/entities/api-key.entity';
 import { Notification } from '../modules/notifications/entities/notification.entity';
 
+/**
+ * Database Configuration
+ *
+ * Supports both Supabase and regular PostgreSQL.
+ * If SUPABASE_DB_URL is provided, uses Supabase connection.
+ * Otherwise, falls back to regular PostgreSQL connection.
+ */
 export const databaseConfig = (
   configService: ConfigService,
-): TypeOrmModuleOptions => ({
-  type: 'postgres',
-  host: configService.get('DB_HOST'),
-  port: configService.get('DB_PORT'),
-  username: configService.get('DB_USER'),
-  password: configService.get('DB_PASSWORD'),
-  database: configService.get('DB_NAME'),
-  entities: [
+): TypeOrmModuleOptions => {
+  const entities = [
     Block,
     Transaction,
     TransactionLog,
@@ -35,12 +36,43 @@ export const databaseConfig = (
     User,
     ApiKey,
     Notification,
-  ],
-  synchronize: configService.get('NODE_ENV') === 'development',
-  logging: configService.get('NODE_ENV') === 'development',
-  ssl: configService.get('DB_SSL') ? { rejectUnauthorized: false } : false,
-  migrations: ['dist/migrations/*.js'],
-  migrationsRun: false,
-  // Disable Redis cache for now - will enable after Redis connection is verified
-  cache: false,
-});
+  ];
+
+  // Check if Supabase is configured
+  const supabaseDbUrl = configService.get<string>('SUPABASE_DB_URL');
+  const useSupabase = configService.get('USE_SUPABASE') === 'true';
+
+  // Use Supabase if configured
+  if (useSupabase && supabaseDbUrl) {
+    return {
+      type: 'postgres',
+      url: supabaseDbUrl,
+      entities,
+      synchronize: configService.get('NODE_ENV') === 'development',
+      logging: configService.get('NODE_ENV') === 'development',
+      ssl: {
+        rejectUnauthorized: false,
+      },
+      migrations: ['dist/migrations/*.js'],
+      migrationsRun: false,
+      cache: false,
+    };
+  }
+
+  // Fall back to regular PostgreSQL
+  return {
+    type: 'postgres',
+    host: configService.get('DB_HOST', 'localhost'),
+    port: configService.get('DB_PORT', 5432),
+    username: configService.get('DB_USER', 'postgres'),
+    password: configService.get('DB_PASSWORD', 'postgres'),
+    database: configService.get('DB_NAME', 'norchain_explorer'),
+    entities,
+    synchronize: configService.get('NODE_ENV') === 'development',
+    logging: configService.get('NODE_ENV') === 'development',
+    ssl: configService.get('DB_SSL') ? { rejectUnauthorized: false } : false,
+    migrations: ['dist/migrations/*.js'],
+    migrationsRun: false,
+    cache: false,
+  };
+};

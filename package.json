@@ -2,7 +2,7 @@
   "name": "norchain-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "NorChain Ecosystem Monorepo - Explorer API & NEX Exchange",
+  "description": "NorChain Ecosystem Monorepo - Core Blockchain Infrastructure",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -21,12 +21,7 @@
     "nex:check": "npm run check --workspace=@norchain/nex-exchange",
     "docs:dev": "npm run dev --workspace=@norchain/docs",
     "docs:build": "npm run build --workspace=@norchain/docs",
-    "docs:start": "npm run start --workspace=@norchain/docs",
-    "wallet:dev": "npm run dev --workspace=@norchain/wallet",
-    "wallet:build": "npm run build --workspace=@norchain/wallet",
-    "wallet:start": "npm run start --workspace=@norchain/wallet",
-    "wallet:android": "cd apps/wallet-android && ./gradlew assembleDebug",
-    "wallet:ios": "cd apps/wallet-ios && ./scripts/open-xcode.sh"
+    "docs:start": "npm run start --workspace=@norchain/docs"
   },
   "devDependencies": {
     "typescript": "^5.5.0",

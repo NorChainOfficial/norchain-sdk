@@ -1,25 +1,24 @@
 # NorChain Monorepo
 
-**Complete NorChain ecosystem in a single repository**
+**Core NorChain blockchain infrastructure in a single repository**
 
 This monorepo contains:
-- **Unified API** (`apps/api`) - NestJS backend API (handles all database operations for Explorer, Wallet, Exchange, and all services)
+- **Unified API** (`apps/api`) - NestJS backend API (handles all database operations for Explorer, Exchange, and blockchain services)
 - **Explorer** (`apps/explorer`) - Blockchain explorer frontend
 - **Landing Page** (`apps/landing`) - Marketing website
 - **NEX Exchange** (`apps/nex-exchange`) - DEX platform frontend
-- **Wallet** (`apps/wallet`) - Multi-platform cryptocurrency wallet web app
-- **Wallet Android** (`apps/wallet-android`) - Android native wallet app (Kotlin/Compose)
-- **Wallet iOS** (`apps/wallet-ios`) - iOS native wallet app (SwiftUI)
 - **Documentation** (`apps/docs`) - Nextra documentation site
+
+> **Note**: Wallet applications have been moved to `backup/wallets/` for potential extraction into separate repositories, allowing them to support multiple blockchain networks independently.
 
 ## 🏗️ Architecture
 
 ```
-All Apps (Frontend) → Unified API (Backend) → PostgreSQL/Redis
+Frontend Apps → Unified API (Backend) → PostgreSQL/Redis
 ```
 
-- **All Frontend Apps**: Explorer, Landing, NEX Exchange, Wallet - call Unified API endpoints
-- **Unified API**: Backend API, handles all database operations for entire ecosystem
+- **Frontend Apps**: Explorer, Landing, NEX Exchange - call Unified API endpoints
+- **Unified API**: Backend API, handles all database operations for blockchain infrastructure
 - **Shared Database**: PostgreSQL used by Unified API, Redis for caching
 
 ## 🚀 Quick Start
@@ -52,39 +51,40 @@ npm run dev
 
 # Or run individually
 npm run api:dev         # Unified API on :4000
-npm run nex:dev         # NEX Exchange on :4001
+npm run nex:dev         # NEX Exchange on :3001
+npm run docs:dev        # Documentation on :3000
 ```
 
 ## 📦 Workspaces
 
 ### Unified API (`apps/api`)
 
-NestJS backend API - **handles all database operations for Explorer, Wallet, Exchange, and all ecosystem services**.
+NestJS backend API - **handles all database operations for Explorer, Exchange, and all blockchain infrastructure services**.
 
 **Port**: 4000 (external), 3000 (internal)  
 **Docs**: http://localhost:4000/api-docs
 
-**Endpoints**:
-- `/api/swap/*` - Swap operations
+**Key Endpoints**:
+- `/api/block/*` - Block data and blockchain operations
+- `/api/transaction/*` - Transaction data and analysis
+- `/api/account/*` - Account operations and balances
+- `/api/swap/*` - DEX swap operations
 - `/api/orders/*` - Order management (limit, stop-loss, DCA)
-- `/api/prices` - Token prices
-- `/api/portfolio` - Portfolio data
-- `/api/account/*` - Account operations
-- `/api/block/*` - Block data
-- `/api/transaction/*` - Transaction data
+- `/api/token/*` - Token information and metadata
+- `/api/stats/*` - Network statistics and analytics
 
 ### NEX Exchange (`apps/nex-exchange`)
 
-Next.js frontend - **no database access, calls Explorer API**.
+Next.js DEX frontend - **no database access, calls Unified API**.
 
 **Port**: 3001  
 **URL**: http://localhost:3001
 
 **Features**:
-- Swap interface
-- Order management UI
-- Portfolio tracking
-- Wallet connection
+- Token swap interface
+- Advanced order management (limit, stop-loss, DCA)
+- Trading analytics and portfolio tracking
+- Multi-wallet integration support
 
 ## 🔧 Development
 
@@ -145,16 +145,37 @@ npm start
 | `npm run dev` | Run all services in development |
 | `npm run build` | Build all workspaces |
 | `npm test` | Run all tests |
-| `npm run explorer:dev` | Run Explorer API only |
+| `npm run api:dev` | Run Unified API only |
 | `npm run nex:dev` | Run NEX Exchange only |
+| `npm run docs:dev` | Run documentation site |
 | `npm run check` | Run setup checks |
 
 ## 🔗 Links
 
-- **Explorer API**: http://localhost:3000
+- **Unified API**: http://localhost:4000
+- **Explorer**: http://localhost:3002
 - **NEX Exchange**: http://localhost:3001
-- **API Docs**: http://localhost:3000/api-docs
+- **API Docs**: http://localhost:4000/api-docs
+- **Documentation**: http://localhost:3000
+
+## 📱 Wallet Applications (Backup)
+
+Wallet applications have been moved to `backup/wallets/` to achieve better separation of concerns:
+
+- `backup/wallets/web-wallet/` - Next.js web wallet
+- `backup/wallets/android-wallet/` - Android native wallet (Kotlin/Compose)
+- `backup/wallets/ios-wallet/` - iOS native wallet (SwiftUI)
+- `backup/wallets/chrome-extension/` - Chrome extension wallet
+- `backup/wallets/desktop-wallet/` - Desktop Tauri wallet
+- `backup/wallets/wallet-core/` - Shared Rust core library
+
+These can be extracted to separate repositories to:
+- Support multiple blockchain networks (not just NorChain)
+- Have independent development and deployment cycles
+- Reduce coupling between blockchain infrastructure and wallet applications
+
+See `backup/wallets/README.md` for extraction guidance.
 
 ---
 
-**Status**: ✅ **MONOREPO WITH SHARED DATABASE COMPLETE**
+**Status**: ✅ **BLOCKCHAIN INFRASTRUCTURE MONOREPO COMPLETE**

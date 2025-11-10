@@ -1,14 +1,18 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NorChainWebSocketGateway } from '../websocket/websocket.gateway';
+import { SupabaseService } from '../supabase/supabase.service';
 import { Notification } from './entities/notification.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
 /**
  * Notifications Service
  *
- * Manages user notifications and real-time delivery via WebSocket.
+ * Manages user notifications with real-time delivery via:
+ * - WebSocket (Socket.io) - For client connections
+ * - Supabase Realtime - For database change subscriptions and custom events
+ *
  * Supports push notifications, email notifications, and in-app notifications.
  *
  * @class NotificationsService
@@ -32,6 +36,7 @@ export class NotificationsService {
     @InjectRepository(Notification)
     private notificationRepository: Repository<Notification>,
     private websocketGateway: NorChainWebSocketGateway,
+    @Optional() private supabaseService?: SupabaseService,
   ) {}
 
   /**
@@ -48,6 +53,20 @@ export class NotificationsService {
     this.websocketGateway.server
       .to(`user:${dto.userId}`)
       .emit('notification', saved);
+
+    // Also broadcast via Supabase Realtime for cross-platform support
+    if (this.supabaseService) {
+      try {
+        await this.supabaseService.broadcast(
+          `notifications:${dto.userId}`,
+          'new-notification',
+          saved,
+        );
+        this.logger.debug(`Notification broadcasted via Supabase for user ${dto.userId}`);
+      } catch (error) {
+        this.logger.warn(`Failed to broadcast via Supabase: ${error.message}`);
+      }
+    }
 
     this.logger.log(`Notification created: ${saved.id} for user ${dto.userId}`);
     return saved;
@@ -151,12 +170,59 @@ export class NotificationsService {
   /**
    * Sends a real-time notification to a user.
    *
+   * Uses both WebSocket and Supabase Realtime for maximum compatibility.
+   *
    * @param {string} userId - User ID
    * @param {any} data - Notification data
    */
   sendRealtimeNotification(userId: string, data: any) {
+    // Send via WebSocket
     this.websocketGateway.server
       .to(`user:${userId}`)
       .emit('notification', data);
+
+    // Also broadcast via Supabase Realtime
+    if (this.supabaseService) {
+      this.supabaseService
+        .broadcast(`notifications:${userId}`, 'notification', data)
+        .catch((error) => {
+          this.logger.warn(`Supabase broadcast failed: ${error.message}`);
+        });
+    }
+  }
+
+  /**
+   * Subscribes to notifications for a user via Supabase Realtime.
+   *
+   * This allows clients to receive notifications directly from Supabase
+   * without needing WebSocket connection.
+   *
+   * @param {string} userId - User ID
+   * @param {Function} callback - Callback function for notifications
+   */
+  async subscribeToUserNotifications(
+    userId: string,
+    callback: (notification: Notification) => void,
+  ): Promise<void> {
+    if (!this.supabaseService) {
+      this.logger.warn('Supabase not available for notification subscriptions');
+      return;
+    }
+
+    // Subscribe to database changes
+    await this.supabaseService.subscribeToChannel(
+      `notifications:${userId}`,
+      (payload) => {
+        if (payload.type === 'presence') {
+          return; // Ignore presence events
+        }
+        callback(payload.payload || payload);
+      },
+      {
+        event: 'new-notification',
+      },
+    );
+
+    this.logger.log(`Subscribed to notifications for user: ${userId}`);
   }
 }

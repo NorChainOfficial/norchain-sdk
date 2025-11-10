@@ -10,14 +10,26 @@ import { NorChainWebSocketGateway } from '../websocket/websocket.gateway';
 /**
  * Supabase Service
  *
- * Provides Supabase integration for real-time database subscriptions.
- * Listens to database changes and broadcasts via WebSocket.
+ * Provides comprehensive Supabase integration for all real-time features:
+ * - Database change subscriptions (blocks, transactions, tokens)
+ * - Custom real-time channels and events
+ * - Presence tracking
+ * - Direct real-time broadcasting
+ * - Storage real-time updates
  *
  * @class SupabaseService
  * @example
  * ```typescript
- * // Subscribe to new blocks
+ * // Subscribe to database changes
  * supabaseService.subscribeToBlocks();
+ *
+ * // Subscribe to custom channel
+ * supabaseService.subscribeToChannel('custom-events', (payload) => {
+ *   console.log('Custom event:', payload);
+ * });
+ *
+ * // Broadcast custom event
+ * supabaseService.broadcast('custom-channel', 'event-name', { data: 'value' });
  * ```
  */
 @Injectable()
@@ -25,6 +37,7 @@ export class SupabaseService implements OnModuleInit {
   private readonly logger = new Logger(SupabaseService.name);
   private supabase: SupabaseClient;
   private channels: Map<string, RealtimeChannel> = new Map();
+  private customChannels: Map<string, RealtimeChannel> = new Map();
 
   constructor(
     private configService: ConfigService,
@@ -41,9 +54,9 @@ export class SupabaseService implements OnModuleInit {
           },
         },
       });
-      this.logger.log('Supabase client initialized');
+      this.logger.log('Supabase client initialized for all real-time features');
     } else {
-      this.logger.warn('Supabase not configured, real-time features disabled');
+      this.logger.warn('Supabase not configured, all real-time features disabled');
     }
   }
 
@@ -236,11 +249,184 @@ export class SupabaseService implements OnModuleInit {
   }
 
   /**
+   * Subscribes to a custom real-time channel.
+   *
+   * Use this for custom events, presence tracking, or any real-time feature
+   * that doesn't depend on database changes.
+   *
+   * @param {string} channelName - Channel name
+   * @param {Function} callback - Callback function for events
+   * @param {object} options - Subscription options
+   * @example
+   * ```typescript
+   * supabaseService.subscribeToChannel('notifications', (payload) => {
+   *   console.log('Notification:', payload);
+   * });
+   * ```
+   */
+  async subscribeToChannel(
+    channelName: string,
+    callback: (payload: any) => void,
+    options?: {
+      event?: string;
+      filter?: string;
+    },
+  ): Promise<void> {
+    if (!this.supabase) {
+      this.logger.warn(`Cannot subscribe to ${channelName}: Supabase not configured`);
+      return;
+    }
+
+    if (this.customChannels.has(channelName)) {
+      this.logger.warn(`Already subscribed to channel: ${channelName}`);
+      return;
+    }
+
+    const channel = this.supabase.channel(channelName);
+
+    // Subscribe to custom events
+    if (options?.event) {
+      channel.on('broadcast', { event: options.event }, (payload) => {
+        callback(payload);
+      });
+    } else {
+      // Subscribe to all events on channel
+      channel.on('broadcast', { event: '*' }, (payload) => {
+        callback(payload);
+      });
+    }
+
+    // Subscribe to presence updates
+    channel.on('presence', { event: 'sync' }, () => {
+      const state = channel.presenceState();
+      callback({ type: 'presence', state });
+    });
+
+    channel.on('presence', { event: 'join' }, ({ key, newPresences }) => {
+      callback({ type: 'presence-join', key, presences: newPresences });
+    });
+
+    channel.on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+      callback({ type: 'presence-leave', key, presences: leftPresences });
+    });
+
+    await channel.subscribe();
+    this.customChannels.set(channelName, channel);
+    this.logger.log(`Subscribed to custom channel: ${channelName}`);
+  }
+
+  /**
+   * Broadcasts a custom event to a Supabase channel.
+   *
+   * This allows broadcasting events directly through Supabase Realtime,
+   * not just database changes.
+   *
+   * @param {string} channelName - Channel name
+   * @param {string} event - Event name
+   * @param {any} payload - Event payload
+   * @example
+   * ```typescript
+   * supabaseService.broadcast('notifications', 'new-notification', {
+   *   userId: '123',
+   *   message: 'New transaction'
+   * });
+   * ```
+   */
+  async broadcast(
+    channelName: string,
+    event: string,
+    payload: any,
+  ): Promise<void> {
+    if (!this.supabase) {
+      this.logger.warn(`Cannot broadcast to ${channelName}: Supabase not configured`);
+      return;
+    }
+
+    let channel = this.customChannels.get(channelName);
+
+    // Create channel if it doesn't exist
+    if (!channel) {
+      channel = this.supabase.channel(channelName);
+      await channel.subscribe();
+      this.customChannels.set(channelName, channel);
+    }
+
+    const status = await channel.send({
+      type: 'broadcast',
+      event,
+      payload,
+    });
+
+    if (status === 'ok') {
+      this.logger.debug(`Broadcasted ${event} to ${channelName}`);
+    } else {
+      this.logger.error(`Failed to broadcast ${event} to ${channelName}: ${status}`);
+    }
+  }
+
+  /**
+   * Updates presence on a channel.
+   *
+   * Use this to track who's online, what they're viewing, etc.
+   *
+   * @param {string} channelName - Channel name
+   * @param {string} key - Unique identifier (e.g., userId)
+   * @param {any} presence - Presence data
+   * @example
+   * ```typescript
+   * supabaseService.updatePresence('blocks', 'user-123', {
+   *   viewing: 'block-12345',
+   *   timestamp: Date.now()
+   * });
+   * ```
+   */
+  async updatePresence(
+    channelName: string,
+    key: string,
+    presence: any,
+  ): Promise<void> {
+    if (!this.supabase) {
+      this.logger.warn(`Cannot update presence: Supabase not configured`);
+      return;
+    }
+
+    let channel = this.customChannels.get(channelName);
+
+    if (!channel) {
+      channel = this.supabase.channel(channelName);
+      await channel.subscribe();
+      this.customChannels.set(channelName, channel);
+    }
+
+    await channel.track({
+      key,
+      ...presence,
+    });
+
+    this.logger.debug(`Updated presence for ${key} on ${channelName}`);
+  }
+
+  /**
+   * Unsubscribes from a custom channel.
+   *
+   * @param {string} channelName - Channel name
+   */
+  async unsubscribeFromChannel(channelName: string): Promise<void> {
+    const channel = this.customChannels.get(channelName);
+    if (channel) {
+      await this.supabase.removeChannel(channel);
+      this.customChannels.delete(channelName);
+      this.logger.log(`Unsubscribed from custom channel: ${channelName}`);
+    }
+  }
+
+  /**
    * Cleans up all subscriptions.
    */
   async onModuleDestroy() {
     if (!this.supabase) return;
 
+    // Clean up database subscriptions
     for (const [name, channel] of this.channels.entries()) {
       try {
         await this.supabase.removeChannel(channel);
@@ -250,5 +436,16 @@ export class SupabaseService implements OnModuleInit {
       }
     }
     this.channels.clear();
+
+    // Clean up custom channels
+    for (const [name, channel] of this.customChannels.entries()) {
+      try {
+        await this.supabase.removeChannel(channel);
+        this.logger.log(`Unsubscribed from custom channel: ${name}`);
+      } catch (error) {
+        this.logger.error(`Error unsubscribing from custom channel ${name}: ${error.message}`);
+      }
+    }
+    this.customChannels.clear();
   }
 }

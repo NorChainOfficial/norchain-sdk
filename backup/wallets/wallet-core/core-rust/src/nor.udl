@@ -1,0 +1,322 @@
+// UniFFI interface definition for Noor Wallet Core
+namespace noor {
+    void init_logger(LogLevel level);
+    string get_noor_chain_rpc();
+    u64 get_noor_chain_id();
+};
+
+enum LogLevel {
+    "Trace",
+    "Debug",
+    "Info",
+    "Warn",
+    "Error",
+};
+
+// Error types
+[Error]
+enum CoreError {
+    "InvalidMnemonic",
+    "InvalidPrivateKey",
+    "InvalidAddress",
+    "InvalidTransaction",
+    "SigningError",
+    "RpcError",
+    "NetworkError",
+    "InvalidInput",
+    "InternalError",
+};
+
+// Wallet types
+dictionary Account {
+    string address;
+    string public_key;
+    u32 index;
+    string derivation_path;
+};
+
+dictionary Wallet {
+    string id;
+    sequence<Account> accounts;
+    timestamp created_at;
+};
+
+// Transaction types
+dictionary EvmTxParams {
+    string from;
+    string to;
+    string value;
+    string? data;
+    u64 gas_limit;
+    string gas_price;
+    u64 nonce;
+    u64 chain_id;
+};
+
+dictionary EvmTransaction {
+    string hash;
+    string signed_tx;
+    string? block_hash;
+    u64? block_number;
+    timestamp? timestamp;
+};
+
+dictionary GasEstimate {
+    string gas_limit;
+    string gas_price;
+    string max_fee;
+    string total_cost;
+};
+
+// Account Abstraction types
+dictionary UserOpParams {
+    string sender;
+    string nonce;
+    string init_code;
+    string call_data;
+    string call_gas_limit;
+    string verification_gas_limit;
+    string pre_verification_gas;
+    string max_fee_per_gas;
+    string max_priority_fee_per_gas;
+    string paymaster_and_data;
+    string signature;
+};
+
+dictionary UserOperation {
+    UserOpParams params;
+    string hash;
+    string? entry_point;
+};
+
+// Simulation types
+dictionary SimulationResult {
+    boolean success;
+    string? error;
+    sequence<StateChange> state_changes;
+    sequence<AllowanceChange> allowance_changes;
+    sequence<TokenTransfer> token_transfers;
+    GasEstimate gas_estimate;
+};
+
+dictionary StateChange {
+    string address;
+    string key;
+    string old_value;
+    string new_value;
+};
+
+dictionary AllowanceChange {
+    string token;
+    string owner;
+    string spender;
+    string old_allowance;
+    string new_allowance;
+};
+
+dictionary TokenTransfer {
+    string token;
+    string from;
+    string to;
+    string amount;
+    string? token_symbol;
+    u8? decimals;
+};
+
+dictionary SafetyReport {
+    boolean is_safe;
+    sequence<string> warnings;
+    sequence<string> critical_issues;
+    SimulationResult simulation;
+};
+
+// TRON types
+dictionary TronTxParams {
+    string from;
+    string to;
+    i64 amount;
+    string? contract_address;
+    string? data;
+    i64 fee_limit;
+};
+
+dictionary TronTransaction {
+    string txid;
+    string raw_data;
+    string signed_tx;
+};
+
+// RPC types
+dictionary RpcRequest {
+    string method;
+    string params;
+    string? id;
+};
+
+dictionary RpcResponse {
+    string? result;
+    string? error;
+    string? id;
+};
+
+// Network types
+dictionary NetworkInfo {
+    string rpc_url;
+    u64 chain_id;
+    string name;
+    string symbol;
+    u8 decimals;
+    string explorer_url;
+};
+
+// Wallet Management Interface
+interface WalletManager {
+    [Throws=CoreError]
+    constructor();
+    
+    [Throws=CoreError]
+    Wallet create_wallet(bytes entropy, string? passphrase);
+    
+    [Throws=CoreError]
+    Wallet import_from_mnemonic(string mnemonic, string? passphrase);
+    
+    [Throws=CoreError]
+    Wallet import_from_private_key(string private_key);
+    
+    [Throws=CoreError]
+    string export_mnemonic(string wallet_id);
+    
+    [Throws=CoreError]
+    string export_private_key(string wallet_id, u32 account_index);
+    
+    [Throws=CoreError]
+    Account derive_account(string wallet_id, u32 index);
+    
+    [Throws=CoreError]
+    sequence<Account> derive_accounts(string wallet_id, u32 start_index, u32 count);
+};
+
+// EVM Transaction Manager
+interface EvmManager {
+    [Throws=CoreError]
+    constructor();
+    
+    [Throws=CoreError]
+    EvmTransaction build_transaction(EvmTxParams params);
+    
+    [Throws=CoreError]
+    string sign_transaction(string wallet_id, u32 account_index, EvmTxParams params);
+    
+    [Throws=CoreError]
+    string sign_message(string wallet_id, u32 account_index, string message);
+    
+    [Throws=CoreError]
+    string sign_typed_data(string wallet_id, u32 account_index, string typed_data_json);
+    
+    [Throws=CoreError]
+    string recover_signer(string message, string signature);
+    
+    [Throws=CoreError]
+    GasEstimate estimate_gas(EvmTxParams params, string rpc_url);
+};
+
+// Account Abstraction Manager
+interface AaManager {
+    [Throws=CoreError]
+    constructor();
+    
+    [Throws=CoreError]
+    string create_account(string owner_address, u64 chain_id, string entry_point);
+    
+    [Throws=CoreError]
+    UserOperation build_user_operation(UserOpParams params);
+    
+    [Throws=CoreError]
+    string sign_user_operation(string wallet_id, u32 account_index, UserOpParams params);
+    
+    [Throws=CoreError]
+    GasEstimate estimate_user_op_gas(UserOpParams params, string bundler_url);
+    
+    [Throws=CoreError]
+    string send_user_operation(UserOpParams params, string bundler_url);
+};
+
+// TRON Manager
+interface TronManager {
+    [Throws=CoreError]
+    constructor();
+    
+    [Throws=CoreError]
+    TronTransaction build_transaction(TronTxParams params);
+    
+    [Throws=CoreError]
+    string sign_transaction(string wallet_id, u32 account_index, TronTxParams params);
+    
+    [Throws=CoreError]
+    string sign_message(string wallet_id, u32 account_index, string message);
+    
+    [Throws=CoreError]
+    boolean validate_address(string address);
+};
+
+// RPC Client
+interface RpcClient {
+    [Throws=CoreError]
+    constructor(string rpc_url);
+    
+    [Throws=CoreError]
+    RpcResponse call(string method, string params_json);
+    
+    [Throws=CoreError]
+    sequence<RpcResponse> batch_call(sequence<RpcRequest> requests);
+    
+    [Throws=CoreError]
+    string get_balance(string address);
+    
+    [Throws=CoreError]
+    u64 get_nonce(string address);
+    
+    [Throws=CoreError]
+    u64 get_chain_id();
+    
+    [Throws=CoreError]
+    string get_block_number();
+};
+
+// Simulation Engine
+interface SimulationEngine {
+    [Throws=CoreError]
+    constructor();
+    
+    [Throws=CoreError]
+    SimulationResult simulate_transaction(EvmTxParams params, string rpc_url);
+    
+    [Throws=CoreError]
+    SafetyReport analyze_transaction(EvmTxParams params, string rpc_url);
+    
+    [Throws=CoreError]
+    string check_allowance(string token, string owner, string spender, string rpc_url);
+    
+    [Throws=CoreError]
+    sequence<TokenTransfer> decode_token_transfers(string tx_hash, string rpc_url);
+};
+
+// Network Manager
+interface NetworkManager {
+    [Throws=CoreError]
+    constructor();
+    
+    NetworkInfo get_network_info();
+    
+    [Throws=CoreError]
+    string get_balance(string address);
+    
+    [Throws=CoreError]
+    u64 get_nonce(string address);
+    
+    [Throws=CoreError]
+    u64 get_chain_id();
+    
+    [Throws=CoreError]
+    string get_block_number();
+};

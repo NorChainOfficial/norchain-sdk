@@ -1,0 +1,24 @@
+# CodeQL Analysis Configuration
+name: "CodeQL"
+
+# Language configuration
+languages:
+  - javascript-typescript
+
+# Paths to analyze
+paths:
+  - apps/api/src
+  - apps/api/test
+
+# Exclusions
+paths-ignore:
+  - '**/node_modules'
+  - '**/dist'
+  - '**/*.spec.ts'
+  - '**/*.test.ts'
+
+# Query suites
+queries:
+  - security-extended
+  - security-and-quality
+

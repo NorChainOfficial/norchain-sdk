@@ -1,0 +1,60 @@
+name: NoorWallet
+options:
+  bundleIdPrefix: com.noor
+  deploymentTarget:
+    iOS: "15.0"
+  
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.noor.wallet
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    INFOPLIST_FILE: NoorWallet/Resources/Info.plist
+    SWIFT_OBJC_BRIDGING_HEADER: NoorWallet/Supporting Files/NorWallet-Bridging-Header.h
+    LIBRARY_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/../core-rust/target/universal-sim/release"
+    HEADER_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/NoorWallet/Supporting Files"
+    OTHER_LDFLAGS: "$(inherited) -lnor_core"
+    ENABLE_BITCODE: "NO"
+    SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+  configs:
+    Debug:
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+      GCC_OPTIMIZATION_LEVEL: "0"
+    Release:
+      SWIFT_OPTIMIZATION_LEVEL: "-O"
+      SWIFT_COMPILATION_MODE: wholemodule
+      GCC_OPTIMIZATION_LEVEL: "s"
+      VALIDATE_PRODUCT: "YES"
+
+targets:
+  NoorWallet:
+    type: application
+    platform: iOS
+    sources:
+      - path: NoorWallet/App
+        excludes:
+          - "*.h"
+      - NoorWallet/Resources
+    settings:
+      base:
+        PRODUCT_NAME: NoorWallet
+        PRODUCT_BUNDLE_IDENTIFIER: com.noor.wallet
+    dependencies:
+      - package: NoorCore
+
+packages:
+  NoorCore:
+    path: Packages/NoorCore
+
+schemes:
+  NoorWallet:
+    build:
+      targets:
+        NoorWallet: all
+    run:
+      config: Debug
+    archive:
+      config: Release
