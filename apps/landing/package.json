@@ -1,6 +1,7 @@
 {
-  "name": "@noor/landing",
-  "version": "1.0.0",
+  "name": "@norchain/landing",
+  "version": "2.0.0",
+  "description": "NorChain Infrastructure - Enterprise blockchain infrastructure and developer APIs",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010",

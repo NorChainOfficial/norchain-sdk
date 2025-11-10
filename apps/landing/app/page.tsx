@@ -1,14 +1,11 @@
 import Header from "../components/Header";
 import Hero from "../components/Hero";
-import ShariahCompliance from "../components/ShariahCompliance";
 import Features from "../components/Features";
 import EcosystemOverview from "../components/EcosystemOverview";
+import DeveloperQuickStart from "../components/DeveloperQuickStart";
+import EnterpriseFeatures from "../components/EnterpriseFeatures";
 import NetworkStats from "../components/NetworkStats";
-import FinancialProducts from "../components/FinancialProducts";
-import GovernanceCompliance from "../components/GovernanceCompliance";
-import CharityImpact from "../components/CharityImpact";
 import TechnologyStack from "../components/TechnologyStack";
-import Roadmap from "../components/Roadmap";
 import FAQ from "../components/FAQ";
 import Community from "../components/Community";
 import Footer from "../components/Footer";
@@ -20,15 +17,12 @@ export default function Home() {
       <Header />
       <div className="pt-16">
         <Hero />
-        <ShariahCompliance />
         <Features />
         <EcosystemOverview />
+        <DeveloperQuickStart />
+        <EnterpriseFeatures />
         <NetworkStats />
-        <FinancialProducts />
-        <GovernanceCompliance />
-        <CharityImpact />
         <TechnologyStack />
-        <Roadmap />
         <FAQ />
         <Community />
         <Footer />

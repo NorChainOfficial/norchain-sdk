@@ -1,8 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Enable standalone output for Docker
-  output: 'standalone',
+  // Enable static export for deployment
+  output: 'export',
+  trailingSlash: true,
+  
+  // Image optimization needs to be disabled for static export
+  images: {
+    unoptimized: true,
+  },
   
   // Bypass TypeScript and ESLint errors for deployment
   typescript: {

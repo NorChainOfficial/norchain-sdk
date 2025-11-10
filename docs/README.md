@@ -8,6 +8,8 @@ Complete documentation for the NorChain ecosystem monorepo.
 Complete product requirements, features, and specifications for the NorChain ecosystem.
 
 ### [Architecture](./architecture/)
+- **[High-Level Architecture](./architecture/HIGH_LEVEL_ARCHITECTURE.md)** ⭐ **NEW** - Complete protocol overview, tokenomics, and strategic roadmap
+- [System Diagram](./architecture/SYSTEM_DIAGRAM.md) - Visual architecture diagrams
 - [Complete Architecture](./architecture/COMPLETE_ARCHITECTURE.md) - Full system architecture
 - [System Architecture](./architecture/ARCHITECTURE.md) - Original architecture doc
 - [Ecosystem Overview](./architecture/ECOSYSTEM_COMPLETE.md) - Ecosystem structure
@@ -61,6 +63,8 @@ Roadmap and next steps for development and deployment.
 ## 🚀 Quick Links
 
 - [Main README](../README.md) - Project overview
+- **[High-Level Architecture](./architecture/HIGH_LEVEL_ARCHITECTURE.md)** ⭐ - Complete protocol and strategic overview
+- [System Diagram](./architecture/SYSTEM_DIAGRAM.md) - Visual architecture diagrams
 - [Architecture Overview](./architecture/COMPLETE_ARCHITECTURE.md) - How everything connects
 - [Development Setup](./development/DEVELOPMENT_INFRASTRUCTURE.md) - Get started developing
 - [Deployment Guide](./deployment/DOCKER_SETUP.md) - Deploy the ecosystem
@@ -69,9 +73,11 @@ Roadmap and next steps for development and deployment.
 
 ### Getting Started
 1. Read [PRD](./product/PRD.md) to understand the product
-2. Review [Architecture](./architecture/COMPLETE_ARCHITECTURE.md) to understand the system
-3. Follow [Development Infrastructure](./development/DEVELOPMENT_INFRASTRUCTURE.md) to set up
-4. Check [Next Steps](./NEXT_STEPS.md) for roadmap
+2. Review **[High-Level Architecture](./architecture/HIGH_LEVEL_ARCHITECTURE.md)** for protocol overview
+3. Check [System Diagram](./architecture/SYSTEM_DIAGRAM.md) for visual architecture
+4. Review [Complete Architecture](./architecture/COMPLETE_ARCHITECTURE.md) for technical details
+5. Follow [Development Infrastructure](./development/DEVELOPMENT_INFRASTRUCTURE.md) to set up
+6. Check [Next Steps](./NEXT_STEPS.md) for roadmap
 
 ### For Developers
 - [Development Infrastructure](./development/DEVELOPMENT_INFRASTRUCTURE.md)
@@ -85,6 +91,8 @@ Roadmap and next steps for development and deployment.
 
 ### For Product/Management
 - [Product Requirements](./product/PRD.md)
-- [Architecture Overview](./architecture/COMPLETE_ARCHITECTURE.md)
+- **[High-Level Architecture](./architecture/HIGH_LEVEL_ARCHITECTURE.md)** - Strategic protocol overview
+- [System Diagram](./architecture/SYSTEM_DIAGRAM.md) - Visual architecture
+- [Architecture Overview](./architecture/COMPLETE_ARCHITECTURE.md) - Technical architecture
 - [Next Steps](./NEXT_STEPS.md)
 

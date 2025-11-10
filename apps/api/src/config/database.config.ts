@@ -12,6 +12,9 @@ import { ApiUsage } from '../modules/stats/entities/api-usage.entity';
 import { User } from '../modules/auth/entities/user.entity';
 import { ApiKey } from '../modules/auth/entities/api-key.entity';
 import { Notification } from '../modules/notifications/entities/notification.entity';
+import { LimitOrder } from '../modules/orders/entities/limit-order.entity';
+import { DCASchedule } from '../modules/orders/entities/dca-schedule.entity';
+import { StopLossOrder } from '../modules/orders/entities/stop-loss-order.entity';
 
 /**
  * Database Configuration
@@ -36,26 +39,34 @@ export const databaseConfig = (
     User,
     ApiKey,
     Notification,
+    LimitOrder,
+    DCASchedule,
+    StopLossOrder,
   ];
 
   // Check if Supabase is configured
   const supabaseDbUrl = configService.get<string>('SUPABASE_DB_URL');
   const useSupabase = configService.get('USE_SUPABASE') === 'true';
 
+  const nodeEnv = configService.get('NODE_ENV', 'development');
+  const isTest = nodeEnv === 'test';
+  
   // Use Supabase if configured
   if (useSupabase && supabaseDbUrl) {
     return {
       type: 'postgres',
       url: supabaseDbUrl,
       entities,
-      synchronize: configService.get('NODE_ENV') === 'development',
-      logging: configService.get('NODE_ENV') === 'development',
+      autoLoadEntities: false,
+      synchronize: !isTest && nodeEnv === 'development',
+      logging: !isTest && nodeEnv === 'development',
       ssl: {
         rejectUnauthorized: false,
       },
-      migrations: ['dist/migrations/*.js'],
+      migrations: isTest ? [] : ['dist/migrations/*.js'],
       migrationsRun: false,
       cache: false,
+      dropSchema: false,
     };
   }
 
@@ -68,11 +79,13 @@ export const databaseConfig = (
     password: configService.get('DB_PASSWORD', 'postgres'),
     database: configService.get('DB_NAME', 'norchain_explorer'),
     entities,
-    synchronize: configService.get('NODE_ENV') === 'development',
-    logging: configService.get('NODE_ENV') === 'development',
+    autoLoadEntities: false,
+    synchronize: !isTest && nodeEnv === 'development',
+    logging: !isTest && nodeEnv === 'development',
     ssl: configService.get('DB_SSL') ? { rejectUnauthorized: false } : false,
-    migrations: ['dist/migrations/*.js'],
+    migrations: isTest ? [] : ['dist/migrations/*.js'],
     migrationsRun: false,
     cache: false,
+    dropSchema: false,
   };
 };

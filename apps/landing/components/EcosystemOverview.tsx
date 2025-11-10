@@ -2,70 +2,90 @@
 
 import { useState } from "react";
 
-interface EcosystemComponent {
+interface DeveloperEcosystemComponent {
   readonly name: string;
-  readonly purpose: string;
-  readonly icon: string;
+  readonly description: string;
+  readonly category: string;
+  readonly link: string;
   readonly color: string;
+  readonly iconPath: string;
 }
 
 export default function EcosystemOverview() {
   const [activeComponent, setActiveComponent] = useState<string | null>(null);
 
-  const ecosystemComponents: readonly EcosystemComponent[] = [
+  const developerEcosystem: readonly DeveloperEcosystemComponent[] = [
     {
-      name: "NorChain (L1)",
-      purpose: "Core blockchain running PoSA (Parlia) consensus with 3s blocks and 10,000-block epochs",
-      icon: "⛓️",
+      name: "JSON-RPC API",
+      description: "Complete Ethereum-compatible API with enhanced features for enterprise applications",
+      category: "Core API",
+      link: "https://api.norchain.org/api-docs",
       color: "from-blue-600 to-blue-700",
+      iconPath: "M10 20l4-16m18 4l4 4-4 4M6 16l-4-4 4-4",
     },
     {
-      name: "Dirhamat",
-      purpose: "Shariah-compliant stable-asset representing UAE Dirham and vaulted gold",
-      icon: "🪙",
-      color: "from-amber-600 to-amber-700",
-    },
-    {
-      name: "Digital KES",
-      purpose: "Stable digital Kenyan Shilling aligned with CBK sandbox regulations",
-      icon: "🇰🇪",
+      name: "WebSocket Streams",
+      description: "Real-time block, transaction, and event streaming for responsive applications",
+      category: "Real-time",
+      link: "https://docs.norchain.org/websockets",
       color: "from-green-600 to-green-700",
+      iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
     },
     {
-      name: "NordCoin",
-      purpose: "Nordic-compliant currency focused on ESG reporting and EU MiCA alignment",
-      icon: "🌊",
-      color: "from-cyan-600 to-cyan-700",
-    },
-    {
-      name: "NoorSwap (DEX)",
-      purpose: "Native decentralized exchange with hybrid liquidity routing and $800K locked liquidity",
-      icon: "🔄",
+      name: "Block Explorer API",
+      description: "Comprehensive blockchain data access with advanced filtering and analytics",
+      category: "Data Access",
+      link: "https://explorer.norchain.org/api",
       color: "from-purple-600 to-purple-700",
+      iconPath: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
     },
     {
-      name: "Noor Bridge",
-      purpose: "Cross-chain vault and router system linking Noor with BSC, Polygon, Ethereum",
-      icon: "🌉",
-      color: "from-indigo-600 to-indigo-700",
+      name: "Smart Contract Tools",
+      description: "Development tools, testing frameworks, and deployment utilities for smart contracts",
+      category: "Development",
+      link: "https://docs.norchain.org/smart-contracts",
+      color: "from-amber-600 to-amber-700",
+      iconPath: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
     },
     {
-      name: "Noor Funds",
-      purpose: "On-chain halal mutual and retirement funds for ethical investing",
-      icon: "💼",
-      color: "from-emerald-600 to-emerald-700",
-    },
-    {
-      name: "Compliance Core (XCC)",
-      purpose: "Smart-contract framework for AML/KYC/GDPR/AAOIFI rules",
-      icon: "🛡️",
+      name: "Authentication SDKs",
+      description: "Secure authentication and authorization libraries for multiple programming languages",
+      category: "Security",
+      link: "https://docs.norchain.org/auth",
       color: "from-red-600 to-red-700",
+      iconPath: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
     },
     {
-      name: "Noor AI Agents",
-      purpose: "Autonomous agents handling liquidity, compliance, and governance automation",
-      icon: "🤖",
+      name: "Analytics Suite",
+      description: "Business intelligence tools and APIs for blockchain analytics and insights",
+      category: "Analytics",
+      link: "https://analytics.norchain.org",
+      color: "from-cyan-600 to-cyan-700",
+      iconPath: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+    },
+    {
+      name: "Monitoring Tools",
+      description: "Infrastructure monitoring, alerting, and performance optimization tools",
+      category: "DevOps",
+      link: "https://monitor.norchain.org",
+      color: "from-indigo-600 to-indigo-700",
+      iconPath: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+    },
+    {
+      name: "Test Networks",
+      description: "Staging and development environments with faucets and testing utilities",
+      category: "Testing",
+      link: "https://testnet.norchain.org",
+      color: "from-emerald-600 to-emerald-700",
+      iconPath: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.722a8.014 8.014 0 00.962-3.428L10 16.5l.316 1.072A8.014 8.014 0 0011.278 21H16a8.014 8.014 0 00-.244-5.572z",
+    },
+    {
+      name: "Client Libraries",
+      description: "Official SDKs and libraries for JavaScript, Python, Go, and other popular languages",
+      category: "SDKs",
+      link: "https://docs.norchain.org/sdks",
       color: "from-pink-600 to-pink-700",
+      iconPath: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
     },
   ] as const;
 
@@ -75,22 +95,21 @@ export default function EcosystemOverview() {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Complete Financial Ecosystem
+            Developer Infrastructure
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
-            NorChain is the anchor of a complete financial and technological
-            ecosystem—bridging fiat, gold, digital assets, and AI-driven
-            governance.
+            Build the next generation of decentralized applications with our
+            comprehensive suite of developer tools, APIs, and infrastructure services.
           </p>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
-            Each component interoperates through unified standards and the Noor
-            AI protocol layer for predictive management.
+            From basic RPC calls to advanced analytics, we provide everything you need
+            to create production-ready blockchain applications.
           </p>
         </div>
 
-        {/* Ecosystem Grid */}
+        {/* Developer Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {ecosystemComponents.map((component) => (
+          {developerEcosystem.map((component) => (
             <div
               key={component.name}
               className={`bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 ${
@@ -117,9 +136,11 @@ export default function EcosystemOverview() {
             >
               {/* Icon */}
               <div
-                className={`h-16 w-16 bg-gradient-to-br ${component.color} rounded-2xl flex items-center justify-center text-4xl mb-6 shadow-lg`}
+                className={`h-16 w-16 bg-gradient-to-br ${component.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg`}
               >
-                {component.icon}
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={component.iconPath}/>
+                </svg>
               </div>
 
               {/* Component Name */}
@@ -127,79 +148,101 @@ export default function EcosystemOverview() {
                 {component.name}
               </h3>
 
-              {/* Purpose */}
-              <p className="text-gray-600 leading-relaxed">
-                {component.purpose}
+              {/* Category Badge */}
+              <div className="inline-block px-3 py-1 bg-blue-100 text-blue-600 text-sm font-medium rounded-full mb-4">
+                {component.category}
+              </div>
+              
+              {/* Description */}
+              <p className="text-gray-600 leading-relaxed mb-4">
+                {component.description}
               </p>
+              
+              {/* Action Link */}
+              <a
+                href={component.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Explore
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                </svg>
+              </a>
             </div>
           ))}
         </div>
 
-        {/* Key Technical Specs */}
+        {/* Developer Quick Start */}
         <div className="bg-white rounded-2xl p-8 shadow-xl">
           <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-            Technical Specifications
+            Get Started in Minutes
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-              <div className="text-4xl font-bold text-blue-600 mb-2">
-                65001
+              <div className="h-12 w-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
               </div>
-              <div className="text-sm text-gray-600 font-medium">Chain ID</div>
+              <div className="text-lg font-bold text-blue-600 mb-2">
+                Read Docs
+              </div>
+              <div className="text-sm text-gray-600">Comprehensive guides</div>
             </div>
 
             <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
-              <div className="text-4xl font-bold text-green-600 mb-2">3s</div>
-              <div className="text-sm text-gray-600 font-medium">
-                Block Time
+              <div className="h-12 w-12 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                </svg>
               </div>
+              <div className="text-lg font-bold text-green-600 mb-2">
+                Get API Key
+              </div>
+              <div className="text-sm text-gray-600">Free tier available</div>
             </div>
 
             <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-              <div className="text-4xl font-bold text-purple-600 mb-2">
-                21B
+              <div className="h-12 w-12 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m18 4l4 4-4 4M6 16l-4-4 4-4"/>
+                </svg>
               </div>
-              <div className="text-sm text-gray-600 font-medium">
-                NOR Supply
+              <div className="text-lg font-bold text-purple-600 mb-2">
+                Write Code
               </div>
+              <div className="text-sm text-gray-600">Use our SDKs</div>
             </div>
 
             <div className="text-center p-6 bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl">
-              <div className="text-4xl font-bold text-amber-600 mb-2">
-                3 + 2
+              <div className="h-12 w-12 bg-amber-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
               </div>
-              <div className="text-sm text-gray-600 font-medium">
-                Validators
+              <div className="text-lg font-bold text-amber-600 mb-2">
+                Deploy
               </div>
+              <div className="text-sm text-gray-600">Go live instantly</div>
             </div>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-6 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-xl">
-              <div className="text-2xl font-bold text-indigo-600 mb-2">
-                &lt;30s
-              </div>
-              <div className="text-sm text-gray-600 font-medium">
-                Finality Time
-              </div>
-            </div>
-
-            <div className="text-center p-6 bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl">
-              <div className="text-2xl font-bold text-pink-600 mb-2">
-                10,000
-              </div>
-              <div className="text-sm text-gray-600 font-medium">
-                Blocks per Epoch
-              </div>
-            </div>
-
-            <div className="text-center p-6 bg-gradient-to-br from-cyan-50 to-cyan-100 rounded-xl">
-              <div className="text-2xl font-bold text-cyan-600 mb-2">PoSA</div>
-              <div className="text-sm text-gray-600 font-medium">
-                Consensus Engine
-              </div>
-            </div>
+          <div className="mt-8 text-center">
+            <a
+              href="https://docs.norchain.org/getting-started"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-2xl hover:from-blue-500 hover:to-purple-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
+            >
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Start Building Now
+            </a>
           </div>
         </div>
       </div>

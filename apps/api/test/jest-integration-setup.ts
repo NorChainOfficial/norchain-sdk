@@ -5,3 +5,7 @@ jest.mock('bcrypt', () => ({
   genSalt: jest.fn(() => Promise.resolve('salt')),
 }));
 
+// Prevent TypeORM from scanning outside the app directory
+process.env.TYPEORM_ENTITIES_DIR = __dirname + '/../src';
+process.env.TYPEORM_MIGRATIONS_DIR = __dirname + '/../src/migrations';
+

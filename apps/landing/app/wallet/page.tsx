@@ -1,255 +1,173 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Noor Wallet - Download',
-  description: 'Download the official Noor Wallet Chrome extension. Manage NOR, tokens, and connect to dApps without MetaMask.',
+  title: 'NorChain Infrastructure - Wallet Applications',
+  description: 'Wallet applications have been moved to separate repositories for multi-network support.',
 };
 
 export default function WalletPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-purple-950/20 to-slate-950">
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 text-white overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+        <div className="absolute top-40 -left-40 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse [animation-delay:2s]"></div>
+        <div className="absolute bottom-40 right-40 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse [animation-delay:4s]"></div>
+      </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 mb-6">
-              <span className="text-4xl">🔐</span>
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-6 py-20">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Icon */}
+          <div className="mb-8 inline-flex">
+            <div className="h-32 w-32 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-500 animate-bounce">
+              <svg className="h-16 w-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 3l-1-1m-7-1h.01m-6.01 0H6m6-3a3 3 0 100 6 3 3 0 000-6z"/>
+              </svg>
             </div>
+          </div>
 
-            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Noor Wallet
+          {/* Title with stunning animation */}
+          <div className="mb-8 overflow-hidden">
+            <h1 className="text-6xl md:text-8xl font-black mb-4 leading-tight animate-fade-in">
+              <span className="block bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                Wallet Applications
+              </span>
             </h1>
+          </div>
 
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-              Your gateway to NorChain. Manage NOR, tokens, and connect to dApps with our native Chrome extension.
-            </p>
+          {/* Notification Badge */}
+          <div className="inline-flex items-center gap-4 bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-md border-2 border-orange-400/50 px-8 py-4 rounded-2xl mb-8 animate-fade-in [animation-delay:300ms]">
+            <div className="h-8 w-8 bg-orange-400 rounded-lg flex items-center justify-center animate-pulse">
+              <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div className="text-left">
+              <div className="text-orange-300 font-bold text-lg">Infrastructure Evolution</div>
+              <div className="text-orange-100 text-sm">Applications now available as independent services</div>
+            </div>
+          </div>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="/downloads/norchain-wallet-latest.zip"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-xl hover:shadow-xl hover:shadow-purple-500/50 transition-all hover:scale-105"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          {/* Main Message */}
+          <div className="mb-12 animate-fade-in [animation-delay:600ms]">
+            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 max-w-3xl mx-auto border border-white/20 shadow-2xl">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-blue-100">
+                Multi-Network Wallet Ecosystem
+              </h2>
+              <p className="text-lg md:text-xl text-blue-200 leading-relaxed mb-6">
+                We've restructured our wallet applications into independent repositories to enable 
+                specialized development for different blockchain networks. This architectural change 
+                allows for better security, faster iterations, and network-specific optimizations.
+              </p>
+              
+              {/* Features Grid */}
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-3 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="h-6 w-6 bg-blue-400 rounded-lg flex items-center justify-center">
+                      <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9"/>
+                      </svg>
+                    </div>
+                    <span className="text-white font-semibold">Cross-Chain Support</span>
+                  </div>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-3 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="h-6 w-6 bg-purple-400 rounded-lg flex items-center justify-center">
+                      <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12l4-4m-4 4l4 4"/>
+                      </svg>
+                    </div>
+                    <span className="text-white font-semibold">Modular Architecture</span>
+                  </div>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-3 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="h-6 w-6 bg-green-400 rounded-lg flex items-center justify-center">
+                      <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                      </svg>
+                    </div>
+                    <span className="text-white font-semibold">Rapid Deployment</span>
+                  </div>
+                </div>
+                <div className="bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-3 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="h-6 w-6 bg-pink-400 rounded-lg flex items-center justify-center">
+                      <svg className="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                      </svg>
+                    </div>
+                    <span className="text-white font-semibold">Enhanced Security</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap justify-center gap-6 mb-8 animate-fade-in [animation-delay:900ms]">
+            <a
+              href="/"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-2xl hover:from-blue-500 hover:to-purple-500 transition-all duration-300 shadow-2xl hover:shadow-blue-500/50 hover:scale-105 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+              <svg className="h-6 w-6 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m0 0h3.586a1 1 0 00.707-.293l8.293-8.293M13 21h3a1 1 0 001-1v-10"/>
+              </svg>
+              Back to Infrastructure
+            </a>
+            
+            <a
+              href="https://docs.norchain.org/wallets"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-lg rounded-2xl hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-2xl hover:shadow-purple-500/50 hover:scale-105 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+              <svg className="h-6 w-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+              </svg>
+              View Documentation
+            </a>
+          </div>
+
+          {/* Info Cards */}
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto animate-fade-in [animation-delay:1200ms]">
+            <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 backdrop-blur-md border border-blue-400/30 rounded-2xl p-6 hover:scale-105 transition-all duration-300 group">
+              <div className="h-16 w-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                 </svg>
-                Download for Chrome
-              </a>
+              </div>
+              <h3 className="text-xl font-bold text-blue-200 mb-3">Mobile Applications</h3>
+              <p className="text-blue-100/80">Native iOS and Android applications with biometric authentication and secure key management.</p>
+            </div>
 
-              <a
-                href="https://github.com/norchain/norchain-sdk/tree/main/apps/wallet-extension"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-700 transition-all border border-slate-700"
-              >
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-md border border-purple-400/30 rounded-2xl p-6 hover:scale-105 transition-all duration-300 group">
+              <div className="h-16 w-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9"/>
                 </svg>
-                View on GitHub
-              </a>
+              </div>
+              <h3 className="text-xl font-bold text-purple-200 mb-3">Browser Extensions</h3>
+              <p className="text-purple-100/80">Seamlessly connect with decentralized applications through Chrome, Firefox, and Edge browsers.</p>
             </div>
-          </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-4xl mx-auto mb-20">
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">100%</div>
-              <div className="text-gray-400">Secure</div>
-            </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">Free</div>
-              <div className="text-gray-400">Open Source</div>
-            </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">25+</div>
-              <div className="text-gray-400">RPC Methods</div>
-            </div>
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-xl p-6 text-center">
-              <div className="text-3xl font-bold text-purple-400 mb-2">5.6k+</div>
-              <div className="text-gray-400">Lines of Code</div>
+            <div className="bg-gradient-to-br from-pink-900/50 to-red-900/50 backdrop-blur-md border border-pink-400/30 rounded-2xl p-6 hover:scale-105 transition-all duration-300 group">
+              <div className="h-16 w-16 bg-gradient-to-br from-pink-400 to-pink-600 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-pink-200 mb-3">Desktop Solutions</h3>
+              <p className="text-pink-100/80">Professional desktop applications for Windows, macOS, and Linux with hardware wallet integration.</p>
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Features */}
-      <section className="py-20 bg-slate-900/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-white text-center mb-12">
-            Why Choose Noor Wallet?
-          </h2>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
-              <div className="text-4xl mb-4">🔐</div>
-              <h3 className="text-xl font-bold text-white mb-3">Bank-Grade Security</h3>
-              <p className="text-gray-400">
-                Your keys are encrypted with AES-GCM and PBKDF2 (100,000 iterations). Only you can access your funds.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
-              <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold text-white mb-3">Native to Noor</h3>
-              <p className="text-gray-400">
-                Optimized specifically for Noor Chain. No need for MetaMask or other wallets.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
-              <div className="text-4xl mb-4">🌐</div>
-              <h3 className="text-xl font-bold text-white mb-3">Full dApp Support</h3>
-              <p className="text-gray-400">
-                Connect to any Noor dApp with our EIP-1193 compliant provider API.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
-              <div className="text-4xl mb-4">💎</div>
-              <h3 className="text-xl font-bold text-white mb-3">Multi-Account</h3>
-              <p className="text-gray-400">
-                Create unlimited accounts from a single seed phrase. Perfect for managing multiple identities.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
-              <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-xl font-bold text-white mb-3">Beautiful UI</h3>
-              <p className="text-gray-400">
-                Modern, intuitive interface designed specifically for the Noor ecosystem.
-              </p>
-            </div>
-
-            <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
-              <div className="text-4xl mb-4">🔓</div>
-              <h3 className="text-xl font-bold text-white mb-3">Open Source</h3>
-              <p className="text-gray-400">
-                Fully transparent and auditable. View the code on GitHub and verify security yourself.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Installation Steps */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-4xl font-bold text-white text-center mb-12">
-            Easy Installation
-          </h2>
-
-          <div className="space-y-6">
-            <div className="flex gap-6 items-start bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xl">
-                1
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">Download the Extension</h3>
-                <p className="text-gray-400">
-                  Click the download button above to get the latest version of Noor Wallet.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-start bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xl">
-                2
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">Install in Chrome</h3>
-                <p className="text-gray-400 mb-3">
-                  Go to <code className="px-2 py-1 bg-slate-700 rounded text-purple-300">chrome://extensions/</code>, enable Developer Mode, click "Load unpacked", and select the extracted folder.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-start bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xl">
-                3
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">Create Your Wallet</h3>
-                <p className="text-gray-400">
-                  Click the extension icon, create a new wallet, and securely backup your 12-word seed phrase.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-6 items-start bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-              <div className="flex-shrink-0 w-12 h-12 rounded-full bg-purple-600 flex items-center justify-center text-white font-bold text-xl">
-                4
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-white mb-2">Start Using!</h3>
-                <p className="text-gray-400">
-                  Connect to dApps, send NOR, and explore the Noor ecosystem.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Security Notice */}
-      <section className="py-20 bg-slate-900/50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border-2 border-yellow-500/50 rounded-2xl p-8">
-            <div className="flex gap-4 items-start">
-              <div className="text-4xl">⚠️</div>
-              <div>
-                <h3 className="text-2xl font-bold text-yellow-400 mb-3">Important Security Notice</h3>
-                <ul className="space-y-2 text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-400 mt-1">✓</span>
-                    <span><strong>ALWAYS</strong> back up your 12-word seed phrase on paper</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-400 mt-1">✓</span>
-                    <span><strong>NEVER</strong> share your seed phrase with anyone</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-green-400 mt-1">✓</span>
-                    <span><strong>STORE</strong> your seed phrase in a safe place (fireproof safe recommended)</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-400 mt-1">✗</span>
-                    <span><strong>DON&apos;T</strong> screenshot or store digitally</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-400 mt-1">✗</span>
-                    <span><strong>DON&apos;T</strong> share with support (we&apos;ll never ask)</span>
-                  </li>
-                </ul>
-                <p className="mt-4 text-yellow-300 font-semibold">
-                  Lost seed phrase = Lost funds forever. There is NO recovery without it!
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="py-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Get Started?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8">
-            Download Noor Wallet today and take control of your digital assets.
-          </p>
-          <a
-            href="/downloads/xaheen-wallet-latest.zip"
-            className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-lg rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all hover:scale-105"
-          >
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Download Noor Wallet
-          </a>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
