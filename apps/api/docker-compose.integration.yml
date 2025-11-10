@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Integration Tests
+  postgres-integration:
+    image: postgres:14-alpine
+    container_name: norchain-postgres-integration
+    environment:
+      POSTGRES_DB: ${DB_NAME:-norchain_explorer_test}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-integration-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - norchain-integration-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache for Integration Tests
+  redis-integration:
+    image: redis:7-alpine
+    container_name: norchain-redis-integration
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis-integration-data:/data
+    restart: unless-stopped
+    networks:
+      - norchain-integration-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # API Service for Integration Tests
+  api-integration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: norchain-api-integration
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=test
+      - PORT=3000
+      - DB_HOST=postgres-integration
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_NAME=${DB_NAME:-norchain_explorer_test}
+      - REDIS_HOST=redis-integration
+      - REDIS_PORT=6379
+      # Supabase Configuration for Integration Tests
+      - USE_SUPABASE=${USE_SUPABASE:-true}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - SUPABASE_DB_URL=${SUPABASE_DB_URL}
+      - JWT_SECRET=${JWT_SECRET:-test-secret-key}
+      - RPC_URL=${RPC_URL:-https://rpc.xaheen.org}
+      - CHAIN_ID=${CHAIN_ID:-65001}
+    depends_on:
+      postgres-integration:
+        condition: service_healthy
+      redis-integration:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - norchain-integration-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 30s
+    command: >
+      sh -c "
+        echo 'Waiting for services to be ready...' &&
+        sleep 10 &&
+        npm run start:prod
+      "
+
+volumes:
+  postgres-integration-data:
+  redis-integration-data:
+
+networks:
+  norchain-integration-network:
+    driver: bridge
+
