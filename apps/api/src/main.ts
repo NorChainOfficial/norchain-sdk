@@ -13,6 +13,7 @@ import { RateLimitInterceptor } from './common/interceptors/rate-limit.intercept
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
 import { CacheService } from './common/services/cache.service';
 import { WinstonLogger } from './common/logger/winston.logger';
+import { PerformanceMonitorInterceptor } from './modules/monitoring/performance-monitor.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -56,7 +57,7 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   // Global interceptors
-  app.useGlobalInterceptors(
+  const interceptors = [
     new TransformInterceptor(),
     new LoggingInterceptor(),
     new PaginationInterceptor(),
@@ -65,7 +66,19 @@ async function bootstrap() {
       app.get(Reflector),
       app.get(CacheService),
     ),
-  );
+  ];
+
+  // Add performance monitor interceptor if available
+  try {
+    const performanceMonitor = app.get(PerformanceMonitorInterceptor, { strict: false });
+    if (performanceMonitor) {
+      interceptors.push(performanceMonitor);
+    }
+  } catch (e) {
+    // Performance monitor not available, skip
+  }
+
+  app.useGlobalInterceptors(...interceptors);
 
   // Swagger documentation
   const swaggerConfig = new DocumentBuilder()

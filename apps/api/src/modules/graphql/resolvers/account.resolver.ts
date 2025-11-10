@@ -21,8 +21,8 @@ export class AccountResolver {
     return {
       address,
       balance: summary.balance || '0',
-      nonce: summary.nonce,
-      codeHash: summary.codeHash,
+      nonce: summary.transactionCount || 0,
+      codeHash: undefined, // Not available in AccountSummary
     };
   }
 }

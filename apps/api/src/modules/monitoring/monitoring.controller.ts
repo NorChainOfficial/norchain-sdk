@@ -1,44 +1,40 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { MonitoringService } from './monitoring.service';
-import { PrometheusService } from './services/prometheus.service';
+import { Controller, Get, Query, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { PerformanceMonitorService } from './performance-monitor.service';
 import { Public } from '@/common/decorators/public.decorator';
 
 @ApiTags('Monitoring')
 @Controller('monitoring')
 export class MonitoringController {
-  constructor(
-    private readonly monitoringService: MonitoringService,
-    private readonly prometheusService: PrometheusService,
-  ) {}
+  constructor(private readonly performanceMonitor: PerformanceMonitorService) {}
 
+  @Get('performance')
   @Public()
-  @Get('metrics')
-  @ApiOperation({ summary: 'Prometheus metrics endpoint' })
-  @ApiResponse({ status: 200, description: 'Metrics retrieved successfully' })
-  async getMetrics() {
-    return this.prometheusService.getMetrics();
+  @ApiOperation({ summary: 'Get performance statistics for all endpoints' })
+  @ApiQuery({
+    name: 'timeWindow',
+    required: false,
+    type: Number,
+    description: 'Time window in milliseconds (default: 1 hour)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Performance statistics retrieved successfully',
+  })
+  async getPerformanceStats(
+    @Query('timeWindow', ParseIntPipe) timeWindow?: number,
+  ) {
+    return this.performanceMonitor.getAllStats(timeWindow);
   }
 
-  @Public()
   @Get('health')
-  @ApiOperation({ summary: 'Detailed health check' })
-  @ApiResponse({
-    status: 200,
-    description: 'Health status retrieved successfully',
-  })
-  async getHealth() {
-    return this.monitoringService.getHealth();
-  }
-
   @Public()
-  @Get('stats')
-  @ApiOperation({ summary: 'Node statistics' })
+  @ApiOperation({ summary: 'Get system health metrics' })
   @ApiResponse({
     status: 200,
-    description: 'Statistics retrieved successfully',
+    description: 'Health metrics retrieved successfully',
   })
-  async getStats() {
-    return this.monitoringService.getStats();
+  async getHealthMetrics() {
+    return this.performanceMonitor.getHealthMetrics();
   }
 }

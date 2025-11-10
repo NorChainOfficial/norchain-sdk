@@ -19,12 +19,12 @@ export class BlockResolver {
     const block = result.result;
     return {
       hash: block.blockHash || '',
-      number: block.blockNumber || 0,
+      number: typeof block.blockNumber === 'number' ? block.blockNumber : parseInt(block.blockNumber) || 0,
       parentHash: block.parentHash || '',
-      timestamp: block.timeStamp || new Date().toISOString(),
+      timestamp: block.timeStamp ? new Date(parseInt(block.timeStamp) * 1000).toISOString() : new Date().toISOString(),
       transactions: block.transactions || [],
-      gasUsed: block.gasUsed || '0',
-      gasLimit: block.gasLimit || '0',
+      gasUsed: block.gasUsed?.toString() || '0',
+      gasLimit: block.gasLimit?.toString() || '0',
     };
   }
 
