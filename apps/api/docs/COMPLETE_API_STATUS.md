@@ -211,6 +211,7 @@ const transfer = await nor.bridge.createTransfer(
 | Validators | ✅ Complete | 1+ | 100% |
 | Insights | ✅ Complete | 3+ | 100% |
 | Webhooks | ✅ Complete | 3+ | 100% |
+| Policy Gateway | ✅ Complete | 2+ | 100% |
 
 ---
 

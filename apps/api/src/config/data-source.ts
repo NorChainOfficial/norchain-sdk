@@ -31,6 +31,7 @@ import { FeatureFlag } from '../modules/admin/entities/feature-flag.entity';
 import { AuditLog } from '../modules/admin/entities/audit-log.entity';
 import { WebhookSubscription } from '../modules/webhooks/entities/webhook-subscription.entity';
 import { WebhookDelivery } from '../modules/webhooks/entities/webhook-delivery.entity';
+import { PolicyCheck } from '../modules/policy/entities/policy-check.entity';
 
 // Load environment variables
 config();
@@ -70,9 +71,10 @@ const entities = [
   Validator,
   SlashingEvent,
   FeatureFlag,
-  AuditLog,
-  WebhookSubscription,
-  WebhookDelivery,
+    AuditLog,
+    WebhookSubscription,
+    WebhookDelivery,
+    PolicyCheck,
 ];
 
 export const AppDataSource = new DataSource({

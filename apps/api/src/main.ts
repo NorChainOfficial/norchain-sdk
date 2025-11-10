@@ -119,6 +119,7 @@ async function bootstrap() {
     .addTag('Validators', 'Validator set endpoints')
     .addTag('Insights', 'Analytics and insights endpoints')
     .addTag('Webhooks', 'Webhook subscription and delivery management')
+    .addTag('Policy', 'Policy gateway and compliance checks')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

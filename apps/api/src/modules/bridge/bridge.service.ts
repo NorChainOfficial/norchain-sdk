@@ -13,6 +13,7 @@ import {
 import { CreateBridgeQuoteDto } from './dto/create-bridge-quote.dto';
 import { CreateBridgeTransferDto } from './dto/create-bridge-transfer.dto';
 import { RpcService } from '@/common/services/rpc.service';
+import { PolicyService } from '../policy/policy.service';
 import { ethers } from 'ethers';
 
 @Injectable()
@@ -21,6 +22,7 @@ export class BridgeService {
     @InjectRepository(BridgeTransfer)
     private readonly bridgeTransferRepository: Repository<BridgeTransfer>,
     private readonly rpcService: RpcService,
+    private readonly policyService: PolicyService,
   ) {}
 
   /**
@@ -82,6 +84,16 @@ export class BridgeService {
         'Source and destination chains must be different',
       );
     }
+
+    // Policy check before creating transfer
+    // PolicyService throws ForbiddenException if blocked, so if we get here, it's allowed
+    await this.policyService.checkPolicy(userId, {
+      fromAddress: dto.fromAddress || '',
+      toAddress: dto.toAddress,
+      amount: dto.amount,
+      asset: dto.asset,
+      requestId: dto.idempotencyKey || `bridge_${Date.now()}`,
+    });
 
     // Calculate fees
     const amount = BigInt(dto.amount);

@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { User } from '../auth/entities/user.entity';
 import { Wallet } from './entities/wallet.entity';
 import { RpcService } from '@/common/services/rpc.service';
+import { PolicyService } from '../policy/policy.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { ImportWalletDto } from './dto/import-wallet.dto';
 import { SendTransactionDto } from './dto/send-transaction.dto';
@@ -21,6 +22,7 @@ export class WalletService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly rpcService: RpcService,
+    private readonly policyService: PolicyService,
   ) {}
 
   async createWallet(userId: string, dto: CreateWalletDto) {
@@ -182,18 +184,28 @@ export class WalletService {
     };
   }
 
-  async sendTransaction(
-    userId: string,
-    address: string,
-    dto: SendTransactionDto,
-  ) {
-    const wallet = await this.verifyWalletOwnership(userId, address);
+    async sendTransaction(
+      userId: string,
+      address: string,
+      dto: SendTransactionDto,
+    ) {
+      const wallet = await this.verifyWalletOwnership(userId, address);
 
-    // Decrypt private key (in production, use proper encryption)
-    const privateKey = await this.decryptPrivateKey(
-      wallet.encryptedPrivateKey,
-      dto.password,
-    );
+      // Policy check before sending transaction
+      // PolicyService throws ForbiddenException if blocked, so if we get here, it's allowed
+      await this.policyService.checkPolicy(userId, {
+        fromAddress: wallet.address,
+        toAddress: dto.to,
+        amount: ethers.parseEther(dto.amount).toString(),
+        asset: 'NOR',
+        requestId: `wallet_send_${Date.now()}`,
+      });
+
+      // Decrypt private key (in production, use proper encryption)
+      const privateKey = await this.decryptPrivateKey(
+        wallet.encryptedPrivateKey,
+        dto.password,
+      );
 
     // Create transaction
     const walletInstance = new ethers.Wallet(privateKey);

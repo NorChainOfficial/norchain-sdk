@@ -30,6 +30,7 @@ import { FeatureFlag } from '../modules/admin/entities/feature-flag.entity';
 import { AuditLog } from '../modules/admin/entities/audit-log.entity';
 import { WebhookSubscription } from '../modules/webhooks/entities/webhook-subscription.entity';
 import { WebhookDelivery } from '../modules/webhooks/entities/webhook-delivery.entity';
+import { PolicyCheck } from '../modules/policy/entities/policy-check.entity';
 
 /**
  * Database Configuration
@@ -72,6 +73,7 @@ export const databaseConfig = (
     AuditLog,
     WebhookSubscription,
     WebhookDelivery,
+    PolicyCheck,
   ];
 
   // Check if Supabase is configured
