@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../auth/entities/user.entity';
+import { Wallet } from './entities/wallet.entity';
 import { RpcService } from '@/common/services/rpc.service';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { ImportWalletDto } from './dto/import-wallet.dto';
@@ -11,12 +12,14 @@ import { ethers } from 'ethers';
 @Injectable()
 export class WalletService {
   constructor(
+    @InjectRepository(Wallet)
+    private readonly walletRepository: Repository<Wallet>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly rpcService: RpcService,
   ) {}
 
-  async createWallet(userId: number, dto: CreateWalletDto) {
+  async createWallet(userId: string, dto: CreateWalletDto) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -33,27 +36,29 @@ export class WalletService {
       dto.password,
     );
 
-    // Store wallet metadata in user's metadata field
-    const wallets = (user.metadata?.wallets as any[]) || [];
-    wallets.push({
+    // Count existing wallets for naming
+    const walletCount = await this.walletRepository.count({
+      where: { userId },
+    });
+
+    // Create wallet entity
+    const walletEntity = this.walletRepository.create({
       address,
       encryptedPrivateKey,
-      name: dto.name || `Wallet ${wallets.length + 1}`,
-      createdAt: new Date().toISOString(),
+      name: dto.name || `Wallet ${walletCount + 1}`,
+      userId,
     });
 
-    await this.userRepository.update(userId, {
-      metadata: { ...user.metadata, wallets },
-    });
+    const savedWallet = await this.walletRepository.save(walletEntity);
 
     return {
-      address,
-      name: dto.name || `Wallet ${wallets.length}`,
+      address: savedWallet.address,
+      name: savedWallet.name,
       message: 'Wallet created successfully. Save your private key securely.',
     };
   }
 
-  async importWallet(userId: number, dto: ImportWalletDto) {
+  async importWallet(userId: string, dto: ImportWalletDto) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -77,40 +82,43 @@ export class WalletService {
     );
 
     // Check if wallet already exists
-    const wallets = (user.metadata?.wallets as any[]) || [];
-    if (wallets.some((w) => w.address.toLowerCase() === address.toLowerCase())) {
+    const existingWallet = await this.walletRepository.findOne({
+      where: { address: address.toLowerCase(), userId },
+    });
+
+    if (existingWallet) {
       throw new Error('Wallet already imported');
     }
 
-    wallets.push({
-      address,
-      encryptedPrivateKey,
-      name: dto.name || `Imported Wallet ${wallets.length + 1}`,
-      importedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
+    // Count existing wallets for naming
+    const walletCount = await this.walletRepository.count({
+      where: { userId },
     });
 
-    await this.userRepository.update(userId, {
-      metadata: { ...user.metadata, wallets },
+    // Create wallet entity
+    const walletEntity = this.walletRepository.create({
+      address: address.toLowerCase(),
+      encryptedPrivateKey,
+      name: dto.name || `Imported Wallet ${walletCount + 1}`,
+      userId,
+      importedAt: new Date(),
     });
+
+    const savedWallet = await this.walletRepository.save(walletEntity);
 
     return {
-      address,
-      name: dto.name || `Imported Wallet ${wallets.length}`,
+      address: savedWallet.address,
+      name: savedWallet.name,
       message: 'Wallet imported successfully',
     };
   }
 
-  async getUserWallets(userId: number) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
+  async getUserWallets(userId: string) {
+    const wallets = await this.walletRepository.find({
+      where: { userId },
+      order: { createdAt: 'ASC' },
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const wallets = (user.metadata?.wallets as any[]) || [];
     return wallets.map((w) => ({
       address: w.address,
       name: w.name,
@@ -119,26 +127,17 @@ export class WalletService {
     }));
   }
 
-  async getWallet(userId: number, address: string) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
+  async getWallet(userId: string, address: string) {
+    const wallet = await this.walletRepository.findOne({
+      where: { address: address.toLowerCase(), userId },
     });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const wallets = (user.metadata?.wallets as any[]) || [];
-    const wallet = wallets.find(
-      (w) => w.address.toLowerCase() === address.toLowerCase(),
-    );
 
     if (!wallet) {
       throw new NotFoundException('Wallet not found');
     }
 
     // Get balance
-    const balance = await this.rpcService.getBalance(address);
+    const balance = await this.rpcService.getBalance(wallet.address);
 
     return {
       address: wallet.address,
@@ -149,7 +148,7 @@ export class WalletService {
     };
   }
 
-  async getBalance(userId: number, address: string) {
+  async getBalance(userId: string, address: string) {
     await this.verifyWalletOwnership(userId, address);
     const balance = await this.rpcService.getBalance(address);
     return {
@@ -159,7 +158,7 @@ export class WalletService {
     };
   }
 
-  async getTokens(userId: number, address: string) {
+  async getTokens(userId: string, address: string) {
     await this.verifyWalletOwnership(userId, address);
     // This would typically query token balances from the database
     // For now, return empty array
@@ -169,7 +168,7 @@ export class WalletService {
     };
   }
 
-  async getTransactions(userId: number, address: string) {
+  async getTransactions(userId: string, address: string) {
     await this.verifyWalletOwnership(userId, address);
     // This would typically query transactions from the database
     // For now, return empty array
@@ -180,19 +179,11 @@ export class WalletService {
   }
 
   async sendTransaction(
-    userId: number,
+    userId: string,
     address: string,
     dto: SendTransactionDto,
   ) {
-    await this.verifyWalletOwnership(userId, address);
-
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-    const wallets = (user.metadata?.wallets as any[]) || [];
-    const wallet = wallets.find(
-      (w) => w.address.toLowerCase() === address.toLowerCase(),
-    );
+    const wallet = await this.verifyWalletOwnership(userId, address);
 
     // Decrypt private key (in production, use proper encryption)
     const privateKey = await this.decryptPrivateKey(
@@ -203,7 +194,7 @@ export class WalletService {
     // Create transaction
     const walletInstance = new ethers.Wallet(privateKey);
     const provider = this.rpcService.getProvider();
-    const connectedWallet = walletInstance.connect(provider);
+    const connectedWallet = walletInstance.connect(provider as any);
 
     const tx = await connectedWallet.sendTransaction({
       to: dto.to,
@@ -220,21 +211,10 @@ export class WalletService {
     };
   }
 
-  async deleteWallet(userId: number, address: string) {
-    await this.verifyWalletOwnership(userId, address);
+  async deleteWallet(userId: string, address: string) {
+    const wallet = await this.verifyWalletOwnership(userId, address);
 
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
-    });
-
-    const wallets = (user.metadata?.wallets as any[]) || [];
-    const filteredWallets = wallets.filter(
-      (w) => w.address.toLowerCase() !== address.toLowerCase(),
-    );
-
-    await this.userRepository.update(userId, {
-      metadata: { ...user.metadata, wallets: filteredWallets },
-    });
+    await this.walletRepository.remove(wallet);
 
     return {
       message: 'Wallet deleted successfully',
@@ -242,23 +222,16 @@ export class WalletService {
     };
   }
 
-  private async verifyWalletOwnership(userId: number, address: string) {
-    const user = await this.userRepository.findOne({
-      where: { id: userId },
+  private async verifyWalletOwnership(userId: string, address: string): Promise<Wallet> {
+    const wallet = await this.walletRepository.findOne({
+      where: { address: address.toLowerCase(), userId },
     });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    const wallets = (user.metadata?.wallets as any[]) || [];
-    const wallet = wallets.find(
-      (w) => w.address.toLowerCase() === address.toLowerCase(),
-    );
 
     if (!wallet) {
       throw new ForbiddenException('Wallet not found or access denied');
     }
+
+    return wallet;
   }
 
   private async encryptPrivateKey(

@@ -34,7 +34,7 @@ export class WalletController {
     status: 201,
     description: 'Wallet created successfully',
   })
-  async createWallet(@Request() req, @Body() dto: CreateWalletDto) {
+  async createWallet(@Request() req: any, @Body() dto: CreateWalletDto) {
     return this.walletService.createWallet(req.user.id, dto);
   }
 
@@ -44,7 +44,7 @@ export class WalletController {
     status: 201,
     description: 'Wallet imported successfully',
   })
-  async importWallet(@Request() req, @Body() dto: ImportWalletDto) {
+  async importWallet(@Request() req: any, @Body() dto: ImportWalletDto) {
     return this.walletService.importWallet(req.user.id, dto);
   }
 
@@ -54,7 +54,7 @@ export class WalletController {
     status: 200,
     description: 'Wallets retrieved successfully',
   })
-  async getWallets(@Request() req) {
+  async getWallets(@Request() req: any) {
     return this.walletService.getUserWallets(req.user.id);
   }
 
@@ -65,7 +65,7 @@ export class WalletController {
     status: 200,
     description: 'Wallet details retrieved successfully',
   })
-  async getWallet(@Request() req, @Param('address') address: string) {
+  async getWallet(@Request() req: any, @Param('address') address: string) {
     return this.walletService.getWallet(req.user.id, address);
   }
 
@@ -76,7 +76,7 @@ export class WalletController {
     status: 200,
     description: 'Balance retrieved successfully',
   })
-  async getBalance(@Request() req, @Param('address') address: string) {
+  async getBalance(@Request() req: any, @Param('address') address: string) {
     return this.walletService.getBalance(req.user.id, address);
   }
 
@@ -87,7 +87,7 @@ export class WalletController {
     status: 200,
     description: 'Tokens retrieved successfully',
   })
-  async getTokens(@Request() req, @Param('address') address: string) {
+  async getTokens(@Request() req: any, @Param('address') address: string) {
     return this.walletService.getTokens(req.user.id, address);
   }
 
@@ -99,7 +99,7 @@ export class WalletController {
     description: 'Transactions retrieved successfully',
   })
   async getTransactions(
-    @Request() req,
+    @Request() req: any,
     @Param('address') address: string,
   ) {
     return this.walletService.getTransactions(req.user.id, address);
@@ -113,7 +113,7 @@ export class WalletController {
     description: 'Transaction sent successfully',
   })
   async sendTransaction(
-    @Request() req,
+    @Request() req: any,
     @Param('address') address: string,
     @Body() dto: SendTransactionDto,
   ) {
@@ -127,7 +127,7 @@ export class WalletController {
     status: 200,
     description: 'Wallet deleted successfully',
   })
-  async deleteWallet(@Request() req, @Param('address') address: string) {
+  async deleteWallet(@Request() req: any, @Param('address') address: string) {
     return this.walletService.deleteWallet(req.user.id, address);
   }
 }
