@@ -87,8 +87,8 @@ export class BridgeService {
 
     // Policy check before creating transfer
     // PolicyService throws ForbiddenException if blocked, so if we get here, it's allowed
+    // Note: fromAddress would come from user's wallet, not from DTO
     await this.policyService.checkPolicy(userId, {
-      fromAddress: dto.fromAddress || '',
       toAddress: dto.toAddress,
       amount: dto.amount,
       asset: dto.asset,

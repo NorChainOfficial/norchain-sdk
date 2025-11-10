@@ -8,9 +8,10 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Logger, UseGuards } from '@nestjs/common';
+import { Logger, UseGuards, OnModuleInit } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { OnEvent } from '@nestjs/event-emitter';
 
 /**
  * WebSocket Gateway
@@ -34,7 +35,7 @@ import { ConfigService } from '@nestjs/config';
   namespace: '/ws',
 })
 export class NorChainWebSocketGateway
-  implements OnGatewayConnection, OnGatewayDisconnect
+  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
 {
   @WebSocketServer()
   server: Server;
@@ -137,6 +138,17 @@ export class NorChainWebSocketGateway
           return;
         }
         room = `token:${tokenAddress.toLowerCase()}`;
+        break;
+      case 'policy':
+        room = 'policy';
+        break;
+      case 'user':
+        // User-specific events (requires authentication)
+        if (!client.data.userId) {
+          client.emit('error', { message: 'Authentication required for user subscriptions' });
+          return;
+        }
+        room = `user:${client.data.userId}`;
         break;
       default:
         client.emit('error', { message: `Unknown subscription type: ${type}` });
@@ -265,5 +277,25 @@ export class NorChainWebSocketGateway
         ]),
       ),
     };
+  }
+
+  /**
+   * Initialize event listeners
+   */
+  onModuleInit() {
+    // Policy check events are handled via @OnEvent decorator
+  }
+
+  /**
+   * Handle policy check events
+   */
+  @OnEvent('policy.check')
+  handlePolicyCheck(payload: any) {
+    // Emit to user-specific room if userId is available
+    if (payload.userId) {
+      this.server.to(`user:${payload.userId}`).emit('policy.check', payload);
+    }
+    // Also emit to general policy room
+    this.server.to('policy').emit('policy.check', payload);
   }
 }

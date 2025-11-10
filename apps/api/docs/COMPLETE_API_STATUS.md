@@ -212,6 +212,7 @@ const transfer = await nor.bridge.createTransfer(
 | Insights | ✅ Complete | 3+ | 100% |
 | Webhooks | ✅ Complete | 3+ | 100% |
 | Policy Gateway | ✅ Complete | 2+ | 100% |
+| Streaming (SSE) | ✅ Complete | 1+ | 100% |
 
 ---
 

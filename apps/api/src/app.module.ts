@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -41,10 +42,13 @@ import { RPCExtensionsModule } from './modules/rpc/rpc-extensions.module';
 import { V2Module } from './modules/v2/v2.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { PolicyModule } from './modules/policy/policy.module';
+import { StreamingModule } from './modules/streaming/streaming.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
+    // Event Emitter for cross-module communication
+    EventEmitterModule.forRoot(),
     // Global Common Services
     CommonModule,
 
@@ -135,6 +139,7 @@ import { CommonModule } from './common/common.module';
     V2Module,
     WebhooksModule,
     PolicyModule,
+    StreamingModule,
   ],
   providers: [
     {

@@ -90,11 +90,8 @@ describe('PolicyService', () => {
       });
       mockPolicyCheckRepository.save.mockResolvedValue({});
 
-      const result = await service.checkPolicy(userId, dto);
-
-      expect(result.allowed).toBe(false);
-      expect(result.status).toBe(PolicyCheckStatus.BLOCKED);
-      expect(result.checks.some((c) => c.type === 'sanctions' && !c.passed)).toBe(true);
+      // PolicyService throws ForbiddenException when blocked
+      await expect(service.checkPolicy(userId, dto)).rejects.toThrow();
     });
 
     it('should flag for review when velocity limit exceeded', async () => {

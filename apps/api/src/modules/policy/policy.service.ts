@@ -5,6 +5,7 @@ import { PolicyCheck, PolicyCheckStatus, PolicyCheckType } from './entities/poli
 import { PolicyCheckDto } from './dto/policy-check.dto';
 import { CacheService } from '@/common/services/cache.service';
 import { createHash } from 'crypto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 export interface PolicyResult {
   allowed: boolean;
@@ -28,6 +29,7 @@ export class PolicyService {
     @InjectRepository(PolicyCheck)
     private readonly policyCheckRepository: Repository<PolicyCheck>,
     private readonly cacheService: CacheService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -139,6 +141,22 @@ export class PolicyService {
     });
 
     await this.policyCheckRepository.save(policyCheck);
+
+    // Emit policy check event for WebSocket/SSE streaming
+    this.eventEmitter.emit('policy.check', {
+      userId,
+      requestId: dto.requestId || `req_${Date.now()}`,
+      status,
+      allowed,
+      riskScore: Math.min(100, riskScore),
+      checks,
+      auditHash,
+      fromAddress: dto.fromAddress,
+      toAddress: dto.toAddress,
+      amount: dto.amount,
+      asset: dto.asset,
+      timestamp: new Date().toISOString(),
+    });
 
     // Throw exception if blocked (for automatic rejection)
     if (!allowed && status === PolicyCheckStatus.BLOCKED) {
