@@ -35,6 +35,11 @@ import { WalletModule } from './modules/wallet/wallet.module';
 import { BridgeModule } from './modules/bridge/bridge.module';
 import { ComplianceModule } from './modules/compliance/compliance.module';
 import { GovernanceModule } from './modules/governance/governance.module';
+import { PaymentsModule } from './modules/payments/payments.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { RPCExtensionsModule } from './modules/rpc/rpc-extensions.module';
+import { V2Module } from './modules/v2/v2.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
@@ -123,6 +128,11 @@ import { CommonModule } from './common/common.module';
     BridgeModule,
     ComplianceModule,
     GovernanceModule,
+    PaymentsModule,
+    AdminModule,
+    RPCExtensionsModule,
+    V2Module,
+    WebhooksModule,
   ],
   providers: [
     {

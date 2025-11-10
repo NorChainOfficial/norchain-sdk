@@ -22,6 +22,7 @@ import { BridgeService } from './bridge.service';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { CreateBridgeQuoteDto } from './dto/create-bridge-quote.dto';
 import { CreateBridgeTransferDto } from './dto/create-bridge-transfer.dto';
+import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 
 @ApiTags('Bridge')
 @Controller('bridge')
@@ -36,6 +37,16 @@ export class BridgeController {
     status: 200,
     description: 'Quote retrieved successfully',
   })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: ErrorResponseDto,
+  })
   async getQuote(@Body() dto: CreateBridgeQuoteDto) {
     return this.bridgeService.getQuote(dto);
   }
@@ -45,6 +56,16 @@ export class BridgeController {
   @ApiResponse({
     status: 201,
     description: 'Bridge transfer created successfully',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request',
+    type: ErrorResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+    type: ErrorResponseDto,
   })
   async createTransfer(@Request() req: any, @Body() dto: CreateBridgeTransferDto) {
     return this.bridgeService.createTransfer(req.user.id, dto);

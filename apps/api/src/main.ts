@@ -8,6 +8,8 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { PaginationInterceptor } from './common/interceptors/pagination.interceptor';
+import { RateLimitInterceptor } from './common/interceptors/rate-limit.interceptor';
 import { WinstonLogger } from './common/logger/winston.logger';
 
 async function bootstrap() {
@@ -48,11 +50,15 @@ async function bootstrap() {
     }),
   );
 
-  // Global filters and interceptors
+  // Global exception filter for consistent error responses
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Global interceptors
   app.useGlobalInterceptors(
     new TransformInterceptor(),
     new LoggingInterceptor(),
+    new PaginationInterceptor(),
+    new RateLimitInterceptor(),
   );
 
   // Swagger documentation

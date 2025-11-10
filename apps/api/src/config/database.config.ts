@@ -21,6 +21,15 @@ import { ComplianceScreening } from '../modules/compliance/entities/compliance-s
 import { ComplianceCase } from '../modules/compliance/entities/compliance-case.entity';
 import { GovernanceProposal } from '../modules/governance/entities/governance-proposal.entity';
 import { GovernanceVote } from '../modules/governance/entities/governance-vote.entity';
+import { PaymentInvoice } from '../modules/payments/entities/payment-invoice.entity';
+import { POSSession } from '../modules/payments/entities/pos-session.entity';
+import { MerchantSettlement } from '../modules/payments/entities/merchant-settlement.entity';
+import { Validator } from '../modules/admin/entities/validator.entity';
+import { SlashingEvent } from '../modules/admin/entities/slashing-event.entity';
+import { FeatureFlag } from '../modules/admin/entities/feature-flag.entity';
+import { AuditLog } from '../modules/admin/entities/audit-log.entity';
+import { WebhookSubscription } from '../modules/webhooks/entities/webhook-subscription.entity';
+import { WebhookDelivery } from '../modules/webhooks/entities/webhook-delivery.entity';
 
 /**
  * Database Configuration
@@ -54,6 +63,15 @@ export const databaseConfig = (
     ComplianceCase,
     GovernanceProposal,
     GovernanceVote,
+    PaymentInvoice,
+    POSSession,
+    MerchantSettlement,
+    Validator,
+    SlashingEvent,
+    FeatureFlag,
+    AuditLog,
+    WebhookSubscription,
+    WebhookDelivery,
   ];
 
   // Check if Supabase is configured
