@@ -91,6 +91,9 @@ async function bootstrap() {
     .addTag('Auth', 'Authentication endpoints')
     .addTag('Health', 'Health check endpoints')
     .addTag('Wallet', 'Wallet management endpoints')
+    .addTag('Bridge', 'Cross-chain bridge operations')
+    .addTag('Compliance', 'Compliance and regulatory endpoints')
+    .addTag('Governance', 'On-chain governance endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

@@ -15,6 +15,12 @@ import { Notification } from '../modules/notifications/entities/notification.ent
 import { LimitOrder } from '../modules/orders/entities/limit-order.entity';
 import { DCASchedule } from '../modules/orders/entities/dca-schedule.entity';
 import { StopLossOrder } from '../modules/orders/entities/stop-loss-order.entity';
+import { Wallet } from '../modules/wallet/entities/wallet.entity';
+import { BridgeTransfer } from '../modules/bridge/entities/bridge-transfer.entity';
+import { ComplianceScreening } from '../modules/compliance/entities/compliance-screening.entity';
+import { ComplianceCase } from '../modules/compliance/entities/compliance-case.entity';
+import { GovernanceProposal } from '../modules/governance/entities/governance-proposal.entity';
+import { GovernanceVote } from '../modules/governance/entities/governance-vote.entity';
 
 /**
  * Database Configuration
@@ -42,6 +48,12 @@ export const databaseConfig = (
     LimitOrder,
     DCASchedule,
     StopLossOrder,
+    Wallet,
+    BridgeTransfer,
+    ComplianceScreening,
+    ComplianceCase,
+    GovernanceProposal,
+    GovernanceVote,
   ];
 
   // Check if Supabase is configured

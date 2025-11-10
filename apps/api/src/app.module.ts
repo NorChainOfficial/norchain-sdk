@@ -32,6 +32,9 @@ import { AIModule } from './modules/ai/ai.module';
 import { MonitoringModule } from './modules/monitoring/monitoring.module';
 import { BlockchainModule } from './modules/blockchain/blockchain.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { BridgeModule } from './modules/bridge/bridge.module';
+import { ComplianceModule } from './modules/compliance/compliance.module';
+import { GovernanceModule } from './modules/governance/governance.module';
 import { CommonModule } from './common/common.module';
 
 @Module({
@@ -117,6 +120,9 @@ import { CommonModule } from './common/common.module';
     MonitoringModule,
     BlockchainModule,
     WalletModule,
+    BridgeModule,
+    ComplianceModule,
+    GovernanceModule,
   ],
   providers: [
     {
