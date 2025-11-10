@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleInit,
+  OnModuleDestroy,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   createClient,
@@ -33,9 +38,10 @@ import { NorChainWebSocketGateway } from '../websocket/websocket.gateway';
  * ```
  */
 @Injectable()
-export class SupabaseService implements OnModuleInit {
+export class SupabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(SupabaseService.name);
   private supabase: SupabaseClient;
+  private adminSupabase: SupabaseClient;
   private channels: Map<string, RealtimeChannel> = new Map();
   private customChannels: Map<string, RealtimeChannel> = new Map();
 
@@ -44,10 +50,13 @@ export class SupabaseService implements OnModuleInit {
     private websocketGateway: NorChainWebSocketGateway,
   ) {
     const supabaseUrl = this.configService.get<string>('SUPABASE_URL');
-    const supabaseKey = this.configService.get<string>('SUPABASE_ANON_KEY');
+    const supabaseAnonKey = this.configService.get<string>('SUPABASE_ANON_KEY');
+    const supabaseServiceKey = this.configService.get<string>(
+      'SUPABASE_SERVICE_ROLE_KEY',
+    );
 
-    if (supabaseUrl && supabaseKey) {
-      this.supabase = createClient(supabaseUrl, supabaseKey, {
+    if (supabaseUrl && supabaseAnonKey) {
+      this.supabase = createClient(supabaseUrl, supabaseAnonKey, {
         realtime: {
           params: {
             eventsPerSecond: 10,
@@ -55,8 +64,21 @@ export class SupabaseService implements OnModuleInit {
         },
       });
       this.logger.log('Supabase client initialized for all real-time features');
+
+      // Create admin client with service role key for admin operations
+      if (supabaseServiceKey) {
+        this.adminSupabase = createClient(supabaseUrl, supabaseServiceKey, {
+          auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+          },
+        });
+        this.logger.log('Supabase admin client initialized');
+      }
     } else {
-      this.logger.warn('Supabase not configured, all real-time features disabled');
+      this.logger.warn(
+        'Supabase not configured, all real-time features disabled',
+      );
     }
   }
 
@@ -86,9 +108,13 @@ export class SupabaseService implements OnModuleInit {
   /**
    * Gets the Supabase client instance.
    *
+   * @param {boolean} admin - Whether to return admin client (with service role key)
    * @returns {SupabaseClient} Supabase client
    */
-  getClient(): SupabaseClient {
+  getClient(admin: boolean = false): SupabaseClient {
+    if (admin && this.adminSupabase) {
+      return this.adminSupabase;
+    }
     return this.supabase;
   }
 
@@ -421,9 +447,9 @@ export class SupabaseService implements OnModuleInit {
   }
 
   /**
-   * Cleans up all subscriptions.
+   * Cleans up all subscriptions on module destroy.
    */
-  async onModuleDestroy() {
+  async onModuleDestroy(): Promise<void> {
     if (!this.supabase) return;
 
     // Clean up database subscriptions

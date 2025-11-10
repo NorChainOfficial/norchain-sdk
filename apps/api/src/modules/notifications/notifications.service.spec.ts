@@ -4,12 +4,14 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Notification } from './entities/notification.entity';
 import { NorChainWebSocketGateway } from '../websocket/websocket.gateway';
+import { SupabaseService } from '../supabase/supabase.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 
 describe('NotificationsService', () => {
   let service: NotificationsService;
   let notificationRepository: jest.Mocked<Repository<Notification>>;
   let websocketGateway: jest.Mocked<NorChainWebSocketGateway>;
+  let supabaseService: jest.Mocked<SupabaseService>;
 
   beforeEach(async () => {
     const mockNotificationRepository = {
@@ -29,6 +31,11 @@ describe('NotificationsService', () => {
       },
     };
 
+    const mockSupabaseService = {
+      broadcast: jest.fn().mockResolvedValue(undefined),
+      subscribeToChannel: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         NotificationsService,
@@ -40,12 +47,17 @@ describe('NotificationsService', () => {
           provide: NorChainWebSocketGateway,
           useValue: mockWebSocketGateway,
         },
+        {
+          provide: SupabaseService,
+          useValue: mockSupabaseService,
+        },
       ],
     }).compile();
 
     service = module.get<NotificationsService>(NotificationsService);
     notificationRepository = module.get(getRepositoryToken(Notification));
     websocketGateway = module.get(NorChainWebSocketGateway);
+    supabaseService = module.get(SupabaseService);
   });
 
   afterEach(() => {
@@ -82,6 +94,36 @@ describe('NotificationsService', () => {
       expect(notificationRepository.create).toHaveBeenCalledWith(dto);
       expect(notificationRepository.save).toHaveBeenCalled();
       expect(websocketGateway.server.to).toHaveBeenCalledWith(`user:${dto.userId}`);
+      expect(supabaseService.broadcast).toHaveBeenCalledWith(
+        `notifications:${dto.userId}`,
+        'new-notification',
+        notification,
+      );
+    });
+
+    it('should handle Supabase broadcast errors gracefully', async () => {
+      const dto: CreateNotificationDto = {
+        userId: 'user-1',
+        type: 'transaction',
+        title: 'New Transaction',
+        message: 'You received 1 ETH',
+      };
+
+      const notification = {
+        id: '1',
+        ...dto,
+        read: false,
+        createdAt: new Date(),
+      };
+
+      notificationRepository.create.mockReturnValue(notification as any);
+      notificationRepository.save.mockResolvedValue(notification as any);
+      supabaseService.broadcast.mockRejectedValue(new Error('Broadcast failed'));
+
+      const result = await service.create(dto);
+
+      expect(result).toEqual(notification);
+      expect(supabaseService.broadcast).toHaveBeenCalled();
     });
   });
 
@@ -237,6 +279,87 @@ describe('NotificationsService', () => {
       await expect(service.delete(notificationId, userId)).rejects.toThrow(
         'Notification not found',
       );
+    });
+  });
+
+  describe('sendRealtimeNotification', () => {
+    it('should send notification via WebSocket and Supabase', () => {
+      const userId = 'user-1';
+      const data = { message: 'Test notification' };
+
+      service.sendRealtimeNotification(userId, data);
+
+      expect(websocketGateway.server.to).toHaveBeenCalledWith(`user:${userId}`);
+      expect(supabaseService.broadcast).toHaveBeenCalledWith(
+        `notifications:${userId}`,
+        'notification',
+        data,
+      );
+    });
+
+    it('should handle Supabase broadcast errors gracefully', () => {
+      const userId = 'user-1';
+      const data = { message: 'Test notification' };
+      supabaseService.broadcast.mockRejectedValue(new Error('Broadcast failed'));
+
+      expect(() => {
+        service.sendRealtimeNotification(userId, data);
+      }).not.toThrow();
+    });
+  });
+
+  describe('subscribeToUserNotifications', () => {
+    it('should subscribe to user notifications via Supabase', async () => {
+      const userId = 'user-1';
+      const callback = jest.fn();
+
+      await service.subscribeToUserNotifications(userId, callback);
+
+      expect(supabaseService.subscribeToChannel).toHaveBeenCalledWith(
+        `notifications:${userId}`,
+        expect.any(Function),
+        { event: 'new-notification' },
+      );
+    });
+
+    it('should handle missing Supabase service gracefully', async () => {
+      const moduleWithoutSupabase: TestingModule =
+        await Test.createTestingModule({
+          providers: [
+            NotificationsService,
+            {
+              provide: getRepositoryToken(Notification),
+              useValue: {
+                create: jest.fn(),
+                save: jest.fn(),
+                findOne: jest.fn(),
+                update: jest.fn(),
+                delete: jest.fn(),
+                count: jest.fn(),
+                createQueryBuilder: jest.fn(),
+              },
+            },
+            {
+              provide: NorChainWebSocketGateway,
+              useValue: {
+                server: {
+                  to: jest.fn().mockReturnThis(),
+                  emit: jest.fn(),
+                },
+              },
+            },
+            // SupabaseService not provided
+          ],
+        }).compile();
+
+      const serviceWithoutSupabase =
+        moduleWithoutSupabase.get<NotificationsService>(NotificationsService);
+
+      const callback = jest.fn();
+      await serviceWithoutSupabase.subscribeToUserNotifications('user-1', callback);
+
+      // Should not throw error
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 });
