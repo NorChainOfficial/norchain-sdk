@@ -12,4 +12,4 @@ import { CommonModule } from '@/common/common.module';
   providers: [InsightsService],
   exports: [InsightsService],
 })
-export class V2Module {}
+export class InsightsModule {}

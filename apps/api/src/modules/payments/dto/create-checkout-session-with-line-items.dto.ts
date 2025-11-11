@@ -29,7 +29,7 @@ export class LineItemDto {
   quantity: number;
 }
 
-export class CreateCheckoutSessionV2Dto {
+export class CreateCheckoutSessionWithLineItemsDto {
   @ApiProperty({
     example: 'org_123',
     description: 'Organization/Merchant ID',

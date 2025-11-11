@@ -1,11 +1,7 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PaymentsController } from './payments.controller';
-import { PaymentsV2Controller } from './payments-v2.controller';
-import { PaymentsV2EnhancedController } from './payments-v2-enhanced.controller';
 import { PaymentsService } from './payments.service';
-import { PaymentsV2Service } from './payments-v2.service';
-import { PaymentsV2EnhancedService } from './payments-v2-enhanced.service';
 import { PaymentInvoice } from './entities/payment-invoice.entity';
 import { POSSession } from './entities/pos-session.entity';
 import { MerchantSettlement } from './entities/merchant-settlement.entity';
@@ -48,8 +44,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     forwardRef(() => LedgerModule),
     EventEmitterModule,
   ],
-  controllers: [PaymentsController, PaymentsV2Controller, PaymentsV2EnhancedController],
-  providers: [PaymentsService, PaymentsV2Service, PaymentsV2EnhancedService],
-  exports: [PaymentsService, PaymentsV2Service, PaymentsV2EnhancedService],
+  controllers: [PaymentsController],
+  providers: [PaymentsService],
+  exports: [PaymentsService],
 })
 export class PaymentsModule {}

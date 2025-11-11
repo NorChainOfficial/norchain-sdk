@@ -30,7 +30,7 @@ import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { Idempotent } from '@/common/decorators/idempotency.decorator';
 
 @ApiTags('Messaging')
-@Controller('v2/messaging')
+@Controller('messaging')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 export class MessagingController {

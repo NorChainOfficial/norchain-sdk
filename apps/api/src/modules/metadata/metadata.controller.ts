@@ -35,7 +35,7 @@ import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 @ApiTags('Metadata')
-@Controller('v2/metadata')
+@Controller('metadata')
 export class MetadataController {
   constructor(
     private readonly metadataService: MetadataService,

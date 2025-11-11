@@ -27,7 +27,7 @@ import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { AccountStatus } from './entities/ledger-account.entity';
 
 @ApiTags('Ledger')
-@Controller('v2/ledger')
+@Controller('ledger')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 export class LedgerController {

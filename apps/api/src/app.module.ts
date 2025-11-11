@@ -40,7 +40,7 @@ import { GovernanceModule } from './modules/governance/governance.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { RPCExtensionsModule } from './modules/rpc/rpc-extensions.module';
-import { V2Module } from './modules/v2/v2.module';
+import { InsightsModule } from './modules/insights/insights.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { PolicyModule } from './modules/policy/policy.module';
 import { StreamingModule } from './modules/streaming/streaming.module';
@@ -139,7 +139,7 @@ import { CommonModule } from './common/common.module';
     PaymentsModule,
     AdminModule,
     RPCExtensionsModule,
-    V2Module,
+    InsightsModule,
     WebhooksModule,
     PolicyModule,
     StreamingModule,

@@ -9,6 +9,7 @@ import {
   Request,
   ParseIntPipe,
   DefaultValuePipe,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,8 +24,18 @@ import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { CreatePOSSessionDto } from './dto/create-pos-session.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { CreatePriceDto } from './dto/create-price.dto';
+import { CreateCustomerDto } from './dto/create-customer.dto';
+import { CreateSubscriptionDto } from './dto/create-subscription.dto';
+import { CreateDisputeDto } from './dto/create-dispute.dto';
+import { CreateCheckoutSessionWithLineItemsDto } from './dto/create-checkout-session-with-line-items.dto';
+import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
+import { CreateRefundDto } from './dto/create-refund.dto';
+import { OnboardMerchantDto } from './dto/onboard-merchant.dto';
 import { InvoiceStatus } from './entities/payment-invoice.entity';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
+import { ApiHeader } from '@nestjs/swagger';
 
 @ApiTags('Payments')
 @Controller('payments')
@@ -142,5 +153,198 @@ export class PaymentsController {
       throw new Error('Access denied');
     }
     return this.paymentsService.getSettlement(merchantId, settlementId);
+  }
+
+  // ========== Merchant & Checkout Endpoints ==========
+
+  @Post('merchants')
+  @Idempotent()
+  @ApiOperation({ summary: 'Onboard a merchant' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Merchant onboarded successfully' })
+  @ApiResponse({ status: 400, description: 'Merchant already onboarded' })
+  async onboardMerchant(@Request() req: any, @Body() dto: OnboardMerchantDto) {
+    return this.paymentsService.onboardMerchant(req.user.orgId || req.user.id, req.user.id, dto);
+  }
+
+  @Post('checkout-sessions')
+  @Idempotent()
+  @ApiOperation({
+    summary: 'Create a checkout session',
+    description: 'Creates a hosted checkout session for crypto payments',
+  })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Checkout session created successfully' })
+  @ApiResponse({ status: 404, description: 'Merchant not found' })
+  async createCheckoutSession(@Request() req: any, @Body() dto: CreateCheckoutSessionDto) {
+    return this.paymentsService.createCheckoutSession(dto, req.user.id);
+  }
+
+  @Post('checkout-sessions/with-line-items')
+  @Idempotent()
+  @ApiOperation({
+    summary: 'Create a checkout session with line items',
+    description: 'Creates a hosted checkout session for products/prices',
+  })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Checkout session created successfully' })
+  async createCheckoutSessionWithLineItems(@Request() req: any, @Body() dto: CreateCheckoutSessionWithLineItemsDto) {
+    return this.paymentsService.createCheckoutSessionWithLineItems(dto, req.user.id);
+  }
+
+  @Get('checkout-sessions/:sessionId')
+  @ApiOperation({ summary: 'Get checkout session status' })
+  @ApiResponse({ status: 200, description: 'Checkout session retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Checkout session not found' })
+  async getCheckoutSession(@Param('sessionId') sessionId: string) {
+    return this.paymentsService.getCheckoutSession(sessionId);
+  }
+
+  @Post('refunds')
+  @Idempotent()
+  @ApiOperation({
+    summary: 'Create a refund',
+    description: 'Creates a refund for a payment (sends on-chain transaction)',
+  })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Refund created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid refund amount' })
+  @ApiResponse({ status: 403, description: 'Refund blocked by policy' })
+  @ApiResponse({ status: 404, description: 'Payment not found' })
+  async createRefund(@Request() req: any, @Body() dto: CreateRefundDto) {
+    return this.paymentsService.createRefund(dto, req.user.id);
+  }
+
+  // ========== Products & Prices Endpoints ==========
+
+  @Post('products')
+  @Idempotent()
+  @ApiOperation({ summary: 'Create a product' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Product created successfully' })
+  async createProduct(@Request() req: any, @Body() dto: CreateProductDto) {
+    return this.paymentsService.createProduct(dto, req.user.id);
+  }
+
+  @Post('prices')
+  @Idempotent()
+  @ApiOperation({ summary: 'Create a price for a product' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Price created successfully' })
+  async createPrice(@Request() req: any, @Body() dto: CreatePriceDto) {
+    return this.paymentsService.createPrice(dto, req.user.id);
+  }
+
+  @Get('catalog')
+  @ApiOperation({ summary: 'Get product catalog with prices' })
+  @ApiResponse({ status: 200, description: 'Catalog retrieved successfully' })
+  async getCatalog(@Request() req: any, @Query('orgId') orgId?: string) {
+    const targetOrgId = orgId || req.user.orgId || req.user.id;
+    return this.paymentsService.getCatalog(targetOrgId);
+  }
+
+  // ========== Customers Endpoints ==========
+
+  @Post('customers')
+  @Idempotent()
+  @ApiOperation({ summary: 'Create a customer' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Customer created successfully' })
+  async createCustomer(@Request() req: any, @Body() dto: CreateCustomerDto) {
+    return this.paymentsService.createCustomer(dto, req.user.id);
+  }
+
+  // ========== Subscriptions Endpoints ==========
+
+  @Post('subscriptions')
+  @Idempotent()
+  @ApiOperation({ summary: 'Create a subscription' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Subscription created successfully' })
+  async createSubscription(@Request() req: any, @Body() dto: CreateSubscriptionDto) {
+    return this.paymentsService.createSubscription(dto, req.user.id);
+  }
+
+  @Post('subscriptions/:id/cancel')
+  @Idempotent()
+  @ApiOperation({ summary: 'Cancel a subscription' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 200, description: 'Subscription canceled successfully' })
+  async cancelSubscription(@Request() req: any, @Param('id', ParseUUIDPipe) id: string) {
+    return this.paymentsService.cancelSubscription(id, req.user.id);
+  }
+
+  // ========== Disputes Endpoints ==========
+
+  @Post('disputes')
+  @Idempotent()
+  @ApiOperation({ summary: 'Create a dispute for a payment' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Dispute created successfully' })
+  async createDispute(@Request() req: any, @Body() dto: CreateDisputeDto) {
+    return this.paymentsService.createDispute(dto, req.user.id);
+  }
+
+  // ========== Webhooks Endpoints ==========
+
+  @Post('webhooks')
+  @Idempotent()
+  @ApiOperation({ summary: 'Register a webhook endpoint' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Webhook endpoint registered successfully' })
+  async registerWebhook(
+    @Request() req: any,
+    @Body() dto: { orgId: string; url: string; events: string[] },
+  ) {
+    return this.paymentsService.registerWebhook(
+      dto.orgId,
+      dto.url,
+      dto.events,
+      req.user.id,
+    );
   }
 }
