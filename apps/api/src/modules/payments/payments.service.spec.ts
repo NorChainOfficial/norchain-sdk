@@ -1,11 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { PaymentsService } from './payments.service';
 import { PaymentInvoice, InvoiceStatus, PaymentMethod } from './entities/payment-invoice.entity';
 import { POSSession, POSSessionStatus } from './entities/pos-session.entity';
 import { MerchantSettlement, SettlementStatus, SettlementType } from './entities/merchant-settlement.entity';
+import { Merchant } from './entities/merchant.entity';
+import { Product } from './entities/product.entity';
+import { Price } from './entities/price.entity';
+import { Customer } from './entities/customer.entity';
+import { PaymentMethod as PaymentMethodEntity } from './entities/payment-method.entity';
+import { CheckoutSession } from './entities/checkout-session.entity';
+import { Payment } from './entities/payment.entity';
+import { Refund } from './entities/refund.entity';
+import { Subscription } from './entities/subscription.entity';
+import { Dispute } from './entities/dispute.entity';
+import { WebhookEndpoint } from './entities/webhook-endpoint.entity';
 import { RpcService } from '@/common/services/rpc.service';
+import { PolicyService } from '../policy/policy.service';
+import { LedgerService } from '../ledger/ledger.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { CreatePOSSessionDto } from './dto/create-pos-session.dto';
 
@@ -34,8 +48,92 @@ describe('PaymentsService', () => {
     findOne: jest.fn(),
   };
 
+  const mockMerchantRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn(),
+  };
+
+  const mockProductRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn(),
+  };
+
+  const mockPriceRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockCustomerRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockPaymentMethodRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockCheckoutSessionRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockPaymentRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockRefundRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockSubscriptionRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockDisputeRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
+  const mockWebhookEndpointRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+  };
+
   const mockRpcService = {
     getProvider: jest.fn(),
+  };
+
+  const mockPolicyService = {
+    checkPolicy: jest.fn(),
+  };
+
+  const mockLedgerService = {
+    createJournalEntry: jest.fn(),
+  };
+
+  const mockEventEmitter = {
+    emit: jest.fn(),
+  };
+
+  const mockDataSource = {
+    transaction: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -55,8 +153,68 @@ describe('PaymentsService', () => {
           useValue: mockSettlementRepository,
         },
         {
+          provide: getRepositoryToken(Merchant),
+          useValue: mockMerchantRepository,
+        },
+        {
+          provide: getRepositoryToken(Product),
+          useValue: mockProductRepository,
+        },
+        {
+          provide: getRepositoryToken(Price),
+          useValue: mockPriceRepository,
+        },
+        {
+          provide: getRepositoryToken(Customer),
+          useValue: mockCustomerRepository,
+        },
+        {
+          provide: getRepositoryToken(PaymentMethodEntity),
+          useValue: mockPaymentMethodRepository,
+        },
+        {
+          provide: getRepositoryToken(CheckoutSession),
+          useValue: mockCheckoutSessionRepository,
+        },
+        {
+          provide: getRepositoryToken(Payment),
+          useValue: mockPaymentRepository,
+        },
+        {
+          provide: getRepositoryToken(Refund),
+          useValue: mockRefundRepository,
+        },
+        {
+          provide: getRepositoryToken(Subscription),
+          useValue: mockSubscriptionRepository,
+        },
+        {
+          provide: getRepositoryToken(Dispute),
+          useValue: mockDisputeRepository,
+        },
+        {
+          provide: getRepositoryToken(WebhookEndpoint),
+          useValue: mockWebhookEndpointRepository,
+        },
+        {
           provide: RpcService,
           useValue: mockRpcService,
+        },
+        {
+          provide: PolicyService,
+          useValue: mockPolicyService,
+        },
+        {
+          provide: LedgerService,
+          useValue: mockLedgerService,
+        },
+        {
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
+        },
+        {
+          provide: DataSource,
+          useValue: mockDataSource,
         },
       ],
     }).compile();

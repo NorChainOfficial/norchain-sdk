@@ -20,7 +20,12 @@ export class MessagingProfile {
   @Column({ type: 'varchar', length: 42 })
   address: string; // Wallet address
 
-  @Column({ type: 'varchar', length: 100, nullable: true, name: 'display_name' })
+  @Column({
+    type: 'varchar',
+    length: 100,
+    nullable: true,
+    name: 'display_name',
+  })
   displayName?: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true, name: 'avatar_url' })
@@ -35,4 +40,3 @@ export class MessagingProfile {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

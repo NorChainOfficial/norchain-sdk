@@ -64,4 +64,3 @@ export class CreateCustomerDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

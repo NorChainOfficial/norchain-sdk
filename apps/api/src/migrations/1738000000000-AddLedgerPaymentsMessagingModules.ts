@@ -1,11 +1,11 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
 /**
- * Migration: Add Ledger, Payments v2, and Messaging Modules
+ * Migration: Add Ledger, Payments, and Messaging Modules
  *
  * Creates all tables for:
  * - Ledger Module (double-entry accounting)
- * - Payments v2 Module (products, prices, customers, subscriptions, disputes, webhooks)
+ * - Payments Module (products, prices, customers, subscriptions, disputes, webhooks)
  * - Messaging Module (reactions)
  */
 export class AddLedgerPaymentsMessagingModules1738000000000
@@ -97,7 +97,7 @@ export class AddLedgerPaymentsMessagingModules1738000000000
     `);
 
     // ============================================
-    // PAYMENTS V2 MODULE TABLES
+    // PAYMENTS MODULE TABLES
     // ============================================
 
     // Merchants
@@ -448,4 +448,3 @@ export class AddLedgerPaymentsMessagingModules1738000000000
     await queryRunner.query(`DROP TABLE IF EXISTS ledger_accounts CASCADE;`);
   }
 }
-

@@ -35,7 +35,12 @@ export class Customer {
   })
   kycTier: KYCTier;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'display_name' })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    name: 'display_name',
+  })
   displayName?: string;
 
   @Column({ type: 'jsonb', nullable: true })
@@ -50,4 +55,3 @@ export class Customer {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

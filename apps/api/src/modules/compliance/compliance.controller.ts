@@ -87,7 +87,8 @@ export class ComplianceController {
   @Post('travel-rule/precheck')
   @ApiOperation({
     summary: 'Precheck Travel Rule requirements before payment',
-    description: 'Checks if Travel Rule compliance is required for a VASP-to-VASP transfer',
+    description:
+      'Checks if Travel Rule compliance is required for a VASP-to-VASP transfer',
   })
   @ApiResponse({
     status: 200,

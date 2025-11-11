@@ -34,4 +34,3 @@ export class DeviceKey {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

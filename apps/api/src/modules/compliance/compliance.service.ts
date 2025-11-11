@@ -199,9 +199,10 @@ export class ComplianceService {
       isVASPToVASP,
       threshold: TRAVEL_RULE_THRESHOLD.toString(),
       amount: dto.amount,
-      recommendation: requiresTravelRule && isVASPToVASP
-        ? 'Travel Rule compliance required'
-        : 'No Travel Rule required',
+      recommendation:
+        requiresTravelRule && isVASPToVASP
+          ? 'Travel Rule compliance required'
+          : 'No Travel Rule required',
     };
   }
 

@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEthereumAddress, MaxLength, IsUrl } from 'class-validator';
+import {
+  IsString,
+  IsOptional,
+  IsEthereumAddress,
+  MaxLength,
+  IsUrl,
+} from 'class-validator';
 
 export class CreateProfileDto {
   @ApiProperty({
@@ -37,4 +43,3 @@ export class CreateProfileDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

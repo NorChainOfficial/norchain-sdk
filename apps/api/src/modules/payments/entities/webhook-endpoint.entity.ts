@@ -37,4 +37,3 @@ export class WebhookEndpoint {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

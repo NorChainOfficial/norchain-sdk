@@ -10,7 +10,12 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([LedgerAccount, JournalEntry, JournalLine, PeriodClosure]),
+    TypeOrmModule.forFeature([
+      LedgerAccount,
+      JournalEntry,
+      JournalLine,
+      PeriodClosure,
+    ]),
     EventEmitterModule,
   ],
   controllers: [LedgerController],

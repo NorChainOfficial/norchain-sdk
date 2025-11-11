@@ -45,4 +45,3 @@ export class TravelRulePrecheckDto {
   @IsOptional()
   vaspMetadata?: Record<string, any>;
 }
-

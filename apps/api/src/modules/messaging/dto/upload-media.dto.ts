@@ -19,4 +19,3 @@ export class UploadMediaDto {
   @MaxLength(100)
   kind?: string;
 }
-

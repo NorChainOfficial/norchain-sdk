@@ -17,4 +17,3 @@ export class ClosePeriodDto {
   @MaxLength(20)
   period: string;
 }
-

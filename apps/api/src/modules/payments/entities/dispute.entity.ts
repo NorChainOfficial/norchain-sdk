@@ -57,4 +57,3 @@ export class Dispute {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

@@ -109,7 +109,7 @@ export const databaseConfig = (
     JournalEntry,
     JournalLine,
     PeriodClosure,
-    // Payments v2 Module
+    // Payments Module
     Merchant,
     CheckoutSession,
     Payment,

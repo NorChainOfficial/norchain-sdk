@@ -44,7 +44,10 @@ export class MessagingController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Profile created/updated successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Profile created/updated successfully',
+  })
   async createProfile(@Request() req: any, @Body() dto: CreateProfileDto) {
     // In production, verify that req.user.address matches dto.address
     return this.messagingService.createProfile(dto, req.user.id);
@@ -66,8 +69,14 @@ export class MessagingController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Conversation created successfully' })
-  async createConversation(@Request() req: any, @Body() dto: CreateConversationDto) {
+  @ApiResponse({
+    status: 201,
+    description: 'Conversation created successfully',
+  })
+  async createConversation(
+    @Request() req: any,
+    @Body() dto: CreateConversationDto,
+  ) {
     // Get sender DID from user's address
     const senderDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
     return this.messagingService.createConversation(dto, senderDid);
@@ -75,7 +84,10 @@ export class MessagingController {
 
   @Get('conversations')
   @ApiOperation({ summary: 'List conversations for authenticated user' })
-  @ApiResponse({ status: 200, description: 'Conversations retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Conversations retrieved successfully',
+  })
   async listConversations(@Request() req: any) {
     const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
     return this.messagingService.listConversations(userDid);
@@ -83,9 +95,18 @@ export class MessagingController {
 
   @Get('conversations/:id')
   @ApiOperation({ summary: 'Get conversation by ID' })
-  @ApiResponse({ status: 200, description: 'Conversation retrieved successfully' })
-  @ApiResponse({ status: 403, description: 'Not a member of this conversation' })
-  async getConversation(@Request() req: any, @Param('id', ParseUUIDPipe) id: string) {
+  @ApiResponse({
+    status: 200,
+    description: 'Conversation retrieved successfully',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Not a member of this conversation',
+  })
+  async getConversation(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
     return this.messagingService.getConversation(id, userDid);
   }
@@ -94,7 +115,8 @@ export class MessagingController {
   @Idempotent()
   @ApiOperation({
     summary: 'Send an encrypted message',
-    description: 'Sends an end-to-end encrypted message. Server never sees plaintext.',
+    description:
+      'Sends an end-to-end encrypted message. Server never sees plaintext.',
   })
   @ApiHeader({
     name: 'Idempotency-Key',
@@ -135,13 +157,21 @@ export class MessagingController {
     @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit?: number,
   ) {
     const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
-    return this.messagingService.getMessages(conversationId, userDid, cursor, limit);
+    return this.messagingService.getMessages(
+      conversationId,
+      userDid,
+      cursor,
+      limit,
+    );
   }
 
   @Post('messages/:id/delivered')
   @ApiOperation({ summary: 'Mark message as delivered' })
   @ApiResponse({ status: 200, description: 'Message marked as delivered' })
-  async markDelivered(@Request() req: any, @Param('id', ParseUUIDPipe) id: string) {
+  async markDelivered(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     const recipientDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
     await this.messagingService.markDelivered(id, recipientDid);
     return { success: true };
@@ -165,7 +195,11 @@ export class MessagingController {
     required: true,
   })
   @ApiResponse({ status: 201, description: 'Reaction added successfully' })
-  async addReaction(@Request() req: any, @Param('id', ParseUUIDPipe) id: string, @Body() dto: AddReactionDto) {
+  async addReaction(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: AddReactionDto,
+  ) {
     const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
     return this.messagingService.addReaction(id, userDid, dto.emoji);
   }
@@ -198,10 +232,19 @@ export class MessagingController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Upload URL generated successfully' })
-  async generateMediaUploadUrl(@Request() req: any, @Body() dto: UploadMediaDto) {
+  @ApiResponse({
+    status: 201,
+    description: 'Upload URL generated successfully',
+  })
+  async generateMediaUploadUrl(
+    @Request() req: any,
+    @Body() dto: UploadMediaDto,
+  ) {
     const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
-    return this.messagingService.generateMediaUploadUrl(userDid, dto.contentType, dto.kind);
+    return this.messagingService.generateMediaUploadUrl(
+      userDid,
+      dto.contentType,
+      dto.kind,
+    );
   }
 }
-

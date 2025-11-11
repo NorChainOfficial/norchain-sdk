@@ -25,4 +25,3 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
   exports: [MessagingService],
 })
 export class MessagingModule {}
-

@@ -7,12 +7,22 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
-import { LedgerAccount, AccountType, AccountStatus } from './entities/ledger-account.entity';
-import { JournalEntry, JournalEntryStatus } from './entities/journal-entry.entity';
+import {
+  LedgerAccount,
+  AccountType,
+  AccountStatus,
+} from './entities/ledger-account.entity';
+import {
+  JournalEntry,
+  JournalEntryStatus,
+} from './entities/journal-entry.entity';
 import { JournalLine, LineDirection } from './entities/journal-line.entity';
 import { PeriodClosure } from './entities/period-closure.entity';
 import { CreateAccountDto } from './dto/create-account.dto';
-import { CreateJournalEntryDto, JournalLineDto } from './dto/create-journal-entry.dto';
+import {
+  CreateJournalEntryDto,
+  JournalLineDto,
+} from './dto/create-journal-entry.dto';
 import { ClosePeriodDto } from './dto/close-period.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createHash } from 'crypto';
@@ -37,7 +47,10 @@ export class LedgerService {
   /**
    * Create a ledger account
    */
-  async createAccount(dto: CreateAccountDto, userId: string): Promise<LedgerAccount> {
+  async createAccount(
+    dto: CreateAccountDto,
+    userId: string,
+  ): Promise<LedgerAccount> {
     // Check if account code already exists for this org
     const existing = await this.accountRepository.findOne({
       where: { orgId: dto.orgId, code: dto.code },
@@ -73,7 +86,10 @@ export class LedgerService {
   /**
    * List accounts for an organization
    */
-  async listAccounts(orgId: string, status?: AccountStatus): Promise<LedgerAccount[]> {
+  async listAccounts(
+    orgId: string,
+    status?: AccountStatus,
+  ): Promise<LedgerAccount[]> {
     const where: any = { orgId };
     if (status) {
       where.status = status;
@@ -111,7 +127,11 @@ export class LedgerService {
   ): Promise<JournalEntry> {
     // Check if entry already exists (idempotency)
     const existing = await this.entryRepository.findOne({
-      where: { orgId: dto.orgId, eventType: dto.eventType, eventId: dto.eventId },
+      where: {
+        orgId: dto.orgId,
+        eventType: dto.eventType,
+        eventId: dto.eventId,
+      },
     });
 
     if (existing) {
@@ -127,7 +147,9 @@ export class LedgerService {
     });
 
     if (closure) {
-      throw new ConflictException(`Period ${dto.period} is locked and cannot be modified`);
+      throw new ConflictException(
+        `Period ${dto.period} is locked and cannot be modified`,
+      );
     }
 
     // Validate double-entry: sum(debits) == sum(credits) per currency
@@ -164,7 +186,10 @@ export class LedgerService {
           amount: line.amount,
           direction: line.direction,
           fxRate: line.fxRate || '1.0',
-          amountNative: this.calculateNativeAmount(line.amount, line.fxRate || '1.0'),
+          amountNative: this.calculateNativeAmount(
+            line.amount,
+            line.fxRate || '1.0',
+          ),
         }),
       );
 
@@ -179,7 +204,9 @@ export class LedgerService {
       relations: ['lines', 'lines.account'],
     });
 
-    this.logger.log(`Created journal entry: ${entry.id} for event ${dto.eventType}:${dto.eventId}`);
+    this.logger.log(
+      `Created journal entry: ${entry.id} for event ${dto.eventType}:${dto.eventId}`,
+    );
 
     // Emit event for other modules (e.g., payments, swaps)
     this.eventEmitter.emit('ledger.entry.created', {
@@ -224,7 +251,9 @@ export class LedgerService {
       .innerJoin('line.entry', 'entry')
       .where('line.accountId = :accountId', { accountId })
       .andWhere('entry.orgId = :orgId', { orgId })
-      .andWhere('entry.status = :status', { status: JournalEntryStatus.POSTED });
+      .andWhere('entry.status = :status', {
+        status: JournalEntryStatus.POSTED,
+      });
 
     if (fromDate) {
       query.andWhere('entry.occurredAt >= :fromDate', { fromDate });
@@ -267,7 +296,10 @@ export class LedgerService {
   /**
    * Close a period and create Merkle anchor
    */
-  async closePeriod(dto: ClosePeriodDto, userId: string): Promise<PeriodClosure> {
+  async closePeriod(
+    dto: ClosePeriodDto,
+    userId: string,
+  ): Promise<PeriodClosure> {
     // Check if already closed
     const existing = await this.closureRepository.findOne({
       where: { orgId: dto.orgId, period: dto.period },
@@ -301,7 +333,9 @@ export class LedgerService {
 
     const saved = await this.closureRepository.save(closure);
 
-    this.logger.log(`Closed period ${dto.period} for org ${dto.orgId} with Merkle root ${merkleRoot}`);
+    this.logger.log(
+      `Closed period ${dto.period} for org ${dto.orgId} with Merkle root ${merkleRoot}`,
+    );
 
     // Emit event for on-chain anchoring (can be handled by a separate service)
     this.eventEmitter.emit('ledger.period.closed', {
@@ -317,7 +351,10 @@ export class LedgerService {
   /**
    * Get period closure with anchor transaction
    */
-  async getPeriodClosure(period: string, orgId: string): Promise<PeriodClosure> {
+  async getPeriodClosure(
+    period: string,
+    orgId: string,
+  ): Promise<PeriodClosure> {
     const closure = await this.closureRepository.findOne({
       where: { period, orgId },
     });
@@ -332,7 +369,10 @@ export class LedgerService {
   /**
    * Validate double-entry: sum(debits) == sum(credits) per currency
    */
-  private validateDoubleEntry(lines: JournalLineDto[]): { valid: boolean; error?: string } {
+  private validateDoubleEntry(lines: JournalLineDto[]): {
+    valid: boolean;
+    error?: string;
+  } {
     const balances: Record<string, { debit: string; credit: string }> = {};
 
     for (const line of lines) {
@@ -340,8 +380,10 @@ export class LedgerService {
         balances[line.currency] = { debit: '0', credit: '0' };
       }
 
-      const debitAmount = line.direction === LineDirection.DEBIT ? line.amount : '0';
-      const creditAmount = line.direction === LineDirection.CREDIT ? line.amount : '0';
+      const debitAmount =
+        line.direction === LineDirection.DEBIT ? line.amount : '0';
+      const creditAmount =
+        line.direction === LineDirection.CREDIT ? line.amount : '0';
 
       balances[line.currency].debit = (
         parseFloat(balances[line.currency].debit) + parseFloat(debitAmount)
@@ -376,7 +418,7 @@ export class LedgerService {
     lines: JournalLineDto[],
   ): Promise<Array<JournalLineDto & { accountId: string }>> {
     const accountCodes = lines.map((l) => l.account);
-    
+
     // Try to find accounts by code first
     const accounts = await this.accountRepository
       .createQueryBuilder('account')
@@ -389,14 +431,16 @@ export class LedgerService {
     // For accounts not found by code, try by UUID
     const unresolved = lines.filter((l) => !accountMap.has(l.account));
     if (unresolved.length > 0) {
-      const uuids = unresolved.map((l) => l.account).filter((id) => id.length === 36);
+      const uuids = unresolved
+        .map((l) => l.account)
+        .filter((id) => id.length === 36);
       if (uuids.length > 0) {
         const accountsByUuid = await this.accountRepository
           .createQueryBuilder('account')
           .where('account.orgId = :orgId', { orgId })
           .andWhere('account.id IN (:...uuids)', { uuids })
           .getMany();
-        
+
         accountsByUuid.forEach((a) => accountMap.set(a.id, a.id));
       }
     }
@@ -436,4 +480,3 @@ export class LedgerService {
     return createHash('sha256').update(combined).digest('hex');
   }
 }
-

@@ -76,4 +76,3 @@ export class LedgerAccount {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

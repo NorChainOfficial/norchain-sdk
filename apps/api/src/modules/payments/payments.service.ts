@@ -17,15 +17,25 @@ import {
   SettlementStatus,
   SettlementType,
 } from './entities/merchant-settlement.entity';
-import { Merchant, KYCTier, SettlementPreference } from './entities/merchant.entity';
+import {
+  Merchant,
+  KYCTier,
+  SettlementPreference,
+} from './entities/merchant.entity';
 import { Product } from './entities/product.entity';
 import { Price, BillingCycle } from './entities/price.entity';
 import { Customer } from './entities/customer.entity';
-import { PaymentMethod as PaymentMethodEntity, PaymentMethodKind } from './entities/payment-method.entity';
+import {
+  PaymentMethod as PaymentMethodEntity,
+  PaymentMethodKind,
+} from './entities/payment-method.entity';
 import { CheckoutSession } from './entities/checkout-session.entity';
 import { Payment } from './entities/payment.entity';
 import { Refund } from './entities/refund.entity';
-import { Subscription, SubscriptionStatus } from './entities/subscription.entity';
+import {
+  Subscription,
+  SubscriptionStatus,
+} from './entities/subscription.entity';
 import { Dispute, DisputeStatus } from './entities/dispute.entity';
 import { WebhookEndpoint } from './entities/webhook-endpoint.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
@@ -370,7 +380,9 @@ export class PaymentsService {
     });
 
     if (existing) {
-      throw new BadRequestException(`Merchant already onboarded for organization ${orgId}`);
+      throw new BadRequestException(
+        `Merchant already onboarded for organization ${orgId}`,
+      );
     }
 
     // Generate webhook secret
@@ -379,7 +391,8 @@ export class PaymentsService {
     const merchant = this.merchantRepository.create({
       orgId,
       kycTier: dto.kycTier || KYCTier.TIER_0,
-      settlementPreference: dto.settlementPreference || SettlementPreference.CRYPTO_ONLY,
+      settlementPreference:
+        dto.settlementPreference || SettlementPreference.CRYPTO_ONLY,
       webhookSecret,
       webhookUrl: dto.webhookUrl,
       active: true,
@@ -404,7 +417,9 @@ export class PaymentsService {
     });
 
     if (!merchant) {
-      throw new NotFoundException(`Merchant ${dto.merchantId} not found or inactive`);
+      throw new NotFoundException(
+        `Merchant ${dto.merchantId} not found or inactive`,
+      );
     }
 
     // Generate session ID
@@ -431,7 +446,9 @@ export class PaymentsService {
     // Generate payment URL
     const payUrl = `https://pay.norchain.org/${saved.sessionId}`;
 
-    this.logger.log(`Created checkout session: ${saved.sessionId} for merchant ${merchant.id}`);
+    this.logger.log(
+      `Created checkout session: ${saved.sessionId} for merchant ${merchant.id}`,
+    );
 
     return {
       ...saved,
@@ -515,7 +532,9 @@ export class PaymentsService {
       payerAddress,
     });
 
-    this.logger.log(`Payment processed: ${saved.paymentId} for session ${sessionId}`);
+    this.logger.log(
+      `Payment processed: ${saved.paymentId} for session ${sessionId}`,
+    );
 
     return saved;
   }
@@ -523,10 +542,7 @@ export class PaymentsService {
   /**
    * Create a refund
    */
-  async createRefund(
-    dto: CreateRefundDto,
-    userId: string,
-  ): Promise<Refund> {
+  async createRefund(dto: CreateRefundDto, userId: string): Promise<Refund> {
     // Get payment
     const payment = await this.paymentRepository.findOne({
       where: { paymentId: dto.paymentId },
@@ -550,19 +566,18 @@ export class PaymentsService {
     const paymentAmount = parseFloat(payment.amount);
 
     if (refundAmount > paymentAmount) {
-      throw new BadRequestException('Refund amount cannot exceed payment amount');
+      throw new BadRequestException(
+        'Refund amount cannot exceed payment amount',
+      );
     }
 
     // Policy check for refund
-    const policyCheck = await this.policyService.checkPolicy(
-      userId,
-      {
-        fromAddress: payment.payerAddress,
-        toAddress: dto.recipientAddress,
-        amount: dto.amount,
-        asset: payment.currency,
-      },
-    );
+    const policyCheck = await this.policyService.checkPolicy(userId, {
+      fromAddress: payment.payerAddress,
+      toAddress: dto.recipientAddress,
+      amount: dto.amount,
+      asset: payment.currency,
+    });
 
     if (!policyCheck.allowed) {
       throw new ForbiddenException('Refund blocked by policy');
@@ -588,7 +603,9 @@ export class PaymentsService {
     // Process refund (send on-chain transaction)
     await this.processRefund(saved);
 
-    this.logger.log(`Refund created: ${saved.refundId} for payment ${dto.paymentId}`);
+    this.logger.log(
+      `Refund created: ${saved.refundId} for payment ${dto.paymentId}`,
+    );
 
     return saved;
   }
@@ -598,7 +615,9 @@ export class PaymentsService {
    */
   private async processRefund(refund: Refund): Promise<void> {
     try {
-      this.logger.log(`Processing refund ${refund.refundId}: sending ${refund.amount} ${refund.currency} to ${refund.recipientAddress}`);
+      this.logger.log(
+        `Processing refund ${refund.refundId}: sending ${refund.amount} ${refund.currency} to ${refund.recipientAddress}`,
+      );
 
       // Update status to processing
       refund.status = RefundStatus.PROCESSING;
@@ -627,7 +646,9 @@ export class PaymentsService {
 
       this.logger.log(`Refund processed: ${refund.refundId} with tx ${txHash}`);
     } catch (error) {
-      this.logger.error(`Failed to process refund ${refund.refundId}: ${error.message}`);
+      this.logger.error(
+        `Failed to process refund ${refund.refundId}: ${error.message}`,
+      );
       refund.status = RefundStatus.FAILED;
       await this.refundRepository.save(refund);
       throw error;
@@ -647,7 +668,9 @@ export class PaymentsService {
       });
 
       if (!merchant) {
-        this.logger.warn(`Merchant ${payment.merchantId} not found, skipping ledger posting`);
+        this.logger.warn(
+          `Merchant ${payment.merchantId} not found, skipping ledger posting`,
+        );
         return;
       }
 
@@ -699,7 +722,9 @@ export class PaymentsService {
       });
 
       if (!payment) {
-        this.logger.warn(`Payment ${refund.paymentId} not found, skipping ledger posting`);
+        this.logger.warn(
+          `Payment ${refund.paymentId} not found, skipping ledger posting`,
+        );
         return;
       }
 
@@ -708,7 +733,9 @@ export class PaymentsService {
       });
 
       if (!merchant) {
-        this.logger.warn(`Merchant ${refund.merchantId} not found, skipping ledger posting`);
+        this.logger.warn(
+          `Merchant ${refund.merchantId} not found, skipping ledger posting`,
+        );
         return;
       }
 
@@ -809,7 +836,9 @@ export class PaymentsService {
   ): Promise<Customer> {
     // Validate: must have either address or email
     if (!dto.address && !dto.email) {
-      throw new BadRequestException('Customer must have either address or email');
+      throw new BadRequestException(
+        'Customer must have either address or email',
+      );
     }
 
     const customer = this.customerRepository.create({
@@ -837,7 +866,9 @@ export class PaymentsService {
     });
 
     if (!merchant) {
-      throw new NotFoundException(`Merchant ${dto.orgId} not found or inactive`);
+      throw new NotFoundException(
+        `Merchant ${dto.orgId} not found or inactive`,
+      );
     }
 
     // Calculate total amount from line items
@@ -851,10 +882,10 @@ export class PaymentsService {
         throw new NotFoundException(`Price ${item.priceId} not found`);
       }
 
-      const itemTotal = (
-        parseFloat(price.amount) * item.quantity
+      const itemTotal = (parseFloat(price.amount) * item.quantity).toString();
+      totalAmount = (
+        parseFloat(totalAmount) + parseFloat(itemTotal)
       ).toString();
-      totalAmount = (parseFloat(totalAmount) + parseFloat(itemTotal)).toString();
     }
 
     // Generate session ID
@@ -880,7 +911,9 @@ export class PaymentsService {
     const saved = await this.checkoutSessionRepository.save(session);
     const payUrl = `https://pay.norchain.org/${saved.sessionId}`;
 
-    this.logger.log(`Created checkout session with line items: ${saved.sessionId}`);
+    this.logger.log(
+      `Created checkout session with line items: ${saved.sessionId}`,
+    );
 
     return {
       ...saved,
@@ -905,7 +938,9 @@ export class PaymentsService {
     }
 
     if (!price.billingCycle) {
-      throw new BadRequestException('Price must have a billing cycle for subscriptions');
+      throw new BadRequestException(
+        'Price must have a billing cycle for subscriptions',
+      );
     }
 
     // Verify customer exists
@@ -946,7 +981,7 @@ export class PaymentsService {
       currentPeriodStart: periodStart,
       currentPeriodEnd: periodEnd,
       nextBillingAt: periodEnd,
-      prorationPolicy: dto.prorationPolicy || 'create_proration' as any,
+      prorationPolicy: dto.prorationPolicy || ('create_proration' as any),
       metadata: dto.metadata,
     });
 
@@ -995,10 +1030,7 @@ export class PaymentsService {
   /**
    * Create a dispute
    */
-  async createDispute(
-    dto: CreateDisputeDto,
-    userId: string,
-  ): Promise<Dispute> {
+  async createDispute(dto: CreateDisputeDto, userId: string): Promise<Dispute> {
     // Verify payment exists
     const payment = await this.paymentRepository.findOne({
       where: { paymentId: dto.paymentId },
@@ -1035,7 +1067,9 @@ export class PaymentsService {
       reason: dto.reason,
     });
 
-    this.logger.log(`Created dispute: ${saved.id} for payment ${dto.paymentId}`);
+    this.logger.log(
+      `Created dispute: ${saved.id} for payment ${dto.paymentId}`,
+    );
 
     return saved;
   }

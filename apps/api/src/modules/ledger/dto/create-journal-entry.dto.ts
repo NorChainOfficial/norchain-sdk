@@ -121,11 +121,11 @@ export class CreateJournalEntryDto {
 
   @ApiProperty({
     type: [JournalLineDto],
-    description: 'Journal lines (must balance: sum(debits) == sum(credits) per currency)',
+    description:
+      'Journal lines (must balance: sum(debits) == sum(credits) per currency)',
   })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => JournalLineDto)
   lines: JournalLineDto[];
 }
-

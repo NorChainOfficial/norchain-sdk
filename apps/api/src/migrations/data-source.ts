@@ -75,4 +75,3 @@ export const MigrationDataSource = new DataSource({
         ? { rejectUnauthorized: false }
         : false,
 });
-

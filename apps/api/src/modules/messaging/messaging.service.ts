@@ -46,7 +46,10 @@ export class MessagingService {
   /**
    * Create or update messaging profile
    */
-  async createProfile(dto: CreateProfileDto, userId: string): Promise<MessagingProfile> {
+  async createProfile(
+    dto: CreateProfileDto,
+    userId: string,
+  ): Promise<MessagingProfile> {
     const did = this.generateDID(dto.address);
 
     // Check if profile exists
@@ -116,7 +119,9 @@ export class MessagingService {
 
     // For P2P, ensure exactly 2 members
     if (dto.kind === ConversationKind.P2P && dto.members.length !== 2) {
-      throw new BadRequestException('P2P conversations must have exactly 2 members');
+      throw new BadRequestException(
+        'P2P conversations must have exactly 2 members',
+      );
     }
 
     // Check if P2P conversation already exists
@@ -126,7 +131,7 @@ export class MessagingService {
       const allP2P = await this.conversationRepository.find({
         where: { kind: ConversationKind.P2P },
       });
-      
+
       const existing = allP2P.find(
         (conv) =>
           conv.members.length === 2 &&
@@ -163,7 +168,10 @@ export class MessagingService {
   /**
    * Get conversation by ID
    */
-  async getConversation(conversationId: string, userDid: string): Promise<Conversation> {
+  async getConversation(
+    conversationId: string,
+    userDid: string,
+  ): Promise<Conversation> {
     const conversation = await this.conversationRepository.findOne({
       where: { id: conversationId },
     });
@@ -196,17 +204,20 @@ export class MessagingService {
   /**
    * Send a message
    */
-  async sendMessage(
-    dto: SendMessageDto,
-    senderDid: string,
-  ): Promise<Message> {
+  async sendMessage(dto: SendMessageDto, senderDid: string): Promise<Message> {
     // Get conversation
-    const conversation = await this.getConversation(dto.conversationId, senderDid);
+    const conversation = await this.getConversation(
+      dto.conversationId,
+      senderDid,
+    );
 
     // Check idempotency (if clientNonce provided)
     if (dto.clientNonce) {
       const existing = await this.messageRepository.findOne({
-        where: { conversationId: dto.conversationId, clientNonce: dto.clientNonce },
+        where: {
+          conversationId: dto.conversationId,
+          clientNonce: dto.clientNonce,
+        },
       });
 
       if (existing) {
@@ -233,7 +244,9 @@ export class MessagingService {
     conversation.updatedAt = new Date();
     await this.conversationRepository.save(conversation);
 
-    this.logger.log(`Message sent: ${saved.id} in conversation ${dto.conversationId}`);
+    this.logger.log(
+      `Message sent: ${saved.id} in conversation ${dto.conversationId}`,
+    );
 
     // Emit event for real-time delivery
     this.eventEmitter.emit('messaging.message.sent', {
@@ -420,7 +433,11 @@ export class MessagingService {
   /**
    * Remove reaction from a message
    */
-  async removeReaction(messageId: string, userDid: string, emoji: string): Promise<void> {
+  async removeReaction(
+    messageId: string,
+    userDid: string,
+    emoji: string,
+  ): Promise<void> {
     const reaction = await this.reactionRepository.findOne({
       where: { messageId, userDid, emoji },
     });
@@ -464,4 +481,3 @@ export class MessagingService {
     };
   }
 }
-

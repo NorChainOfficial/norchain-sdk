@@ -44,7 +44,12 @@ export class Merchant {
   })
   settlementPreference: SettlementPreference;
 
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'webhook_secret' })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    name: 'webhook_secret',
+  })
   webhookSecret?: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true, name: 'webhook_url' })
@@ -59,4 +64,3 @@ export class Merchant {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

@@ -17,4 +17,3 @@ export class AddReactionDto {
   @MaxLength(50)
   emoji: string;
 }
-

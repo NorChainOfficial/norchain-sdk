@@ -41,7 +41,11 @@ export class JournalEntry {
   @Column({ type: 'timestamptz', name: 'occurred_at' })
   occurredAt: Date; // When the event actually happened
 
-  @Column({ type: 'timestamptz', name: 'booked_at', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'timestamptz',
+    name: 'booked_at',
+    default: () => 'CURRENT_TIMESTAMP',
+  })
   bookedAt: Date; // When the entry was booked
 
   @Column({ type: 'varchar', length: 20 })
@@ -63,4 +67,3 @@ export class JournalEntry {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }
-

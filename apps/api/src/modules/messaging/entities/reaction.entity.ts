@@ -25,4 +25,3 @@ export class MessageReaction {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }
-

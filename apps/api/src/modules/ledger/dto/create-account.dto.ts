@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEnum, IsOptional, IsUUID, MaxLength } from 'class-validator';
+import {
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 import { AccountType } from '../entities/ledger-account.entity';
 
 export class CreateAccountDto {
@@ -52,4 +58,3 @@ export class CreateAccountDto {
   @IsUUID()
   parentId?: string;
 }
-

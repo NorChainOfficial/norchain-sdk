@@ -76,4 +76,3 @@ export class CreateCheckoutSessionWithLineItemsDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

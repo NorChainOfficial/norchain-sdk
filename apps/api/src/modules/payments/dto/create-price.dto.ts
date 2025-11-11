@@ -51,4 +51,3 @@ export class CreatePriceDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

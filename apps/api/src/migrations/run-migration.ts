@@ -1,6 +1,6 @@
 /**
  * Migration Runner Script
- * 
+ *
  * This script can be used to manually run migrations if TypeORM CLI has issues.
  * Usage: npm run migration:run:direct
  */
@@ -33,4 +33,3 @@ async function runMigrations() {
 }
 
 runMigrations();
-

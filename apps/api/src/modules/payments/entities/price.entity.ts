@@ -28,7 +28,9 @@ export class Price {
   @Column({ type: 'uuid', name: 'product_id' })
   productId: string;
 
-  @ManyToOne(() => Product, (product) => product.prices, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Product, (product) => product.prices, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'product_id' })
   product: Product;
 
@@ -58,4 +60,3 @@ export class Price {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

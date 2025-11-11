@@ -45,7 +45,12 @@ export class Payment {
   @Column({ type: 'varchar', length: 42, name: 'payer_address' })
   payerAddress: string;
 
-  @Column({ type: 'varchar', length: 42, nullable: true, name: 'recipient_address' })
+  @Column({
+    type: 'varchar',
+    length: 42,
+    nullable: true,
+    name: 'recipient_address',
+  })
   recipientAddress?: string;
 
   @Column({ type: 'varchar', length: 66, nullable: true, name: 'tx_hash' })
@@ -76,4 +81,3 @@ export class Payment {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

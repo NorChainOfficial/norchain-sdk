@@ -168,7 +168,11 @@ export class PaymentsController {
   @ApiResponse({ status: 201, description: 'Merchant onboarded successfully' })
   @ApiResponse({ status: 400, description: 'Merchant already onboarded' })
   async onboardMerchant(@Request() req: any, @Body() dto: OnboardMerchantDto) {
-    return this.paymentsService.onboardMerchant(req.user.orgId || req.user.id, req.user.id, dto);
+    return this.paymentsService.onboardMerchant(
+      req.user.orgId || req.user.id,
+      req.user.id,
+      dto,
+    );
   }
 
   @Post('checkout-sessions')
@@ -182,9 +186,15 @@ export class PaymentsController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Checkout session created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Checkout session created successfully',
+  })
   @ApiResponse({ status: 404, description: 'Merchant not found' })
-  async createCheckoutSession(@Request() req: any, @Body() dto: CreateCheckoutSessionDto) {
+  async createCheckoutSession(
+    @Request() req: any,
+    @Body() dto: CreateCheckoutSessionDto,
+  ) {
     return this.paymentsService.createCheckoutSession(dto, req.user.id);
   }
 
@@ -199,14 +209,26 @@ export class PaymentsController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Checkout session created successfully' })
-  async createCheckoutSessionWithLineItems(@Request() req: any, @Body() dto: CreateCheckoutSessionWithLineItemsDto) {
-    return this.paymentsService.createCheckoutSessionWithLineItems(dto, req.user.id);
+  @ApiResponse({
+    status: 201,
+    description: 'Checkout session created successfully',
+  })
+  async createCheckoutSessionWithLineItems(
+    @Request() req: any,
+    @Body() dto: CreateCheckoutSessionWithLineItemsDto,
+  ) {
+    return this.paymentsService.createCheckoutSessionWithLineItems(
+      dto,
+      req.user.id,
+    );
   }
 
   @Get('checkout-sessions/:sessionId')
   @ApiOperation({ summary: 'Get checkout session status' })
-  @ApiResponse({ status: 200, description: 'Checkout session retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Checkout session retrieved successfully',
+  })
   @ApiResponse({ status: 404, description: 'Checkout session not found' })
   async getCheckoutSession(@Param('sessionId') sessionId: string) {
     return this.paymentsService.getCheckoutSession(sessionId);
@@ -292,8 +314,14 @@ export class PaymentsController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Subscription created successfully' })
-  async createSubscription(@Request() req: any, @Body() dto: CreateSubscriptionDto) {
+  @ApiResponse({
+    status: 201,
+    description: 'Subscription created successfully',
+  })
+  async createSubscription(
+    @Request() req: any,
+    @Body() dto: CreateSubscriptionDto,
+  ) {
     return this.paymentsService.createSubscription(dto, req.user.id);
   }
 
@@ -305,8 +333,14 @@ export class PaymentsController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 200, description: 'Subscription canceled successfully' })
-  async cancelSubscription(@Request() req: any, @Param('id', ParseUUIDPipe) id: string) {
+  @ApiResponse({
+    status: 200,
+    description: 'Subscription canceled successfully',
+  })
+  async cancelSubscription(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
     return this.paymentsService.cancelSubscription(id, req.user.id);
   }
 
@@ -335,7 +369,10 @@ export class PaymentsController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Webhook endpoint registered successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Webhook endpoint registered successfully',
+  })
   async registerWebhook(
     @Request() req: any,
     @Body() dto: { orgId: string; url: string; events: string[] },

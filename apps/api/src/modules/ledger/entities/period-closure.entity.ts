@@ -34,4 +34,3 @@ export class PeriodClosure {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }
-

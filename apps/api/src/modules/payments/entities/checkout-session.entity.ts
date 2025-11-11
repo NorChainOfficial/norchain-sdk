@@ -53,10 +53,20 @@ export class CheckoutSession {
   })
   status: CheckoutSessionStatus;
 
-  @Column({ type: 'varchar', length: 66, nullable: true, name: 'payment_tx_hash' })
+  @Column({
+    type: 'varchar',
+    length: 66,
+    nullable: true,
+    name: 'payment_tx_hash',
+  })
   paymentTxHash?: string; // On-chain transaction hash
 
-  @Column({ type: 'varchar', length: 42, nullable: true, name: 'payer_address' })
+  @Column({
+    type: 'varchar',
+    length: 42,
+    nullable: true,
+    name: 'payer_address',
+  })
   payerAddress?: string;
 
   @Column({ type: 'timestamptz', nullable: true, name: 'paid_at' })
@@ -71,4 +81,3 @@ export class CheckoutSession {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

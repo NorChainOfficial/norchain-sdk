@@ -98,10 +98,19 @@ export class LedgerController {
     description: 'Idempotency key for safe retries',
     required: true,
   })
-  @ApiResponse({ status: 201, description: 'Journal entry created successfully' })
+  @ApiResponse({
+    status: 201,
+    description: 'Journal entry created successfully',
+  })
   @ApiResponse({ status: 400, description: 'Double-entry validation failed' })
-  @ApiResponse({ status: 409, description: 'Period is locked or entry already exists' })
-  async createJournalEntry(@Request() req: any, @Body() dto: CreateJournalEntryDto) {
+  @ApiResponse({
+    status: 409,
+    description: 'Period is locked or entry already exists',
+  })
+  async createJournalEntry(
+    @Request() req: any,
+    @Body() dto: CreateJournalEntryDto,
+  ) {
     return this.ledgerService.createJournalEntry(dto, req.user.id);
   }
 
@@ -113,7 +122,10 @@ export class LedgerController {
     type: String,
     description: 'Organization ID',
   })
-  @ApiResponse({ status: 200, description: 'Journal entry retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Journal entry retrieved successfully',
+  })
   @ApiResponse({ status: 404, description: 'Journal entry not found' })
   async getJournalEntry(
     @Param('id', ParseUUIDPipe) id: string,
@@ -125,7 +137,8 @@ export class LedgerController {
   @Get('statements')
   @ApiOperation({
     summary: 'Get account statement (trial balance / movements)',
-    description: 'Returns account movements and running balance for a date range',
+    description:
+      'Returns account movements and running balance for a date range',
   })
   @ApiQuery({
     name: 'accountId',
@@ -160,7 +173,12 @@ export class LedgerController {
   ) {
     const fromDate = from ? new Date(from) : undefined;
     const toDate = to ? new Date(to) : undefined;
-    return this.ledgerService.getAccountStatement(accountId, orgId, fromDate, toDate);
+    return this.ledgerService.getAccountStatement(
+      accountId,
+      orgId,
+      fromDate,
+      toDate,
+    );
   }
 
   @Post('close-period')
@@ -184,7 +202,8 @@ export class LedgerController {
   @Get('anchors/:period')
   @ApiOperation({
     summary: 'Get period closure with Merkle anchor',
-    description: 'Returns period closure details including Merkle root and anchor transaction',
+    description:
+      'Returns period closure details including Merkle root and anchor transaction',
   })
   @ApiQuery({
     name: 'orgId',
@@ -192,7 +211,10 @@ export class LedgerController {
     type: String,
     description: 'Organization ID',
   })
-  @ApiResponse({ status: 200, description: 'Period closure retrieved successfully' })
+  @ApiResponse({
+    status: 200,
+    description: 'Period closure retrieved successfully',
+  })
   @ApiResponse({ status: 404, description: 'Period not closed' })
   async getPeriodClosure(
     @Param('period') period: string,
@@ -201,4 +223,3 @@ export class LedgerController {
     return this.ledgerService.getPeriodClosure(period, orgId);
   }
 }
-

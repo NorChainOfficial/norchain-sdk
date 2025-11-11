@@ -35,4 +35,3 @@ export class CreateSubscriptionDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

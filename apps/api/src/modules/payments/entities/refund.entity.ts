@@ -72,4 +72,3 @@ export class Refund {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

@@ -54,4 +54,3 @@ export class CreateConversationDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-
