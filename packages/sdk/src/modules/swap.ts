@@ -1,13 +1,25 @@
 import { AxiosInstance } from 'axios';
-import { GetQuoteDto, ExecuteSwapDto } from '../types';
+
+export interface GetQuoteDto {
+  readonly tokenIn: string;
+  readonly tokenOut: string;
+  readonly amountIn: string;
+  readonly chainId: string;
+}
+
+export interface ExecuteSwapDto {
+  readonly quoteId: string;
+  readonly signedTx: string;
+  readonly userAddress: string;
+}
 
 export class SwapModule {
-  constructor(private axios: AxiosInstance) {}
+  constructor(private readonly axios: AxiosInstance) {}
 
   /**
    * Get swap quote
    */
-  async getQuote(dto: GetQuoteDto) {
+  async getQuote(dto: GetQuoteDto): Promise<any> {
     const response = await this.axios.post('/api/v1/swap/quote', dto);
     return response.data;
   }
@@ -15,7 +27,7 @@ export class SwapModule {
   /**
    * Execute swap
    */
-  async execute(dto: ExecuteSwapDto, options?: { idempotencyKey?: string }) {
+  async execute(dto: ExecuteSwapDto, options?: { idempotencyKey?: string }): Promise<any> {
     const headers: Record<string, string> = {};
     if (options?.idempotencyKey) {
       headers['Idempotency-Key'] = options.idempotencyKey;
@@ -27,4 +39,3 @@ export class SwapModule {
     return response.data;
   }
 }
-

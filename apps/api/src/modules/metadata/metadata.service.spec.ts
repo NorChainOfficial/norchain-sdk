@@ -589,5 +589,239 @@ describe('MetadataService', () => {
       ).rejects.toThrow(BadRequestException);
     });
   });
+
+  describe('getProfile', () => {
+    it('should return profile by chainId and address', async () => {
+      const chainId = '65001';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockProfile = {
+        id: 'profile-123',
+        chainId,
+        address,
+        displayName: 'Test Token',
+        trustLevel: TrustLevel.OWNER_VERIFIED,
+        versions: [],
+        attestations: [],
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+
+      const result = await service.getProfile(chainId, address);
+
+      expect(result).toEqual(mockProfile);
+      expect(mockProfileRepository.findOne).toHaveBeenCalledWith({
+        where: { chainId, address },
+        relations: ['versions', 'attestations'],
+        order: { profileVersion: 'DESC' },
+      });
+    });
+
+    it('should return null when profile not found', async () => {
+      mockProfileRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.getProfile('65001', '0x0000000000000000000000000000000000000000');
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('getProfileVersions', () => {
+    it('should return profile versions', async () => {
+      const chainId = '65001';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockProfile = {
+        id: 'profile-123',
+        chainId,
+        address,
+      };
+      const mockVersions = [
+        {
+          id: 'version-1',
+          profileId: 'profile-123',
+          version: 1,
+          metadata: { name: 'Version 1' },
+        },
+        {
+          id: 'version-2',
+          profileId: 'profile-123',
+          version: 2,
+          metadata: { name: 'Version 2' },
+        },
+      ];
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+      mockVersionRepository.find.mockResolvedValue(mockVersions);
+
+      const result = await service.getProfileVersions(chainId, address);
+
+      expect(result).toEqual(mockVersions);
+      expect(mockVersionRepository.find).toHaveBeenCalledWith({
+        where: { profileId: 'profile-123' },
+        order: { version: 'DESC' },
+      });
+    });
+
+    it('should throw NotFoundException when profile not found', async () => {
+      mockProfileRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getProfileVersions('65001', '0x0000000000000000000000000000000000000000'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('searchProfiles', () => {
+    it('should search profiles by query', async () => {
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+
+      await service.searchProfiles('test', undefined, undefined, 50, 0);
+
+      expect(mockQueryBuilder.where).toHaveBeenCalled();
+      expect(mockQueryBuilder.getManyAndCount).toHaveBeenCalled();
+    });
+
+    it('should search profiles by tag', async () => {
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+
+      await service.searchProfiles(undefined, 'defi', undefined, 50, 0);
+
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        ':tag = ANY(profile.tags)',
+        { tag: 'defi' },
+      );
+    });
+
+    it('should search profiles by trust level', async () => {
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+
+      await service.searchProfiles(undefined, undefined, TrustLevel.OWNER_VERIFIED, 50, 0);
+
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'profile.trustLevel = :trustLevel',
+        { trustLevel: TrustLevel.OWNER_VERIFIED },
+      );
+    });
+
+    it('should use default pagination values', async () => {
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+
+      await service.searchProfiles();
+
+      expect(mockQueryBuilder.take).toHaveBeenCalledWith(50);
+      expect(mockQueryBuilder.skip).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe('reportProfile', () => {
+    it('should create report for profile', async () => {
+      const profileId = 'profile-123';
+      const reason = 'spam';
+      const details = 'This is spam content';
+
+      const mockProfile = {
+        id: profileId,
+        chainId: '65001',
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        reviewState: ReviewState.CLEAN,
+      };
+
+      const mockReport = {
+        id: 'report-123',
+        profileId,
+        reason,
+        details,
+        createdAt: new Date(),
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+      mockReportRepository.create.mockReturnValue(mockReport);
+      mockReportRepository.save.mockResolvedValue(mockReport);
+
+      const result = await service.reportProfile(profileId, reason, details);
+
+      expect(result).toBeDefined();
+      expect(mockReportRepository.save).toHaveBeenCalled();
+    });
+
+    it('should auto-shadow profile for high-risk keywords', async () => {
+      const profileId = 'profile-123';
+      const reason = 'scam';
+      const details = 'This is a scam token';
+
+      const mockProfile = {
+        id: profileId,
+        chainId: '65001',
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        reviewState: ReviewState.CLEAN,
+      };
+
+      const mockReport = {
+        id: 'report-123',
+        profileId,
+        reason,
+        details,
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+      mockReportRepository.create.mockReturnValue(mockReport);
+      mockReportRepository.save.mockResolvedValue(mockReport);
+      mockProfileRepository.save.mockResolvedValue({
+        ...mockProfile,
+        reviewState: ReviewState.SHADOW,
+      });
+
+      await service.reportProfile(profileId, reason, details);
+
+      expect(mockProfileRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewState: ReviewState.SHADOW,
+        }),
+      );
+    });
+
+    it('should throw NotFoundException if profile not found', async () => {
+      mockProfileRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.reportProfile('invalid-id', 'spam', 'details'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
 });
 

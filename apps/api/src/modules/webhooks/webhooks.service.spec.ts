@@ -188,5 +188,119 @@ describe('WebhooksService', () => {
       expect(event1.id).not.toBe(event2.id);
     });
   });
+
+  describe('getDeliveries - Edge Cases', () => {
+    it('should return empty deliveries when none exist', async () => {
+      const userId = 'user-123';
+      const webhookId = 'webhook-123';
+      const mockSubscription = {
+        id: webhookId,
+        userId,
+      };
+
+      mockSubscriptionRepository.findOne.mockResolvedValue(mockSubscription);
+      mockDeliveryRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getDeliveries(userId, webhookId, 50, 0);
+
+      expect(result.deliveries).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('should use default pagination values', async () => {
+      const userId = 'user-123';
+      const webhookId = 'webhook-123';
+      const mockSubscription = {
+        id: webhookId,
+        userId,
+      };
+
+      mockSubscriptionRepository.findOne.mockResolvedValue(mockSubscription);
+      mockDeliveryRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      await service.getDeliveries(userId, webhookId);
+
+      expect(mockDeliveryRepository.findAndCount).toHaveBeenCalledWith({
+        where: { subscriptionId: webhookId },
+        order: { createdAt: 'DESC' },
+        take: 50,
+        skip: 0,
+      });
+    });
+
+    it('should handle pagination correctly', async () => {
+      const userId = 'user-123';
+      const webhookId = 'webhook-123';
+      const mockSubscription = {
+        id: webhookId,
+        userId,
+      };
+
+      const mockDeliveries = [
+        {
+          id: 'delivery-1',
+          eventType: WebhookEventType.TRANSACTION_MINED,
+          status: DeliveryStatus.SUCCESS,
+          attemptCount: 1,
+          httpStatus: 200,
+          deliveredAt: new Date(),
+          createdAt: new Date(),
+        },
+      ];
+
+      mockSubscriptionRepository.findOne.mockResolvedValue(mockSubscription);
+      mockDeliveryRepository.findAndCount.mockResolvedValue([mockDeliveries, 1]);
+
+      const result = await service.getDeliveries(userId, webhookId, 10, 5);
+
+      expect(result.limit).toBe(10);
+      expect(result.offset).toBe(5);
+      expect(mockDeliveryRepository.findAndCount).toHaveBeenCalledWith({
+        where: { subscriptionId: webhookId },
+        order: { createdAt: 'DESC' },
+        take: 10,
+        skip: 5,
+      });
+    });
+  });
+
+  describe('createWebhook - Edge Cases', () => {
+    it('should generate unique HMAC secret for each webhook', async () => {
+      const userId = 'user-123';
+      const dto: CreateWebhookDto = {
+        url: 'https://example.com/webhook',
+        events: [WebhookEventType.TRANSACTION_MINED],
+      };
+
+      const mockSubscription1 = {
+        id: 'webhook-1',
+        userId,
+        ...dto,
+        secret: 'secret-1',
+        status: WebhookStatus.ACTIVE,
+      };
+
+      const mockSubscription2 = {
+        id: 'webhook-2',
+        userId,
+        ...dto,
+        secret: 'secret-2',
+        status: WebhookStatus.ACTIVE,
+      };
+
+      mockSubscriptionRepository.create.mockReturnValueOnce(mockSubscription1);
+      mockSubscriptionRepository.save.mockResolvedValueOnce(mockSubscription1);
+      mockSubscriptionRepository.create.mockReturnValueOnce(mockSubscription2);
+      mockSubscriptionRepository.save.mockResolvedValueOnce(mockSubscription2);
+
+      const result1 = await service.createWebhook(userId, dto);
+      const result2 = await service.createWebhook(userId, dto);
+
+      expect(result1.secret).toBeDefined();
+      expect(result2.secret).toBeDefined();
+      // Secrets should be different (randomly generated)
+      expect(result1.secret).not.toBe(result2.secret);
+    });
+  });
 });
 

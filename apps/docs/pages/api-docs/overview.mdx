@@ -1,0 +1,318 @@
+# API Overview
+
+Welcome to the NorChain API documentation. This comprehensive API provides access to blockchain data, payments, DeFi, governance, and enterprise features.
+
+## What is NorChain API?
+
+NorChain API is a production-ready REST API that powers the entire NorChain ecosystem. It provides:
+
+- **50+ REST endpoints** for blockchain data
+- **GraphQL API** for flexible queries
+- **WebSocket support** for real-time updates
+- **Enterprise-grade** reliability and performance
+- **Comprehensive authentication** with JWT and API keys
+- **Rate limiting** and caching for optimal performance
+
+## API Capabilities
+
+### Blockchain Infrastructure
+- Query blocks, transactions, and account data
+- Access validator information and consensus state
+- Retrieve state roots and finality proofs
+- Monitor network statistics and performance
+
+### Payments & Commerce (NorPay)
+- Process payments in NOR token
+- Manage subscriptions and recurring billing
+- Generate professional invoices
+- Receive real-time payment webhooks
+- Integrate checkout widgets
+
+### DeFi & Trading
+- Execute token swaps via AMM
+- Create limit, stop-loss, and DCA orders
+- Bridge assets across chains
+- Access market data and analytics
+- Track portfolio performance
+
+### Tokens & Contracts
+- Query ERC-20 token data
+- Access contract ABIs and source code
+- Verify contracts
+- Track token holders and transfers
+- View metadata profiles
+
+### Governance & Compliance
+- Participate in DAO governance
+- Create and vote on proposals
+- Submit KYC documentation
+- Screen addresses for AML compliance
+- Check policy compliance
+
+### Developer Tools
+- GraphQL playground
+- WebSocket streaming
+- Comprehensive SDKs
+- Webhook management
+- Batch operations
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  Frontend Applications              │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐         │
+│  │ Explorer │  │   NEX    │  │  NorPay  │         │
+│  └────┬─────┘  └────┬─────┘  └────┬─────┘         │
+│       │             │              │                │
+└───────┼─────────────┼──────────────┼────────────────┘
+        │             │              │
+        └─────────────┼──────────────┘
+                      │
+        ┌─────────────▼──────────────┐
+        │    NorChain API (Port 4000) │
+        │                             │
+        │  • REST API (v1, v2)        │
+        │  • GraphQL                  │
+        │  • WebSocket                │
+        │  • Authentication           │
+        │  • Rate Limiting            │
+        │  • Caching (Redis)          │
+        └─────────────┬───────────────┘
+                      │
+        ┌─────────────▼───────────────┐
+        │    PostgreSQL Database       │
+        │    (via Supabase)            │
+        └──────────────────────────────┘
+```
+
+## API Versions
+
+### v1 - Core Blockchain API
+Base URL: `https://api.norchain.org/api/v1`
+
+Core blockchain functionality:
+- Account queries
+- Blockchain data
+- Transactions
+- Tokens & contracts
+- Gas oracle
+- RPC proxy
+
+### v2 - SaaS & Enterprise API
+Base URL: `https://api.norchain.org/api/v2`
+
+Advanced features:
+- NorPay payments
+- Subscriptions & invoicing
+- NorLedger accounting
+- Messaging
+- Metadata management
+- Advanced analytics
+
+## Quick Start
+
+### 1. Make Your First Request
+
+```bash
+curl https://api.norchain.org/api/v1/health
+```
+
+### 2. Get Account Balance
+
+```bash
+curl "https://api.norchain.org/api/v1/account/balance?address=0x742d35Cc6634C0532925a3b844D9A5d4c9db901c"
+```
+
+### 3. Get Validator Information
+
+```bash
+curl "https://api.norchain.org/api/v1/blockchain/validators"
+```
+
+## Authentication
+
+### Public Endpoints
+Many endpoints are public and don't require authentication:
+- Account balances
+- Transaction lookups
+- Block data
+- Token information
+
+### API Key Authentication (Recommended)
+For higher rate limits and access to premium features:
+
+```bash
+curl -H "X-API-Key: nk_your_api_key" \
+  "https://api.norchain.org/api/v1/account/summary?address=0x..."
+```
+
+### JWT Token Authentication
+For user-specific operations:
+
+```bash
+# 1. Login
+curl -X POST https://api.norchain.org/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"user@example.com","password":"password"}'
+
+# 2. Use token
+curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  "https://api.norchain.org/api/v1/account/summary?address=0x..."
+```
+
+## Rate Limits
+
+| Plan | Requests/Minute | Requests/Day | Features |
+|------|-----------------|--------------|----------|
+| Public | 100 | 10,000 | Basic blockchain data |
+| Authenticated | 1,000 | 100,000 | All features + analytics |
+| Premium | 10,000 | 1,000,000 | Priority support + webhooks |
+
+Rate limit headers in responses:
+```
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 999
+X-RateLimit-Reset: 1640995200
+```
+
+## Response Format
+
+All API responses follow a consistent format:
+
+### Success Response
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    // Response data
+  }
+}
+```
+
+### Error Response
+```json
+{
+  "status": "0",
+  "message": "Error description",
+  "result": null
+}
+```
+
+## SDKs and Libraries
+
+### Official SDKs
+
+#### TypeScript/JavaScript
+```bash
+npm install @norchain/sdk
+```
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient({
+  apiKey: 'nk_your_api_key'
+});
+
+const balance = await client.account.getBalance('0x...');
+```
+
+#### Python
+```bash
+pip install norchain-sdk
+```
+
+```python
+from norchain import NorChainClient
+
+client = NorChainClient(api_key='nk_your_api_key')
+balance = client.account.get_balance('0x...')
+```
+
+## Real-time Data
+
+### WebSocket API
+```javascript
+const ws = new WebSocket('wss://api.norchain.org');
+
+ws.on('open', () => {
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'blocks'
+  }));
+});
+
+ws.on('message', (data) => {
+  console.log('New block:', JSON.parse(data));
+});
+```
+
+### GraphQL API
+```bash
+POST https://api.norchain.org/graphql
+```
+
+```graphql
+query {
+  account(address: "0x...") {
+    balance
+    transactions(first: 10) {
+      edges {
+        node {
+          hash
+          value
+          timestamp
+        }
+      }
+    }
+  }
+}
+```
+
+## API Modules
+
+### Core APIs
+- [Getting Started](/api-docs/getting-started) - Quick start guide
+- [Authentication](/api-docs/authentication) - Auth methods
+- [Account API](/api-docs/account) - Balances and transactions
+- [Blockchain API](/api-docs/blockchain) - Blockchain data
+- [Transactions API](/api-docs/transactions) - Transaction details
+
+### Token & Contract APIs
+- [Tokens & Contracts API](/api-docs/tokens) - Token data and verification
+
+### Payment & Commerce APIs
+- [Payments API](/api-docs/payments) - NorPay integration
+
+### Trading & DeFi APIs
+- [DeFi & Trading API](/api-docs/defi) - Swaps and orders
+
+### Governance APIs
+- [Governance & Compliance API](/api-docs/governance) - DAO and KYC
+
+### Infrastructure APIs
+- [Infrastructure & Monitoring API](/api-docs/infrastructure) - Health and monitoring
+
+### Developer APIs
+- [Developer Tools API](/api-docs/developer) - Webhooks and tools
+- [GraphQL API](/api-docs/graphql) - GraphQL queries
+- [WebSocket API](/api-docs/websocket) - Real-time subscriptions
+
+## Support
+
+- 📚 [Full API Reference](https://api.norchain.org/api-docs)
+- 💬 [Discord Community](https://discord.gg/norchain)
+- 📧 [Email Support](mailto:api@norchain.org)
+- 🐛 [Report Issues](https://github.com/nor-chain/norchain-monorepo/issues)
+
+## Status Page
+
+Monitor API uptime and performance:
+- [https://status.norchain.org](https://status.norchain.org)
+
+## Changelog
+
+Stay updated with API changes:
+- [https://docs.norchain.org/changelog](https://docs.norchain.org/changelog)

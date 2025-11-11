@@ -449,7 +449,49 @@ describe('GovernanceService', () => {
       expect(result.totalVotes).toBe('1700000000000000000');
     });
 
-    it('should handle zero votes', async () => {
+    it('should calculate quorum met correctly', async () => {
+      const proposalId = 'proposal-123';
+      const mockProposal = {
+        id: proposalId,
+        status: ProposalStatus.ACTIVE,
+        forVotes: '600000000000000000000',
+        againstVotes: '400000000000000000000',
+        abstainVotes: '0',
+        quorum: '1000000000000000000000',
+        threshold: '500000000000000000000',
+        votes: [],
+      };
+
+      mockProposalRepository.findOne.mockResolvedValue(mockProposal);
+
+      const result = await service.getTally(proposalId);
+
+      expect(result.quorumMet).toBe(true);
+      expect(result.passed).toBe(true);
+    });
+
+    it('should calculate quorum not met correctly', async () => {
+      const proposalId = 'proposal-123';
+      const mockProposal = {
+        id: proposalId,
+        status: ProposalStatus.ACTIVE,
+        forVotes: '100000000000000000000',
+        againstVotes: '50000000000000000000',
+        abstainVotes: '0',
+        quorum: '1000000000000000000000',
+        threshold: '500000000000000000000',
+        votes: [],
+      };
+
+      mockProposalRepository.findOne.mockResolvedValue(mockProposal);
+
+      const result = await service.getTally(proposalId);
+
+      expect(result.quorumMet).toBe(false);
+      expect(result.passed).toBe(false);
+    });
+
+    it('should handle proposal with zero votes', async () => {
       const proposalId = 'proposal-123';
       const mockProposal = {
         id: proposalId,
@@ -467,6 +509,66 @@ describe('GovernanceService', () => {
       const result = await service.getTally(proposalId);
 
       expect(result.totalVotes).toBe('0');
+      expect(result.quorumMet).toBe(false);
+      expect(result.passed).toBe(false);
+    });
+  });
+
+  describe('getParameters', () => {
+    it('should return governance parameters', async () => {
+      const result = await service.getParameters();
+
+      expect(result).toHaveProperty('minProposalDeposit');
+      expect(result).toHaveProperty('votingPeriod');
+      expect(result).toHaveProperty('quorumPercentage');
+      expect(result).toHaveProperty('thresholdPercentage');
+      expect(result).toHaveProperty('executionDelay');
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle getProposal with invalid proposal ID', async () => {
+      mockProposalRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.getProposal('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should handle getTally with invalid proposal ID', async () => {
+      mockProposalRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.getTally('non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should handle getProposals with empty result', async () => {
+      mockProposalRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getProposals(50, 0);
+
+      expect(result.proposals).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('should handle getProposals with status filter', async () => {
+      const mockProposals = [
+        {
+          id: 'proposal-1',
+          status: ProposalStatus.ACTIVE,
+          forVotes: '0',
+          againstVotes: '0',
+          abstainVotes: '0',
+        },
+      ];
+
+      mockProposalRepository.findAndCount.mockResolvedValue([mockProposals, 1]);
+
+      const result = await service.getProposals(50, 0, ProposalStatus.ACTIVE);
+
+      expect(result.proposals).toHaveLength(1);
+      expect(result.proposals[0].status).toBe(ProposalStatus.ACTIVE);
     });
   });
 });

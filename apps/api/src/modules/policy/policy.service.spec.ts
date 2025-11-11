@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PolicyService } from './policy.service';
-import { PolicyCheck, PolicyCheckStatus } from './entities/policy-check.entity';
+import { PolicyCheck, PolicyCheckStatus, PolicyCheckType } from './entities/policy-check.entity';
 import { CacheService } from '@/common/services/cache.service';
 import { PolicyCheckDto } from './dto/policy-check.dto';
 
@@ -147,6 +147,82 @@ describe('PolicyService', () => {
       expect(result).toHaveProperty('checks');
       expect(result).toHaveProperty('total', 1);
       expect(result.checks).toHaveLength(1);
+    });
+  });
+
+  describe('checkPolicy - RWA Cap', () => {
+    it('should check RWA cap for BTCBR asset', async () => {
+      const userId = 'user-123';
+      const dto: PolicyCheckDto = {
+        fromAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        toAddress: '0x1234567890123456789012345678901234567890',
+        amount: '1000000000000000000',
+        asset: 'BTCBR',
+      };
+
+      mockCacheService.get.mockResolvedValue({ txCount: 0, totalValue: '0' });
+      mockPolicyCheckRepository.create.mockReturnValue({
+        id: 'check-123',
+        ...dto,
+        status: PolicyCheckStatus.ALLOWED,
+      });
+      mockPolicyCheckRepository.save.mockResolvedValue({});
+
+      const result = await service.checkPolicy(userId, dto);
+
+      expect(result).toHaveProperty('checks');
+      const rwaCheck = result.checks.find((c) => c.type === PolicyCheckType.RWA_CAP);
+      expect(rwaCheck).toBeDefined();
+      expect(rwaCheck?.passed).toBe(true);
+    });
+
+    it('should check RWA cap for ETHBR asset', async () => {
+      const userId = 'user-123';
+      const dto: PolicyCheckDto = {
+        fromAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        toAddress: '0x1234567890123456789012345678901234567890',
+        amount: '1000000000000000000',
+        asset: 'ETHBR',
+      };
+
+      mockCacheService.get.mockResolvedValue({ txCount: 0, totalValue: '0' });
+      mockPolicyCheckRepository.create.mockReturnValue({
+        id: 'check-123',
+        ...dto,
+        status: PolicyCheckStatus.ALLOWED,
+      });
+      mockPolicyCheckRepository.save.mockResolvedValue({});
+
+      const result = await service.checkPolicy(userId, dto);
+
+      expect(result).toHaveProperty('checks');
+      const rwaCheck = result.checks.find((c) => c.type === PolicyCheckType.RWA_CAP);
+      expect(rwaCheck).toBeDefined();
+    });
+
+    it('should allow unlimited cap for unknown asset', async () => {
+      const userId = 'user-123';
+      const dto: PolicyCheckDto = {
+        fromAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        toAddress: '0x1234567890123456789012345678901234567890',
+        amount: '1000000000000000000',
+        asset: 'UNKNOWN',
+      };
+
+      mockCacheService.get.mockResolvedValue({ txCount: 0, totalValue: '0' });
+      mockPolicyCheckRepository.create.mockReturnValue({
+        id: 'check-123',
+        ...dto,
+        status: PolicyCheckStatus.ALLOWED,
+      });
+      mockPolicyCheckRepository.save.mockResolvedValue({});
+
+      const result = await service.checkPolicy(userId, dto);
+
+      expect(result).toHaveProperty('checks');
+      const rwaCheck = result.checks.find((c) => c.type === PolicyCheckType.RWA_CAP);
+      expect(rwaCheck).toBeDefined();
+      expect(rwaCheck?.details?.cap).toBe('unlimited');
     });
   });
 });

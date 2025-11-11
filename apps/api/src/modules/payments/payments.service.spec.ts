@@ -1497,5 +1497,342 @@ describe('PaymentsService', () => {
         }),
       );
     });
+
+    it('should throw NotFoundException if subscription not found', async () => {
+      mockSubscriptionRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.cancelSubscription('non-existent', 'user-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('getCatalog', () => {
+    it('should return empty array when no products', async () => {
+      const orgId = 'org-123';
+      mockProductRepository.find.mockResolvedValue([]);
+
+      const result = await service.getCatalog(orgId);
+
+      expect(result).toEqual([]);
+      expect(mockProductRepository.find).toHaveBeenCalledWith({
+        where: { orgId, active: true },
+        relations: ['prices'],
+        order: { createdAt: 'DESC' },
+      });
+    });
+
+    it('should return products with prices', async () => {
+      const orgId = 'org-123';
+      const mockProducts = [
+        {
+          id: 'product-1',
+          orgId,
+          name: 'Product 1',
+          prices: [{ id: 'price-1', amount: '100' }],
+        },
+      ];
+
+      mockProductRepository.find.mockResolvedValue(mockProducts as any);
+
+      const result = await service.getCatalog(orgId);
+
+      expect(result).toEqual(mockProducts);
+      expect(result[0]).toHaveProperty('prices');
+    });
+  });
+
+  describe('createCheckoutSessionWithLineItems', () => {
+    it('should calculate total from multiple line items', async () => {
+      const userId = 'user-123';
+      const dto: CreateCheckoutSessionWithLineItemsDto = {
+        orgId: 'org-123',
+        assetSet: ['NOR'],
+        lineItems: [
+          { priceId: 'price-1', quantity: 2 },
+          { priceId: 'price-2', quantity: 1 },
+        ],
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel',
+      };
+
+      const mockMerchant = {
+        id: 'merchant-123',
+        orgId: 'org-123',
+        active: true,
+      };
+
+      const mockPrice1 = { id: 'price-1', amount: '100.00', active: true };
+      const mockPrice2 = { id: 'price-2', amount: '50.00', active: true };
+
+      mockMerchantRepository.findOne.mockResolvedValue(mockMerchant as any);
+      mockPriceRepository.findOne
+        .mockResolvedValueOnce(mockPrice1 as any)
+        .mockResolvedValueOnce(mockPrice2 as any);
+      mockCheckoutSessionRepository.create.mockReturnValue({
+        sessionId: 'cs_123',
+        amount: '250.00',
+      } as any);
+      mockCheckoutSessionRepository.save.mockResolvedValue({
+        sessionId: 'cs_123',
+        amount: '250.00',
+      } as any);
+
+      const result = await service.createCheckoutSessionWithLineItems(dto, userId);
+
+      expect(result).toHaveProperty('payUrl');
+      expect(result.amount).toBe('250.00'); // (100 * 2) + (50 * 1)
+    });
+
+    it('should throw NotFoundException if price not found in line items', async () => {
+      const userId = 'user-123';
+      const dto: CreateCheckoutSessionWithLineItemsDto = {
+        orgId: 'org-123',
+        assetSet: ['NOR'],
+        lineItems: [{ priceId: 'non-existent', quantity: 1 }],
+        successUrl: 'https://example.com/success',
+        cancelUrl: 'https://example.com/cancel',
+      };
+
+      const mockMerchant = {
+        id: 'merchant-123',
+        orgId: 'org-123',
+        active: true,
+      };
+
+      mockMerchantRepository.findOne.mockResolvedValue(mockMerchant as any);
+      mockPriceRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.createCheckoutSessionWithLineItems(dto, userId),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle getInvoices with empty result', async () => {
+      const userId = 'user-123';
+      mockInvoiceRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getInvoices(userId, 50, 0);
+
+      expect(result.invoices).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('should handle getSettlements with empty result', async () => {
+      const merchantId = 'merchant-123';
+      mockSettlementRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getSettlements(merchantId, 50, 0);
+
+      expect(result.settlements).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('should handle createProduct with active false', async () => {
+      const userId = 'user-123';
+      const dto: CreateProductDto = {
+        orgId: 'org-123',
+        name: 'Test Product',
+        active: false,
+      };
+
+      const mockProduct = {
+        id: 'product-123',
+        ...dto,
+        active: false,
+      };
+
+      mockProductRepository.create.mockReturnValue(mockProduct as any);
+      mockProductRepository.save.mockResolvedValue(mockProduct as any);
+
+      const result = await service.createProduct(dto, userId);
+
+      expect(result.active).toBe(false);
+    });
+  });
+
+  describe('getCheckoutSession', () => {
+    it('should return checkout session', async () => {
+      const sessionId = 'cs_1234567890_abcdef';
+      const mockSession = {
+        id: 'session-123',
+        sessionId,
+        merchantId: 'merchant-123',
+        amount: '100.00',
+        currency: 'NOR',
+        status: CheckoutSessionStatus.PENDING,
+      };
+
+      mockCheckoutSessionRepository.findOne.mockResolvedValue(mockSession);
+
+      const result = await service.getCheckoutSession(sessionId);
+
+      expect(result).toEqual(mockSession);
+      expect(mockCheckoutSessionRepository.findOne).toHaveBeenCalledWith({
+        where: { sessionId },
+      });
+    });
+
+    it('should throw NotFoundException if session not found', async () => {
+      mockCheckoutSessionRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getCheckoutSession('invalid-session'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('createSubscription', () => {
+    it('should create subscription successfully', async () => {
+      const userId = 'user-123';
+      const dto: CreateSubscriptionDto = {
+        customerId: 'customer-123',
+        priceId: 'price-123',
+      };
+
+      const mockPrice = {
+        id: 'price-123',
+        amount: '10.00',
+        currency: 'NOR',
+        billingCycle: BillingCycle.MONTHLY,
+        active: true,
+      };
+
+      const mockCustomer = {
+        id: 'customer-123',
+        orgId: 'org-123',
+      };
+
+      const mockSubscription = {
+        id: 'subscription-123',
+        ...dto,
+        status: SubscriptionStatus.ACTIVE,
+        currentPeriodStart: new Date(),
+        currentPeriodEnd: new Date(),
+      };
+
+      mockPriceRepository.findOne.mockResolvedValue(mockPrice);
+      mockCustomerRepository.findOne.mockResolvedValue(mockCustomer);
+      mockSubscriptionRepository.create.mockReturnValue(mockSubscription);
+      mockSubscriptionRepository.save.mockResolvedValue(mockSubscription);
+
+      const result = await service.createSubscription(dto, userId);
+
+      expect(result).toHaveProperty('id');
+      expect(mockSubscriptionRepository.save).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if price not found', async () => {
+      const userId = 'user-123';
+      const dto: CreateSubscriptionDto = {
+        customerId: 'customer-123',
+        priceId: 'invalid-price',
+      };
+
+      mockPriceRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.createSubscription(dto, userId),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw BadRequestException if price has no billing cycle', async () => {
+      const userId = 'user-123';
+      const dto: CreateSubscriptionDto = {
+        customerId: 'customer-123',
+        priceId: 'price-123',
+      };
+
+      const mockPrice = {
+        id: 'price-123',
+        amount: '10.00',
+        billingCycle: null,
+        active: true,
+      };
+
+      mockPriceRepository.findOne.mockResolvedValue(mockPrice);
+
+      await expect(
+        service.createSubscription(dto, userId),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('createDispute', () => {
+    it('should create dispute successfully', async () => {
+      const userId = 'user-123';
+      const dto: CreateDisputeDto = {
+        paymentId: 'payment-123',
+        reason: 'fraud',
+      };
+
+      const mockPayment = {
+        id: 'payment-123',
+        paymentId: 'payment-123',
+        merchantId: 'merchant-123',
+        status: PaymentStatus.SUCCEEDED,
+      };
+
+      const mockDispute = {
+        id: 'dispute-123',
+        paymentId: mockPayment.id,
+        merchantId: mockPayment.merchantId,
+        reason: dto.reason,
+        status: DisputeStatus.OPEN,
+      };
+
+      mockPaymentRepository.findOne.mockResolvedValue(mockPayment);
+      mockDisputeRepository.findOne.mockResolvedValue(null); // No existing dispute
+      mockDisputeRepository.create.mockReturnValue(mockDispute);
+      mockDisputeRepository.save.mockResolvedValue(mockDispute);
+
+      const result = await service.createDispute(dto, userId);
+
+      expect(result).toHaveProperty('id');
+      expect(mockDisputeRepository.save).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if payment not found', async () => {
+      const userId = 'user-123';
+      const dto: CreateDisputeDto = {
+        paymentId: 'invalid-payment',
+        reason: 'fraud',
+      };
+
+      mockPaymentRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.createDispute(dto, userId),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('registerWebhook', () => {
+    it('should register webhook endpoint', async () => {
+      const userId = 'user-123';
+      const orgId = 'org-123';
+      const url = 'https://example.com/webhook';
+      const events = ['payment.completed'];
+
+      const mockWebhook = {
+        id: 'webhook-123',
+        orgId,
+        url,
+        events,
+        hmacSecret: 'secret-abc',
+        active: true,
+      };
+
+      mockWebhookEndpointRepository.create.mockReturnValue(mockWebhook);
+      mockWebhookEndpointRepository.save.mockResolvedValue(mockWebhook);
+
+      const result = await service.registerWebhook(orgId, url, events, userId);
+
+      expect(result).toHaveProperty('id');
+      expect(result).toHaveProperty('hmacSecret');
+      expect(mockWebhookEndpointRepository.save).toHaveBeenCalled();
+    });
   });
 });

@@ -21,7 +21,7 @@ describe('RPCExtensionsService', () => {
   };
 
   const mockMetadataService = {
-    getAssetProfile: jest.fn(),
+    getProfile: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -189,6 +189,82 @@ describe('RPCExtensionsService', () => {
       const result = await service.getValidatorSet();
 
       expect(result).toHaveProperty('validators');
+    });
+  });
+
+  describe('norTokenProfile', () => {
+    it('should return token profile metadata', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const profile = {
+        displayName: 'Test Token',
+        symbol: 'TEST',
+        logoUrl: 'https://example.com/logo.png',
+        trustLevel: 'VERIFIED',
+        profileVersion: 1,
+      };
+
+      mockMetadataService.getProfile.mockResolvedValue(profile);
+
+      const result = await service.norTokenProfile(address);
+
+      expect(result).toBeDefined();
+      expect(result.name).toBe(profile.displayName);
+      expect(result.symbol).toBe(profile.symbol);
+      expect(result.logoUrl).toBe(profile.logoUrl);
+      expect(result.trustLevel).toBe(profile.trustLevel);
+      expect(result.version).toBe(profile.profileVersion);
+      expect(mockMetadataService.getProfile).toHaveBeenCalledWith('65001', address);
+    });
+
+    it('should return null when profile not found', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+
+      mockMetadataService.getProfile.mockResolvedValue(null);
+
+      const result = await service.norTokenProfile(address);
+
+      expect(result).toBeNull();
+      expect(mockMetadataService.getProfile).toHaveBeenCalledWith('65001', address);
+    });
+  });
+
+  describe('norContractProfile', () => {
+    it('should return contract profile metadata', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const profile = {
+        displayName: 'Test Contract',
+        shortDescription: 'Test Description',
+        logoUrl: 'https://example.com/logo.png',
+        website: 'https://example.com',
+        docsUrl: 'https://docs.example.com',
+        trustLevel: 'VERIFIED',
+        profileVersion: 1,
+      };
+
+      mockMetadataService.getProfile.mockResolvedValue(profile);
+
+      const result = await service.norContractProfile(address);
+
+      expect(result).toBeDefined();
+      expect(result.name).toBe(profile.displayName);
+      expect(result.description).toBe(profile.shortDescription);
+      expect(result.logoUrl).toBe(profile.logoUrl);
+      expect(result.website).toBe(profile.website);
+      expect(result.docsUrl).toBe(profile.docsUrl);
+      expect(result.trustLevel).toBe(profile.trustLevel);
+      expect(result.version).toBe(profile.profileVersion);
+      expect(mockMetadataService.getProfile).toHaveBeenCalledWith('65001', address);
+    });
+
+    it('should return null when profile not found', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+
+      mockMetadataService.getProfile.mockResolvedValue(null);
+
+      const result = await service.norContractProfile(address);
+
+      expect(result).toBeNull();
+      expect(mockMetadataService.getProfile).toHaveBeenCalledWith('65001', address);
     });
   });
 });

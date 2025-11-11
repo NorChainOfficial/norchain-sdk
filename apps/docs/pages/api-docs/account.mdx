@@ -1,0 +1,457 @@
+# Account API
+
+Access account balances, transactions, and token holdings on the NorChain network.
+
+## Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/account/balance` | Get native NOR balance | No |
+| GET | `/account/txlist` | Get transaction list | No |
+| GET | `/account/tokenlist` | Get token holdings | No |
+| GET | `/account/tokentx` | Get token transfers | No |
+| GET | `/account/balancemulti` | Get multiple balances | No |
+| GET | `/account/txlistinternal` | Get internal transactions | No |
+| GET | `/account/summary` | Get comprehensive summary | Yes |
+
+## Get Account Balance
+
+Retrieve the native NOR balance for a specific address.
+
+### Request
+
+```bash
+GET /api/v1/account/balance?address={address}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes | The account address (0x...) |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": "1250000000000000000"
+}
+```
+
+The balance is returned in Wei (1 NOR = 10^18 Wei).
+
+### Example
+
+```bash
+curl "https://api.norchain.org/api/v1/account/balance?address=0x742d35Cc6634C0532925a3b844D9A5d4c9db901c"
+```
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient();
+const balance = await client.account.getBalance('0x742d35Cc6634C0532925a3b844D9A5d4c9db901c');
+console.log(`Balance: ${balance} Wei`);
+```
+
+```python
+from norchain import NorChainClient
+
+client = NorChainClient()
+balance = client.account.get_balance('0x742d35Cc6634C0532925a3b844D9A5d4c9db901c')
+print(f"Balance: {balance} Wei")
+```
+
+## Get Transaction List
+
+Retrieve list of transactions for an account.
+
+### Request
+
+```bash
+GET /api/v1/account/txlist?address={address}&page={page}&offset={offset}&sort={sort}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `address` | string | Yes | - | Account address |
+| `page` | number | No | 1 | Page number |
+| `offset` | number | No | 10 | Results per page (max 100) |
+| `sort` | string | No | desc | Sort order: `asc` or `desc` |
+| `startblock` | number | No | 0 | Start block number |
+| `endblock` | number | No | latest | End block number |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "blockNumber": "1234567",
+      "timeStamp": "1640995200",
+      "hash": "0xabc123...",
+      "from": "0x742d35...",
+      "to": "0x123abc...",
+      "value": "1000000000000000000",
+      "gas": "21000",
+      "gasPrice": "20000000000",
+      "gasUsed": "21000",
+      "isError": "0",
+      "txreceipt_status": "1",
+      "input": "0x",
+      "contractAddress": "",
+      "cumulativeGasUsed": "21000",
+      "confirmations": "12"
+    }
+  ]
+}
+```
+
+### Example
+
+```typescript
+const transactions = await client.account.getTransactions({
+  address: '0x742d35Cc6634C0532925a3b844D9A5d4c9db901c',
+  page: 1,
+  offset: 20,
+  sort: 'desc'
+});
+```
+
+## Get Token Holdings
+
+Retrieve all ERC-20 token balances for an account.
+
+### Request
+
+```bash
+GET /api/v1/account/tokenlist?address={address}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes | Account address |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "contractAddress": "0xdac17...",
+      "tokenName": "Tether USD",
+      "tokenSymbol": "USDT",
+      "tokenDecimal": "6",
+      "balance": "1000000000"
+    },
+    {
+      "contractAddress": "0xa0b86...",
+      "tokenName": "USD Coin",
+      "tokenSymbol": "USDC",
+      "tokenDecimal": "6",
+      "balance": "500000000"
+    }
+  ]
+}
+```
+
+## Get Token Transfers
+
+Retrieve ERC-20 token transfer events for an account.
+
+### Request
+
+```bash
+GET /api/v1/account/tokentx?address={address}&contractaddress={contract}&page={page}&offset={offset}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes | Account address |
+| `contractaddress` | string | No | Filter by token contract |
+| `page` | number | No | Page number |
+| `offset` | number | No | Results per page |
+| `startblock` | number | No | Start block |
+| `endblock` | number | No | End block |
+| `sort` | string | No | Sort order |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "blockNumber": "1234567",
+      "timeStamp": "1640995200",
+      "hash": "0xdef456...",
+      "from": "0x742d35...",
+      "to": "0x123abc...",
+      "value": "1000000",
+      "tokenName": "USD Coin",
+      "tokenSymbol": "USDC",
+      "tokenDecimal": "6",
+      "contractAddress": "0xa0b86...",
+      "gasUsed": "65000",
+      "confirmations": "15"
+    }
+  ]
+}
+```
+
+## Get Multiple Balances
+
+Get balances for multiple addresses in a single request.
+
+### Request
+
+```bash
+GET /api/v1/account/balancemulti?address={address1},{address2},{address3}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes | Comma-separated addresses (max 20) |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "account": "0x742d35...",
+      "balance": "1250000000000000000"
+    },
+    {
+      "account": "0x123abc...",
+      "balance": "500000000000000000"
+    }
+  ]
+}
+```
+
+## Get Internal Transactions
+
+Retrieve internal transactions (contract calls) for an account.
+
+### Request
+
+```bash
+GET /api/v1/account/txlistinternal?address={address}&page={page}&offset={offset}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "blockNumber": "1234567",
+      "timeStamp": "1640995200",
+      "hash": "0xghi789...",
+      "from": "0x742d35...",
+      "to": "0xcontract...",
+      "value": "100000000000000000",
+      "contractAddress": "0xcontract...",
+      "input": "transfer",
+      "type": "call",
+      "gas": "50000",
+      "gasUsed": "35000",
+      "isError": "0",
+      "errCode": ""
+    }
+  ]
+}
+```
+
+## Get Account Summary (Authenticated)
+
+Get comprehensive account information including balances, recent transactions, and analytics.
+
+**Requires authentication** with JWT token or API key.
+
+### Request
+
+```bash
+GET /api/v1/account/summary?address={address}
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+or
+```
+X-API-Key: nk_your_api_key
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "address": "0x742d35...",
+    "balance": "1250000000000000000",
+    "nonce": 42,
+    "tokens": [
+      {
+        "symbol": "USDT",
+        "balance": "1000000000",
+        "valueUSD": 1000.00
+      }
+    ],
+    "transactionCount": 156,
+    "lastActivity": "1640995200",
+    "analytics": {
+      "totalValueUSD": 1250.00,
+      "monthlyVolume": 5000.00,
+      "topTokens": ["USDT", "USDC", "DAI"]
+    },
+    "riskScore": 0.1,
+    "kycTier": 2
+  }
+}
+```
+
+## Rate Limits
+
+| Authentication | Requests/Minute | Requests/Day |
+|----------------|-----------------|--------------|
+| None | 100 | 10,000 |
+| API Key | 1,000 | 100,000 |
+| Premium | 10,000 | 1,000,000 |
+
+## Error Responses
+
+### Invalid Address
+
+```json
+{
+  "status": "0",
+  "message": "Error! Invalid address format",
+  "result": null
+}
+```
+
+### Missing Required Parameter
+
+```json
+{
+  "status": "0",
+  "message": "Error! Missing required parameter: address",
+  "result": null
+}
+```
+
+### Rate Limit Exceeded
+
+```json
+{
+  "status": "0",
+  "message": "Error! Rate limit exceeded",
+  "result": null
+}
+```
+
+## SDK Examples
+
+### TypeScript/JavaScript
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient({
+  apiKey: 'nk_your_api_key'
+});
+
+// Get balance
+const balance = await client.account.getBalance('0x...');
+
+// Get transactions with pagination
+const txs = await client.account.getTransactions({
+  address: '0x...',
+  page: 1,
+  offset: 50
+});
+
+// Get token holdings
+const tokens = await client.account.getTokenList('0x...');
+
+// Get account summary (requires auth)
+const summary = await client.account.getSummary('0x...');
+```
+
+### Python
+
+```python
+from norchain import NorChainClient
+
+client = NorChainClient(api_key='nk_your_api_key')
+
+# Get balance
+balance = client.account.get_balance('0x...')
+
+# Get transactions
+txs = client.account.get_transactions(
+    address='0x...',
+    page=1,
+    offset=50
+)
+
+# Get token holdings
+tokens = client.account.get_token_list('0x...')
+
+# Get summary
+summary = client.account.get_summary('0x...')
+```
+
+## WebSocket Subscriptions
+
+Subscribe to real-time account updates:
+
+```javascript
+const ws = new WebSocket('wss://api.norchain.org');
+
+ws.on('open', () => {
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'account',
+    address: '0x742d35Cc6634C0532925a3b844D9A5d4c9db901c'
+  }));
+});
+
+ws.on('message', (data) => {
+  const event = JSON.parse(data);
+  console.log('Account update:', event);
+  // { type: 'balance', address: '0x...', balance: '...' }
+  // { type: 'transaction', address: '0x...', tx: {...} }
+});
+```
+
+## Next Steps
+
+- [Blockchain API](/api-docs/blockchain) - Blockchain data and validators
+- [Transactions API](/api-docs/transactions) - Transaction details and receipts
+- [Tokens API](/api-docs/tokens) - Token data and contract information
+- [WebSocket API](/api-docs/websocket) - Real-time subscriptions

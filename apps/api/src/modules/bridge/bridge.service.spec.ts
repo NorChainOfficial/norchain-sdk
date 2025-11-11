@@ -355,5 +355,182 @@ describe('BridgeService', () => {
       expect(diff).toBeLessThanOrEqual(5 * 60 * 1000); // 5 minutes
     });
   });
+
+  describe('getTransfer', () => {
+    it('should return transfer details', async () => {
+      const userId = 'user-123';
+      const transferId = 'transfer-123';
+      const mockTransfer = {
+        id: transferId,
+        userId,
+        srcChain: BridgeChain.NOR,
+        dstChain: BridgeChain.BSC,
+        asset: 'NOR',
+        amount: '1000000000000000000',
+        fromAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+        status: BridgeTransferStatus.PENDING_POLICY,
+        srcTxHash: null,
+        dstTxHash: null,
+        fees: '5000000000000000',
+        createdAt: new Date(),
+        completedAt: null,
+        errorMessage: null,
+      };
+
+      mockBridgeTransferRepository.findOne.mockResolvedValue(mockTransfer);
+
+      const result = await service.getTransfer(userId, transferId);
+
+      expect(result).toHaveProperty('transfer_id', transferId);
+      expect(result.status).toBe(BridgeTransferStatus.PENDING_POLICY);
+    });
+
+    it('should throw NotFoundException if transfer not found', async () => {
+      mockBridgeTransferRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getTransfer('user-123', 'non-existent'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw NotFoundException if transfer belongs to different user', async () => {
+      // When userId doesn't match, findOne returns null
+      mockBridgeTransferRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getTransfer('user-123', 'transfer-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('getTransferProof', () => {
+    it('should return transfer proof', async () => {
+      const userId = 'user-123';
+      const transferId = 'transfer-123';
+      const mockTransfer = {
+        id: transferId,
+        userId,
+        proof: { merkleProof: 'proof-123' },
+        srcTxHash: '0x123',
+        dstTxHash: '0x456',
+      };
+
+      mockBridgeTransferRepository.findOne.mockResolvedValue(mockTransfer);
+
+      const result = await service.getTransferProof(userId, transferId);
+
+      expect(result).toHaveProperty('proof');
+      expect(result).toHaveProperty('srcTxHash');
+      expect(result).toHaveProperty('dstTxHash');
+    });
+
+    it('should throw BadRequestException if proof not available', async () => {
+      const userId = 'user-123';
+      const transferId = 'transfer-123';
+      const mockTransfer = {
+        id: transferId,
+        userId,
+        proof: null,
+      };
+
+      mockBridgeTransferRepository.findOne.mockResolvedValue(mockTransfer);
+
+      await expect(
+        service.getTransferProof(userId, transferId),
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('getUserTransfers', () => {
+    it('should return paginated transfers', async () => {
+      const userId = 'user-123';
+      const mockTransfers = [
+        {
+          id: 'transfer-1',
+          userId,
+          srcChain: BridgeChain.NOR,
+          dstChain: BridgeChain.BSC,
+          asset: 'NOR',
+          amount: '1000000000000000000',
+          status: BridgeTransferStatus.COMPLETED,
+          createdAt: new Date(),
+          completedAt: new Date(),
+        },
+      ];
+
+      mockBridgeTransferRepository.findAndCount.mockResolvedValue([
+        mockTransfers,
+        1,
+      ]);
+
+      const result = await service.getUserTransfers(userId, 50, 0);
+
+      expect(result.transfers).toHaveLength(1);
+      expect(result.total).toBe(1);
+      expect(result.limit).toBe(50);
+      expect(result.offset).toBe(0);
+    });
+
+    it('should return empty array when no transfers', async () => {
+      const userId = 'user-123';
+
+      mockBridgeTransferRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getUserTransfers(userId, 50, 0);
+
+      expect(result.transfers).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('should use default pagination values', async () => {
+      const userId = 'user-123';
+
+      mockBridgeTransferRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      await service.getUserTransfers(userId);
+
+      expect(mockBridgeTransferRepository.findAndCount).toHaveBeenCalledWith({
+        where: { userId },
+        order: { createdAt: 'DESC' },
+        take: 50,
+        skip: 0,
+      });
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle createTransfer with same chain validation', async () => {
+      const dto: CreateBridgeTransferDto = {
+        srcChain: BridgeChain.NOR,
+        dstChain: BridgeChain.NOR,
+        amount: '1000000000000000000',
+        asset: 'NOR',
+        toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+      };
+
+      await expect(
+        service.createTransfer('user-123', dto),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('should handle createTransfer with policy rejection', async () => {
+      const dto: CreateBridgeTransferDto = {
+        srcChain: BridgeChain.NOR,
+        dstChain: BridgeChain.BSC,
+        amount: '1000000000000000000',
+        asset: 'NOR',
+        toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+      };
+
+      mockPolicyService.checkPolicy.mockRejectedValue(
+        new ForbiddenException('Transaction blocked by policy'),
+      );
+
+      await expect(
+        service.createTransfer('user-123', dto),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
 });
 

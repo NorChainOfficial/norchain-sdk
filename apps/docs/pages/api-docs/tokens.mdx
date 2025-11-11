@@ -1,0 +1,710 @@
+# Tokens & Contracts API
+
+Access ERC-20 token data, contract information, verification, and metadata on the NorChain network.
+
+## Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/token/:address` | Get token information | No |
+| GET | `/token/:address/holders` | Get token holders | No |
+| GET | `/token/:address/transfers` | Get token transfers | No |
+| GET | `/token/list` | Get verified token list | No |
+| GET | `/contract/:address` | Get contract information | No |
+| GET | `/contract/:address/abi` | Get contract ABI | No |
+| POST | `/contract/verify` | Verify contract source | Yes |
+| GET | `/contract/:address/events` | Get contract events | No |
+| GET | `/metadata/:address` | Get metadata profile | No |
+
+## Get Token Information
+
+Retrieve detailed information about an ERC-20 token.
+
+### Request
+
+```bash
+GET /api/v1/token/:address
+```
+
+#### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | Yes | Token contract address |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "address": "0xtoken...",
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "decimals": "6",
+    "totalSupply": "1000000000000",
+    "holders": 15678,
+    "transfers": 567890,
+    "priceUSD": "1.00",
+    "marketCap": "1000000000",
+    "volume24h": "50000000",
+    "verified": true,
+    "website": "https://usdc.com",
+    "social": {
+      "twitter": "@usdc",
+      "telegram": "https://t.me/usdc"
+    },
+    "metadata": {
+      "logo": "https://metadata.norchain.org/usdc.png",
+      "description": "Fully backed stablecoin",
+      "riskScore": 0.1,
+      "trustLevel": "high"
+    }
+  }
+}
+```
+
+### Example
+
+```bash
+curl "https://api.norchain.org/api/v1/token/0xtoken..."
+```
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient();
+
+const token = await client.token.get('0xtoken...');
+
+console.log(`${token.name} (${token.symbol})`);
+console.log(`Total supply: ${token.totalSupply}`);
+console.log(`Price: $${token.priceUSD}`);
+console.log(`Holders: ${token.holders}`);
+```
+
+```python
+from norchain import NorChainClient
+
+client = NorChainClient()
+
+token = client.token.get('0xtoken...')
+print(f"{token['name']} ({token['symbol']})")
+print(f"Price: ${token['priceUSD']}")
+```
+
+## Get Token Holders
+
+Retrieve list of addresses holding a specific token.
+
+### Request
+
+```bash
+GET /api/v1/token/:address/holders?page={page}&offset={offset}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `page` | number | No | 1 | Page number |
+| `offset` | number | No | 50 | Results per page (max 100) |
+| `minBalance` | string | No | 0 | Minimum balance filter |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "total": 15678,
+    "page": 1,
+    "holders": [
+      {
+        "address": "0x742d35...",
+        "balance": "1000000000",
+        "percentage": "5.25",
+        "firstSeen": "1640995200",
+        "lastActivity": "1641081600"
+      }
+    ]
+  }
+}
+```
+
+### Example
+
+```typescript
+const holders = await client.token.getHolders('0xtoken...', {
+  page: 1,
+  offset: 100,
+  minBalance: '1000000'
+});
+
+console.log(`Total holders: ${holders.total}`);
+holders.holders.forEach(h => {
+  console.log(`${h.address}: ${h.balance} (${h.percentage}%)`);
+});
+```
+
+## Get Token Transfers
+
+Retrieve transfer events for a token.
+
+### Request
+
+```bash
+GET /api/v1/token/:address/transfers?page={page}&offset={offset}&from={from}&to={to}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `page` | number | No | Page number |
+| `offset` | number | No | Results per page |
+| `from` | string | No | Filter by sender address |
+| `to` | string | No | Filter by recipient address |
+| `startblock` | number | No | Start block |
+| `endblock` | number | No | End block |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "blockNumber": "1234567",
+      "timestamp": "1640995200",
+      "hash": "0xtxhash...",
+      "from": "0x742d35...",
+      "to": "0x123abc...",
+      "value": "1000000",
+      "tokenName": "USD Coin",
+      "tokenSymbol": "USDC",
+      "tokenDecimal": "6"
+    }
+  ]
+}
+```
+
+## Get Verified Token List
+
+Retrieve list of verified tokens on NorChain.
+
+### Request
+
+```bash
+GET /api/v1/token/list?verified={true|false}&sort={sort}&limit={limit}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `verified` | boolean | No | Filter verified tokens |
+| `sort` | string | No | Sort by: `marketCap`, `volume`, `holders` |
+| `limit` | number | No | Max results (default: 100) |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "address": "0xtoken1...",
+      "name": "NorChain",
+      "symbol": "NOR",
+      "decimals": "18",
+      "priceUSD": "2.50",
+      "marketCap": "125000000",
+      "volume24h": "5000000",
+      "holders": 25000,
+      "verified": true,
+      "logo": "https://metadata.norchain.org/nor.png"
+    }
+  ]
+}
+```
+
+## Get Contract Information
+
+Retrieve information about a smart contract.
+
+### Request
+
+```bash
+GET /api/v1/contract/:address
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "address": "0xcontract...",
+    "name": "MyContract",
+    "compiler": "v0.8.20+commit.a1b79de6",
+    "optimization": true,
+    "runs": 200,
+    "verified": true,
+    "verifiedAt": "1640995200",
+    "license": "MIT",
+    "creator": "0xcreator...",
+    "creationTx": "0xcreationtx...",
+    "creationBlock": "1000000",
+    "balance": "0",
+    "txCount": 5678,
+    "isToken": true,
+    "isProxy": false
+  }
+}
+```
+
+### Example
+
+```typescript
+const contract = await client.contract.get('0xcontract...');
+
+console.log(`Contract: ${contract.name}`);
+console.log(`Verified: ${contract.verified}`);
+console.log(`Compiler: ${contract.compiler}`);
+```
+
+## Get Contract ABI
+
+Retrieve the Application Binary Interface for a verified contract.
+
+### Request
+
+```bash
+GET /api/v1/contract/:address/abi
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "type": "function",
+      "name": "transfer",
+      "inputs": [
+        {
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable"
+    }
+  ]
+}
+```
+
+### Example
+
+```typescript
+const abi = await client.contract.getABI('0xcontract...');
+
+// Use with ethers.js
+import { ethers } from 'ethers';
+
+const provider = new ethers.providers.JsonRpcProvider('https://rpc.norchain.org');
+const contract = new ethers.Contract('0xcontract...', abi, provider);
+
+// Call contract methods
+const balance = await contract.balanceOf('0x742d35...');
+console.log('Balance:', balance.toString());
+```
+
+## Verify Contract Source Code
+
+Submit contract source code for verification (requires authentication).
+
+### Request
+
+```bash
+POST /api/v1/contract/verify
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+or
+```
+X-API-Key: nk_your_api_key
+```
+
+#### Request Body
+
+```json
+{
+  "address": "0xcontract...",
+  "sourceCode": "pragma solidity ^0.8.0; contract MyToken { ... }",
+  "compiler": "v0.8.20+commit.a1b79de6",
+  "optimizationUsed": true,
+  "runs": 200,
+  "contractName": "MyToken",
+  "constructorArguments": "0x000000..."
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "Contract verification successful",
+  "result": {
+    "guid": "verification-guid-123",
+    "status": "verified"
+  }
+}
+```
+
+### Example
+
+```typescript
+const verification = await client.contract.verify({
+  address: '0xcontract...',
+  sourceCode: contractSource,
+  compiler: 'v0.8.20+commit.a1b79de6',
+  optimizationUsed: true,
+  runs: 200,
+  contractName: 'MyToken',
+  constructorArguments: constructorArgs
+});
+
+console.log('Verification status:', verification.status);
+```
+
+## Get Contract Events
+
+Retrieve events emitted by a contract.
+
+### Request
+
+```bash
+GET /api/v1/contract/:address/events?fromBlock={from}&toBlock={to}&topic0={topic}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fromBlock` | number | No | Start block |
+| `toBlock` | number | No | End block |
+| `topic0` | string | No | Event signature hash |
+| `page` | number | No | Page number |
+| `offset` | number | No | Results per page |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "address": "0xcontract...",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000742d35...",
+        "0x000000000000000000000000123abc..."
+      ],
+      "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+      "blockNumber": "1234567",
+      "transactionHash": "0xtx...",
+      "logIndex": "10",
+      "eventName": "Transfer",
+      "decoded": {
+        "from": "0x742d35...",
+        "to": "0x123abc...",
+        "value": "1000000000000000000"
+      }
+    }
+  ]
+}
+```
+
+## Get Metadata Profile
+
+Retrieve metadata profile for a token or contract.
+
+### Request
+
+```bash
+GET /api/v1/metadata/:address
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "address": "0xtoken...",
+    "chainId": 1337,
+    "type": "token",
+    "name": "USD Coin",
+    "symbol": "USDC",
+    "logo": "https://metadata.norchain.org/usdc.png",
+    "description": "Fully backed digital dollar",
+    "website": "https://usdc.com",
+    "whitepaper": "https://usdc.com/whitepaper.pdf",
+    "social": {
+      "twitter": "@usdc",
+      "telegram": "https://t.me/usdc",
+      "discord": "https://discord.gg/usdc",
+      "github": "https://github.com/circlefin/stablecoin-evm"
+    },
+    "verified": true,
+    "verifiedBy": "NorChain Foundation",
+    "verifiedAt": "1640995200",
+    "riskScore": 0.1,
+    "trustLevel": "high",
+    "auditReports": [
+      {
+        "auditor": "Trail of Bits",
+        "date": "2023-01-15",
+        "url": "https://audits.com/usdc-2023.pdf"
+      }
+    ],
+    "tags": ["stablecoin", "payment", "defi"]
+  }
+}
+```
+
+### Example
+
+```typescript
+const metadata = await client.metadata.get('0xtoken...');
+
+console.log(`${metadata.name} (${metadata.symbol})`);
+console.log(`Trust level: ${metadata.trustLevel}`);
+console.log(`Risk score: ${metadata.riskScore}`);
+console.log(`Verified: ${metadata.verified}`);
+```
+
+## Advanced Features
+
+### Token Analytics
+
+```bash
+GET /api/v1/token/:address/analytics
+```
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "price": {
+      "current": "1.00",
+      "change24h": "0.01",
+      "change7d": "0.05",
+      "high24h": "1.02",
+      "low24h": "0.98"
+    },
+    "volume": {
+      "volume24h": "50000000",
+      "volumeChange24h": "5.2"
+    },
+    "liquidity": {
+      "totalLiquidity": "100000000",
+      "liquidityPools": [
+        {
+          "dex": "NorDEX",
+          "pair": "NOR/USDC",
+          "liquidity": "50000000"
+        }
+      ]
+    },
+    "holders": {
+      "total": 15678,
+      "change24h": 125,
+      "top10Percentage": 45.2
+    }
+  }
+}
+```
+
+### Contract Interaction History
+
+```bash
+GET /api/v1/contract/:address/interactions?address={userAddress}
+```
+
+Get all interactions between a user and a contract.
+
+## WebSocket Subscriptions
+
+Subscribe to token events:
+
+```javascript
+const ws = new WebSocket('wss://api.norchain.org');
+
+ws.on('open', () => {
+  // Subscribe to token transfers
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'token_transfers',
+    address: '0xtoken...'
+  }));
+
+  // Subscribe to token price updates
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'token_price',
+    address: '0xtoken...'
+  }));
+});
+
+ws.on('message', (data) => {
+  const event = JSON.parse(data);
+  console.log('Token event:', event);
+});
+```
+
+## GraphQL Queries
+
+Query token data via GraphQL:
+
+```graphql
+query GetToken($address: String!) {
+  token(address: $address) {
+    address
+    name
+    symbol
+    decimals
+    totalSupply
+    priceUSD
+    marketCap
+    volume24h
+    holders {
+      total
+      top10 {
+        address
+        balance
+        percentage
+      }
+    }
+    transfers(first: 10) {
+      edges {
+        node {
+          from
+          to
+          value
+          timestamp
+        }
+      }
+    }
+  }
+}
+```
+
+## Rate Limits
+
+| Authentication | Requests/Minute | Requests/Day |
+|----------------|-----------------|--------------|
+| None | 100 | 10,000 |
+| API Key | 1,000 | 100,000 |
+| Premium | 10,000 | 1,000,000 |
+
+## Error Responses
+
+### Token Not Found
+
+```json
+{
+  "status": "0",
+  "message": "Error! Token contract not found",
+  "result": null
+}
+```
+
+### Contract Not Verified
+
+```json
+{
+  "status": "0",
+  "message": "Error! Contract source code not verified",
+  "result": null
+}
+```
+
+## Best Practices
+
+### Check Token Metadata
+
+```typescript
+async function isTokenSafe(tokenAddress: string) {
+  const metadata = await client.metadata.get(tokenAddress);
+
+  if (!metadata.verified) {
+    console.warn('Token not verified');
+    return false;
+  }
+
+  if (metadata.riskScore > 0.5) {
+    console.warn('High risk token');
+    return false;
+  }
+
+  if (metadata.trustLevel !== 'high') {
+    console.warn('Low trust level');
+    return false;
+  }
+
+  return true;
+}
+```
+
+### Monitor Token Transfers
+
+```typescript
+// Monitor large transfers
+ws.on('message', (data) => {
+  const event = JSON.parse(data);
+
+  if (event.channel === 'token_transfers') {
+    const valueUSD = parseFloat(event.value) * parseFloat(event.priceUSD);
+
+    if (valueUSD > 100000) {
+      console.log(`Large transfer detected: $${valueUSD.toLocaleString()}`);
+      console.log(`From: ${event.from}`);
+      console.log(`To: ${event.to}`);
+    }
+  }
+});
+```
+
+## Next Steps
+
+- [Account API](/api-docs/account) - Account token balances
+- [Transactions API](/api-docs/transactions) - Token transfer transactions
+- [DeFi API](/api-docs/defi) - Token swaps and trading
+- [Payments API](/api-docs/payments) - Accept token payments with NorPay
+- [WebSocket API](/api-docs/websocket) - Real-time token updates

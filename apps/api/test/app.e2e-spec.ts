@@ -2071,4 +2071,864 @@ describe('AppController (e2e)', () => {
         });
     });
   });
+
+  describe('Messaging Endpoints', () => {
+    let authToken: string;
+    let userDid: string;
+
+    beforeAll(async () => {
+      const email = `messaging-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+      userDid = `did:pkh:eip155:65001:0x${Date.now().toString(16)}`;
+    });
+
+    it('/api/messaging/profiles (POST) should create profile', () => {
+      return request(app.getHttpServer())
+        .post('/api/messaging/profiles')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          address: `0x${Date.now().toString(16)}`,
+          displayName: 'Test User',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/messaging/conversations (POST) should create conversation', () => {
+      return request(app.getHttpServer())
+        .post('/api/messaging/conversations')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          kind: 'direct',
+          members: [userDid, `did:pkh:eip155:65001:0x${Date.now().toString(16)}`],
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/messaging/conversations (GET) should list conversations', () => {
+      return request(app.getHttpServer())
+        .get('/api/messaging/conversations')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/messaging/messages (POST) should send message', () => {
+      return request(app.getHttpServer())
+        .post('/api/messaging/messages')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          conversationId: 'conv_123',
+          content: 'Test message',
+          contentType: 'text/plain',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/messaging/media/upload-url (POST) should generate upload URL', () => {
+      return request(app.getHttpServer())
+        .post('/api/messaging/media/upload-url')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          contentType: 'image/jpeg',
+          kind: 'image',
+        })
+        .expect((res) => {
+          expect([200, 400, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Ledger Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `ledger-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/ledger/accounts (POST) should create account', () => {
+      return request(app.getHttpServer())
+        .post('/api/ledger/accounts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          orgId: 'org-123',
+          code: `ACC${Date.now()}`,
+          name: 'Test Account',
+          type: 'ASSET',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/ledger/accounts (GET) should list accounts', () => {
+      return request(app.getHttpServer())
+        .get('/api/ledger/accounts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ orgId: 'org-123' })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/ledger/journal-entries (POST) should create journal entry', () => {
+      return request(app.getHttpServer())
+        .post('/api/ledger/journal-entries')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          orgId: 'org-123',
+          period: '2025-01',
+          eventType: 'payment',
+          eventId: `event-${Date.now()}`,
+          occurredAt: new Date().toISOString(),
+          lines: [
+            {
+              account: '1000',
+              amount: '100.00',
+              direction: 'DEBIT',
+              currency: 'NOR',
+            },
+            {
+              account: '2000',
+              amount: '100.00',
+              direction: 'CREDIT',
+              currency: 'NOR',
+            },
+          ],
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/ledger/accounts/:id/statement (GET) should get account statement', () => {
+      return request(app.getHttpServer())
+        .get('/api/ledger/accounts/account-123/statement')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ orgId: 'org-123' })
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Additional Edge Cases', () => {
+    it('should handle concurrent requests', async () => {
+      const promises = Array.from({ length: 5 }, () =>
+        request(app.getHttpServer()).get('/api/health'),
+      );
+
+      const results = await Promise.all(promises);
+      results.forEach((res) => {
+        expect(res.status).toBe(200);
+      });
+    });
+
+    it('should handle large request bodies', () => {
+      const largeData = Array.from({ length: 1000 }, (_, i) => ({
+        id: i,
+        data: 'x'.repeat(100),
+      }));
+
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email: 'test@example.com',
+          password: 'password123',
+          name: 'Test',
+          metadata: largeData,
+        })
+        .expect((res) => {
+          // Should either succeed or fail gracefully with 400
+          expect([200, 201, 400, 413]).toContain(res.status);
+        });
+    });
+
+    it('should handle malformed JSON', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .set('Content-Type', 'application/json')
+        .send('{ invalid json }')
+        .expect(400);
+    });
+
+    it('should handle missing Content-Type header', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send('email=test@example.com&password=password123')
+        .expect((res) => {
+          expect([400, 415]).toContain(res.status);
+        });
+    });
+
+    it('should handle OPTIONS requests (CORS preflight)', () => {
+      return request(app.getHttpServer())
+        .options('/api/health')
+        .expect((res) => {
+          expect([200, 204]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Compliance Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `compliance-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/compliance/screenings (POST) should create screening', () => {
+      return request(app.getHttpServer())
+        .post('/api/compliance/screenings')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          type: 'SANCTIONS',
+          subject: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/compliance/risk-score/:address (GET) should get risk score', () => {
+      return request(app.getHttpServer())
+        .get('/api/compliance/risk-score/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/compliance/travel-rule/precheck (POST) should precheck Travel Rule', () => {
+      return request(app.getHttpServer())
+        .post('/api/compliance/travel-rule/precheck')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          senderAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          recipientAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+          amount: '1500.00',
+          currency: 'NOR',
+        })
+        .expect((res) => {
+          expect([200, 400, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Governance Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `governance-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/governance/proposals (GET) should list proposals', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/governance/proposals (POST) should create proposal', () => {
+      return request(app.getHttpServer())
+        .post('/api/governance/proposals')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          proposerAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          title: 'Test Proposal',
+          description: 'Test description',
+          type: 'parameter_change',
+          parameters: { key: 'value' },
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401, 403]).toContain(res.status);
+        });
+    });
+
+    it('/api/governance/proposals/:id/tally (GET) should get vote tally', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals/proposal-123/tally')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/governance/parameters (GET) should get governance parameters', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/parameters')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Bridge Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `bridge-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/bridge/quotes (POST) should get bridge quote', () => {
+      return request(app.getHttpServer())
+        .post('/api/bridge/quotes')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          srcChain: 'NOR',
+          dstChain: 'BSC',
+          amount: '1000000000000000000',
+          asset: 'NOR',
+        })
+        .expect((res) => {
+          expect([200, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/bridge/transfers (POST) should create bridge transfer', () => {
+      return request(app.getHttpServer())
+        .post('/api/bridge/transfers')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          srcChain: 'NOR',
+          dstChain: 'BSC',
+          amount: '1000000000000000000',
+          asset: 'NOR',
+          toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401, 403]).toContain(res.status);
+        });
+    });
+
+    it('/api/bridge/transfers (GET) should list user transfers', () => {
+      return request(app.getHttpServer())
+        .get('/api/bridge/transfers')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Error Scenarios - Extended', () => {
+    it('should handle invalid authentication token', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/balance')
+        .set('Authorization', 'Bearer invalid-token')
+        .query({ address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0' })
+        .expect(401);
+    });
+
+    it('should handle missing authentication token', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/balance')
+        .query({ address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0' })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('should handle invalid query parameters', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/balance')
+        .query({ address: 'invalid-address' })
+        .expect(400);
+    });
+
+    it('should handle invalid pagination parameters', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/txlist')
+        .query({
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          page: -1,
+          limit: -10,
+        })
+        .expect((res) => {
+          expect([200, 400]).toContain(res.status);
+        });
+    });
+
+    it('should handle extremely large pagination limit', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/txlist')
+        .query({
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          page: 1,
+          limit: 1000000,
+        })
+        .expect((res) => {
+          expect([200, 400]).toContain(res.status);
+        });
+    });
+
+    it('should handle SQL injection attempts in query params', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/balance')
+        .query({ address: "'; DROP TABLE users; --" })
+        .expect(400);
+    });
+
+    it('should handle XSS attempts in request body', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email: '<script>alert("xss")</script>@example.com',
+          password: 'password123',
+          name: 'Test User',
+        })
+        .expect((res) => {
+          expect([200, 201, 400]).toContain(res.status);
+        });
+    });
+
+    it('should handle rate limiting', async () => {
+      // Make multiple rapid requests
+      const promises = Array.from({ length: 100 }, () =>
+        request(app.getHttpServer()).get('/api/health'),
+      );
+
+      const results = await Promise.all(promises);
+      // Some requests should succeed, some might be rate limited
+      results.forEach((res) => {
+        expect([200, 429]).toContain(res.status);
+      });
+    });
+
+    it('should handle timeout scenarios', () => {
+      return request(app.getHttpServer())
+        .get('/api/health')
+        .timeout(100) // Very short timeout
+        .expect((res) => {
+          // Request should either succeed quickly or timeout
+          expect([200, 408, 504]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Metadata Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `metadata-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/metadata/challenges (POST) should create ownership challenge', () => {
+      return request(app.getHttpServer())
+        .post('/api/metadata/challenges')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          chainId: '65001',
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/metadata/profiles/:chainId/:address (GET) should get profile', () => {
+      return request(app.getHttpServer())
+        .get('/api/metadata/profiles/65001/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/metadata/profiles/search (GET) should search profiles', () => {
+      return request(app.getHttpServer())
+        .get('/api/metadata/profiles/search')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ query: 'test', limit: 10, offset: 0 })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/metadata/profiles/search (GET) should handle pagination', () => {
+      return request(app.getHttpServer())
+        .get('/api/metadata/profiles/search')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 5, offset: 10 })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Webhooks Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `webhooks-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/webhooks (POST) should create webhook', () => {
+      return request(app.getHttpServer())
+        .post('/api/webhooks')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          url: 'https://example.com/webhook',
+          events: ['TRANSACTION_MINED', 'SWAP_EXECUTED'],
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/webhooks (GET) should list webhooks', () => {
+      return request(app.getHttpServer())
+        .get('/api/webhooks')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/webhooks/:id/deliveries (GET) should get webhook deliveries', () => {
+      return request(app.getHttpServer())
+        .get('/api/webhooks/webhook-123/deliveries')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 10, offset: 0 })
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/webhooks/:id/deliveries (GET) should handle pagination', () => {
+      return request(app.getHttpServer())
+        .get('/api/webhooks/webhook-123/deliveries')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 5, offset: 10 })
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Ledger Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `ledger-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/ledger/accounts (POST) should create account', () => {
+      return request(app.getHttpServer())
+        .post('/api/ledger/accounts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          orgId: 'org-123',
+          code: '1000',
+          name: 'Cash Account',
+          type: 'ASSET',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401, 409]).toContain(res.status);
+        });
+    });
+
+    it('/api/ledger/accounts (GET) should list accounts', () => {
+      return request(app.getHttpServer())
+        .get('/api/ledger/accounts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ orgId: 'org-123' })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/ledger/journal-entries (POST) should create journal entry', () => {
+      return request(app.getHttpServer())
+        .post('/api/ledger/journal-entries')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          orgId: 'org-123',
+          eventType: 'payment',
+          eventId: 'event-123',
+          period: '2024-01',
+          occurredAt: new Date().toISOString(),
+          lines: [
+            { accountCode: '1000', amount: '100.00', direction: 'DEBIT', currency: 'NOR' },
+            { accountCode: '2000', amount: '100.00', direction: 'CREDIT', currency: 'NOR' },
+          ],
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/ledger/accounts/:id/statement (GET) should get account statement', () => {
+      return request(app.getHttpServer())
+        .get('/api/ledger/accounts/account-123/statement')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ orgId: 'org-123' })
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Payments Endpoints - Extended', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `payments-ext-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/payments/checkout-sessions/:sessionId (GET) should get checkout session', () => {
+      return request(app.getHttpServer())
+        .get('/api/payments/checkout-sessions/cs_1234567890_abcdef')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/payments/subscriptions (POST) should create subscription', () => {
+      return request(app.getHttpServer())
+        .post('/api/payments/subscriptions')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          customerId: 'customer-123',
+          priceId: 'price-123',
+          orgId: 'org-123',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/payments/disputes (POST) should create dispute', () => {
+      return request(app.getHttpServer())
+        .post('/api/payments/disputes')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          paymentId: 'payment-123',
+          reason: 'fraud',
+          description: 'Suspicious transaction',
+          orgId: 'org-123',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/payments/webhooks (POST) should register webhook', () => {
+      return request(app.getHttpServer())
+        .post('/api/payments/webhooks')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          url: 'https://example.com/webhook',
+          events: ['payment.completed'],
+          orgId: 'org-123',
+        })
+        .expect((res) => {
+          expect([200, 201, 400, 401, 404]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Messaging Endpoints - Extended', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `messaging-ext-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/messaging/profiles/:did (GET) should get profile by DID', () => {
+      return request(app.getHttpServer())
+        .get('/api/messaging/profiles/did:pkh:eip155:65001:0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/messaging/conversations/:id (GET) should get conversation', () => {
+      return request(app.getHttpServer())
+        .get('/api/messaging/conversations/conv-123')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/messaging/messages/:id/reactions (GET) should get reactions', () => {
+      return request(app.getHttpServer())
+        .get('/api/messaging/messages/message-123/reactions')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+  });
 });

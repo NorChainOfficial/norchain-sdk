@@ -7,9 +7,12 @@ const withNextra = nextra({
 
 export default withNextra({
   reactStrictMode: true,
-  // Enable standalone output for Docker
-  output: 'standalone',
-  
+  // Enable static export for deployment
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
+
   // Bypass TypeScript and ESLint errors for deployment
   typescript: {
     ignoreBuildErrors: true,

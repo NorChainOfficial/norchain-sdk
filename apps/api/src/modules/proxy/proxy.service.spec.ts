@@ -269,5 +269,275 @@ describe('ProxyService', () => {
       expect(result.result).toBe('0x' + feeData.gasPrice.toString(16));
       expect(rpcService.getFeeData).toHaveBeenCalled();
     });
+
+    it('should handle null gasPrice', async () => {
+      const feeData = {
+        gasPrice: null,
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+        toJSON: jest.fn(),
+      } as any;
+
+      rpcService.getFeeData.mockResolvedValue(feeData);
+
+      const result = await service.eth_gasPrice();
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result).toBe('0x0');
+    });
+  });
+
+  describe('eth_getBlockByNumber', () => {
+    it('should return error when block not found', async () => {
+      rpcService.getBlock.mockResolvedValue(null);
+
+      const result = await service.eth_getBlockByNumber('0x3039', false);
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('0');
+      expect(result.message).toBe('Block not found');
+    });
+
+    it('should handle pending block tag', async () => {
+      const block = {
+        number: 12345,
+        hash: '0xabc',
+        parentHash: '0xdef',
+        timestamp: 1234567890,
+        transactions: [],
+        gasUsed: BigInt('500000'),
+        gasLimit: BigInt('1000000'),
+        miner: '0xminer',
+        difficulty: BigInt('1000'),
+        extraData: '0x',
+        toJSON: jest.fn(),
+      } as any;
+
+      rpcService.getBlock.mockResolvedValue(block);
+
+      const result = await service.eth_getBlockByNumber('pending', false);
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(rpcService.getBlock).toHaveBeenCalledWith('pending');
+    });
+
+    it('should format block with full transactions', async () => {
+      const block = {
+        number: 12345,
+        hash: '0xabc',
+        parentHash: '0xdef',
+        timestamp: 1234567890,
+        transactions: [
+          {
+            hash: '0xtx1',
+            blockNumber: 12345,
+            from: '0xfrom',
+            to: '0xto',
+            value: BigInt('1000'),
+            gasLimit: BigInt('21000'),
+            gasPrice: BigInt('20000000000'),
+            data: '0x',
+            nonce: 0,
+            index: 0,
+          },
+        ],
+        gasUsed: BigInt('500000'),
+        gasLimit: BigInt('1000000'),
+        miner: '0xminer',
+        difficulty: BigInt('1000'),
+        extraData: '0x',
+        toJSON: jest.fn(),
+      } as any;
+
+      rpcService.getBlock.mockResolvedValue(block);
+
+      const result = await service.eth_getBlockByNumber('0x3039', true);
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result.transactions).toHaveLength(1);
+      expect(result.result.transactions[0]).toHaveProperty('hash');
+    });
+
+    it('should format block with transaction hashes only', async () => {
+      const block = {
+        number: 12345,
+        hash: '0xabc',
+        parentHash: '0xdef',
+        timestamp: 1234567890,
+        transactions: ['0xtx1', '0xtx2'],
+        gasUsed: BigInt('500000'),
+        gasLimit: BigInt('1000000'),
+        miner: '0xminer',
+        difficulty: BigInt('1000'),
+        extraData: '0x',
+        toJSON: jest.fn(),
+      } as any;
+
+      rpcService.getBlock.mockResolvedValue(block);
+
+      const result = await service.eth_getBlockByNumber('0x3039', false);
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result.transactions).toEqual(['0xtx1', '0xtx2']);
+    });
+  });
+
+  describe('eth_getTransactionByHash', () => {
+    it('should return error when transaction not found', async () => {
+      rpcService.getTransaction.mockResolvedValue(null);
+
+      const result = await service.eth_getTransactionByHash('0xinvalid');
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('0');
+      expect(result.message).toBe('Transaction not found');
+    });
+
+    it('should format transaction with null to address', async () => {
+      const tx = {
+        hash: '0x123',
+        blockNumber: 12345,
+        blockHash: '0xabc',
+        index: 0,
+        from: '0xfrom',
+        to: null,
+        value: BigInt('1000000000000000000'),
+        gasLimit: BigInt('21000'),
+        gasPrice: BigInt('20000000000'),
+        data: '0x',
+        nonce: 0,
+        toJSON: jest.fn(),
+      } as any;
+
+      rpcService.getTransaction.mockResolvedValue(tx);
+
+      const result = await service.eth_getTransactionByHash('0x123');
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result.to).toBe(null);
+    });
+  });
+
+  describe('eth_getTransactionReceipt', () => {
+    it('should return error when receipt not found', async () => {
+      rpcService.getTransactionReceipt.mockResolvedValue(null);
+
+      const result = await service.eth_getTransactionReceipt('0xinvalid');
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('0');
+      expect(result.message).toBe('Transaction receipt not found');
+    });
+
+    it('should format receipt with logs', async () => {
+      const receipt = {
+        hash: '0x123',
+        blockNumber: 12345,
+        blockHash: '0xabc',
+        index: 0,
+        from: '0xfrom',
+        to: '0xto',
+        status: 1,
+        gasUsed: BigInt('21000'),
+        cumulativeGasUsed: BigInt('21000'),
+        logs: [
+          {
+            address: '0xlog',
+            topics: ['0xtopic'],
+            data: '0xdata',
+            blockNumber: 12345,
+            transactionHash: '0x123',
+            transactionIndex: 0,
+            blockHash: '0xabc',
+            index: 0,
+            removed: false,
+          },
+        ],
+        logsBloom: '0x',
+        contractAddress: '0xcontract',
+        toJSON: jest.fn(),
+      } as any;
+
+      rpcService.getTransactionReceipt.mockResolvedValue(receipt);
+
+      const result = await service.eth_getTransactionReceipt('0x123');
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result.logs).toHaveLength(1);
+      expect(result.result.logs[0]).toHaveProperty('address');
+    });
+  });
+
+  describe('eth_call', () => {
+    it('should handle call errors', async () => {
+      rpcService.call.mockRejectedValue(new Error('Call failed'));
+
+      const result = await service.eth_call({ to: '0x123', data: '0x' });
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('0');
+      expect(result.message).toBe('Call failed');
+    });
+  });
+
+  describe('eth_estimateGas', () => {
+    it('should handle gas estimation errors', async () => {
+      rpcService.estimateGas.mockRejectedValue(new Error('Gas estimation failed'));
+
+      const result = await service.eth_estimateGas({ to: '0x123', value: '1000' });
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('0');
+      expect(result.message).toBe('Gas estimation failed');
+    });
+  });
+
+  describe('eth_getLogs', () => {
+    it('should handle getLogs errors', async () => {
+      rpcService.getLogs.mockRejectedValue(new Error('Failed to get logs'));
+
+      const result = await service.eth_getLogs({
+        fromBlock: 1000,
+        toBlock: 2000,
+      } as any);
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('0');
+      expect(result.message).toBe('Failed to get logs');
+    });
+
+    it('should format logs correctly', async () => {
+      const logs = [
+        {
+          address: '0xlog',
+          topics: ['0xtopic'],
+          data: '0xdata',
+          blockNumber: 12345,
+          transactionHash: '0x123',
+          transactionIndex: 0,
+          blockHash: '0xabc',
+          index: 0,
+          removed: false,
+        },
+      ] as any;
+
+      rpcService.getLogs.mockResolvedValue(logs);
+
+      const result = await service.eth_getLogs({
+        fromBlock: 1000,
+        toBlock: 2000,
+      } as any);
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result).toHaveLength(1);
+      expect(result.result[0]).toHaveProperty('address');
+    });
   });
 });

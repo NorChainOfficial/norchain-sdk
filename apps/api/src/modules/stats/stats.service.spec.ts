@@ -132,4 +132,38 @@ describe('StatsService', () => {
       expect(result.result).toEqual(nodeCount);
     });
   });
+
+  describe('getEthSupply', () => {
+    it('should calculate supply from block number', async () => {
+      cacheService.getOrSet.mockImplementation(async (key, fn) => {
+        rpcService.getBlockNumber.mockResolvedValue(1000);
+        return fn();
+      });
+
+      const result = await service.getEthSupply();
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result).toHaveProperty('EthSupply');
+      expect(result.result).toHaveProperty('Eth2Staking');
+      expect(result.result).toHaveProperty('EthBurntFees');
+      expect(rpcService.getBlockNumber).toHaveBeenCalled();
+    });
+  });
+
+  describe('getChainSize', () => {
+    it('should handle missing block timestamp', async () => {
+      cacheService.getOrSet.mockImplementation(async (key, fn) => {
+        rpcService.getBlockNumber.mockResolvedValue(12345);
+        rpcService.getBlock.mockResolvedValue(null);
+        return fn();
+      });
+
+      const result = await service.getChainSize();
+
+      expect(result).toBeDefined();
+      expect(result.status).toBe('1');
+      expect(result.result.blockTime).toBe('0');
+    });
+  });
 });

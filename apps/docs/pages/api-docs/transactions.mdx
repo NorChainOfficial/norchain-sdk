@@ -1,0 +1,610 @@
+# Transactions API
+
+Query transaction details, receipts, logs, and gas information on the NorChain network.
+
+## Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/transaction/:hash` | Get transaction by hash | No |
+| GET | `/transaction/:hash/receipt` | Get transaction receipt | No |
+| GET | `/transaction/:hash/logs` | Get transaction logs | No |
+| GET | `/transaction/pending` | Get pending transactions | No |
+| POST | `/transaction/send` | Send raw transaction | No |
+| POST | `/transaction/estimate-gas` | Estimate gas for transaction | No |
+| GET | `/transaction/status/:hash` | Get transaction status | No |
+
+## Get Transaction
+
+Retrieve detailed information about a transaction by its hash.
+
+### Request
+
+```bash
+GET /api/v1/transaction/:hash
+```
+
+#### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `hash` | string | Yes | Transaction hash (0x...) |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "hash": "0xabc123...",
+    "blockNumber": "1234567",
+    "blockHash": "0xblock123...",
+    "timestamp": "1640995200",
+    "from": "0x742d35...",
+    "to": "0x123abc...",
+    "value": "1000000000000000000",
+    "gas": "21000",
+    "gasPrice": "20000000000",
+    "gasUsed": "21000",
+    "nonce": "42",
+    "input": "0x",
+    "transactionIndex": "5",
+    "confirmations": "125",
+    "isError": "0",
+    "txreceipt_status": "1"
+  }
+}
+```
+
+### Example
+
+```bash
+curl "https://api.norchain.org/api/v1/transaction/0xabc123..."
+```
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient();
+
+const tx = await client.transaction.get('0xabc123...');
+
+console.log(`From: ${tx.from}`);
+console.log(`To: ${tx.to}`);
+console.log(`Value: ${tx.value} Wei`);
+console.log(`Status: ${tx.txreceipt_status === '1' ? 'Success' : 'Failed'}`);
+```
+
+```python
+from norchain import NorChainClient
+
+client = NorChainClient()
+
+tx = client.transaction.get('0xabc123...')
+print(f"Transaction status: {'Success' if tx['txreceipt_status'] == '1' else 'Failed'}")
+```
+
+## Get Transaction Receipt
+
+Retrieve the receipt for a confirmed transaction, including gas used and logs.
+
+### Request
+
+```bash
+GET /api/v1/transaction/:hash/receipt
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "transactionHash": "0xabc123...",
+    "transactionIndex": "5",
+    "blockHash": "0xblock123...",
+    "blockNumber": "1234567",
+    "from": "0x742d35...",
+    "to": "0x123abc...",
+    "cumulativeGasUsed": "105000",
+    "gasUsed": "21000",
+    "contractAddress": null,
+    "logs": [],
+    "logsBloom": "0x00000000...",
+    "status": "1",
+    "effectiveGasPrice": "20000000000"
+  }
+}
+```
+
+### Example
+
+```typescript
+const receipt = await client.transaction.getReceipt('0xabc123...');
+
+console.log(`Gas used: ${receipt.gasUsed}`);
+console.log(`Effective gas price: ${receipt.effectiveGasPrice} Wei`);
+console.log(`Total cost: ${receipt.gasUsed * receipt.effectiveGasPrice} Wei`);
+```
+
+## Get Transaction Logs
+
+Retrieve event logs emitted during transaction execution.
+
+### Request
+
+```bash
+GET /api/v1/transaction/:hash/logs
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "address": "0xcontract...",
+      "topics": [
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+        "0x000000000000000000000000742d35cc6634c0532925a3b844d9a5d4c9db901c",
+        "0x000000000000000000000000123abc..."
+      ],
+      "data": "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000",
+      "blockNumber": "1234567",
+      "transactionHash": "0xabc123...",
+      "transactionIndex": "5",
+      "blockHash": "0xblock123...",
+      "logIndex": "10",
+      "removed": false
+    }
+  ]
+}
+```
+
+### Decoded Logs
+
+Use the `/logs/decode` endpoint to get human-readable event data:
+
+```bash
+GET /api/v1/transaction/:hash/logs?decode=true
+```
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "eventName": "Transfer",
+      "eventSignature": "Transfer(address,address,uint256)",
+      "parameters": {
+        "from": "0x742d35...",
+        "to": "0x123abc...",
+        "value": "1000000000000000000"
+      },
+      "contractAddress": "0xcontract...",
+      "contractName": "ERC20Token"
+    }
+  ]
+}
+```
+
+## Get Pending Transactions
+
+Retrieve transactions in the mempool waiting to be confirmed.
+
+### Request
+
+```bash
+GET /api/v1/transaction/pending?address={address}&limit={limit}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `address` | string | No | Filter by from/to address |
+| `limit` | number | No | Max results (default: 50, max: 100) |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "hash": "0xpending123...",
+      "from": "0x742d35...",
+      "to": "0x123abc...",
+      "value": "1000000000000000000",
+      "gasPrice": "25000000000",
+      "gas": "21000",
+      "nonce": "43",
+      "submittedAt": "1640995250"
+    }
+  ]
+}
+```
+
+### Example
+
+```typescript
+// Get all pending transactions
+const pending = await client.transaction.getPending();
+
+// Get pending transactions for specific address
+const myPending = await client.transaction.getPending({
+  address: '0x742d35...'
+});
+```
+
+## Send Raw Transaction
+
+Submit a signed transaction to the network.
+
+### Request
+
+```bash
+POST /api/v1/transaction/send
+```
+
+#### Request Body
+
+```json
+{
+  "signedTransaction": "0xf86c808504a817c800825208944d5e6f..."
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "transactionHash": "0xabc123..."
+  }
+}
+```
+
+### Example
+
+```typescript
+import { ethers } from 'ethers';
+
+const wallet = new ethers.Wallet(privateKey);
+
+const tx = {
+  to: '0x123abc...',
+  value: ethers.utils.parseEther('1.0'),
+  gasLimit: 21000,
+  gasPrice: ethers.utils.parseUnits('20', 'gwei'),
+  nonce: await client.account.getNonce(wallet.address)
+};
+
+const signedTx = await wallet.signTransaction(tx);
+const result = await client.transaction.send(signedTx);
+
+console.log('Transaction hash:', result.transactionHash);
+
+// Wait for confirmation
+const receipt = await client.transaction.waitForReceipt(result.transactionHash);
+console.log('Transaction confirmed in block:', receipt.blockNumber);
+```
+
+## Estimate Gas
+
+Estimate gas required for a transaction before sending.
+
+### Request
+
+```bash
+POST /api/v1/transaction/estimate-gas
+```
+
+#### Request Body
+
+```json
+{
+  "from": "0x742d35...",
+  "to": "0x123abc...",
+  "value": "1000000000000000000",
+  "data": "0x"
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "gasEstimate": "21000",
+    "gasPrice": "20000000000",
+    "estimatedCost": "420000000000000",
+    "estimatedCostNOR": "0.00042"
+  }
+}
+```
+
+### Example
+
+```typescript
+const estimate = await client.transaction.estimateGas({
+  from: '0x742d35...',
+  to: '0x123abc...',
+  value: '1000000000000000000'
+});
+
+console.log(`Estimated gas: ${estimate.gasEstimate}`);
+console.log(`Estimated cost: ${estimate.estimatedCostNOR} NOR`);
+```
+
+## Get Transaction Status
+
+Check the status of a transaction (useful for pending transactions).
+
+### Request
+
+```bash
+GET /api/v1/transaction/status/:hash
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "hash": "0xabc123...",
+    "status": "confirmed",
+    "blockNumber": "1234567",
+    "confirmations": 25,
+    "timestamp": "1640995200"
+  }
+}
+```
+
+**Status values:**
+- `pending` - In mempool
+- `confirmed` - Included in block
+- `finalized` - Block finalized
+- `failed` - Transaction failed
+- `dropped` - Removed from mempool
+
+### Example
+
+```typescript
+const status = await client.transaction.getStatus('0xabc123...');
+
+switch (status.status) {
+  case 'pending':
+    console.log('Transaction pending...');
+    break;
+  case 'confirmed':
+    console.log(`Confirmed with ${status.confirmations} confirmations`);
+    break;
+  case 'finalized':
+    console.log('Transaction finalized');
+    break;
+  case 'failed':
+    console.log('Transaction failed');
+    break;
+}
+```
+
+## Advanced Features
+
+### Transaction Tracing
+
+Get detailed execution trace:
+
+```bash
+POST /api/v1/transaction/:hash/trace
+```
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "type": "CALL",
+    "from": "0x742d35...",
+    "to": "0x123abc...",
+    "value": "1000000000000000000",
+    "gas": "21000",
+    "gasUsed": "21000",
+    "input": "0x",
+    "output": "0x",
+    "calls": []
+  }
+}
+```
+
+### Batch Transaction Query
+
+Query multiple transactions at once:
+
+```bash
+POST /api/v1/transaction/batch
+```
+
+```json
+{
+  "hashes": ["0xabc123...", "0xdef456...", "0xghi789..."]
+}
+```
+
+## WebSocket Subscriptions
+
+Subscribe to transaction events:
+
+```javascript
+const ws = new WebSocket('wss://api.norchain.org');
+
+ws.on('open', () => {
+  // Subscribe to all new transactions
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'transactions'
+  }));
+
+  // Subscribe to transactions for specific address
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'address_transactions',
+    address: '0x742d35...'
+  }));
+
+  // Subscribe to pending transactions
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'pending_transactions'
+  }));
+});
+
+ws.on('message', (data) => {
+  const event = JSON.parse(data);
+  console.log('Transaction update:', event);
+});
+```
+
+## GraphQL Queries
+
+Query transactions via GraphQL:
+
+```graphql
+query GetTransaction($hash: String!) {
+  transaction(hash: $hash) {
+    hash
+    from
+    to
+    value
+    gasPrice
+    gasUsed
+    status
+    timestamp
+    block {
+      number
+      hash
+    }
+    logs {
+      address
+      topics
+      data
+    }
+  }
+}
+```
+
+## Rate Limits
+
+| Authentication | Requests/Minute | Requests/Day |
+|----------------|-----------------|--------------|
+| None | 100 | 10,000 |
+| API Key | 1,000 | 100,000 |
+| Premium | 10,000 | 1,000,000 |
+
+## Error Responses
+
+### Transaction Not Found
+
+```json
+{
+  "status": "0",
+  "message": "Error! Transaction not found",
+  "result": null
+}
+```
+
+### Invalid Transaction Hash
+
+```json
+{
+  "status": "0",
+  "message": "Error! Invalid transaction hash format",
+  "result": null
+}
+```
+
+### Transaction Failed
+
+```json
+{
+  "status": "0",
+  "message": "Error! Transaction execution failed",
+  "result": {
+    "revertReason": "ERC20: transfer amount exceeds balance"
+  }
+}
+```
+
+## Best Practices
+
+### Wait for Confirmations
+
+```typescript
+async function waitForConfirmations(txHash: string, requiredConfirmations = 12) {
+  let confirmations = 0;
+
+  while (confirmations < requiredConfirmations) {
+    const tx = await client.transaction.get(txHash);
+    confirmations = parseInt(tx.confirmations);
+
+    if (confirmations < requiredConfirmations) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+  }
+
+  return true;
+}
+```
+
+### Handle Transaction Errors
+
+```typescript
+try {
+  const result = await client.transaction.send(signedTx);
+  const receipt = await client.transaction.getReceipt(result.transactionHash);
+
+  if (receipt.status === '0') {
+    console.error('Transaction failed');
+    // Check logs for revert reason
+  } else {
+    console.log('Transaction successful');
+  }
+} catch (error) {
+  console.error('Error sending transaction:', error);
+}
+```
+
+### Gas Price Optimization
+
+```typescript
+// Get current gas price
+const gasPrice = await client.gas.getPrice();
+
+// Add 10% buffer for faster confirmation
+const adjustedGasPrice = Math.floor(gasPrice * 1.1);
+
+const tx = {
+  // ... other tx params
+  gasPrice: adjustedGasPrice
+};
+```
+
+## Next Steps
+
+- [Account API](/api-docs/account) - Account balances and transactions
+- [Blockchain API](/api-docs/blockchain) - Blockchain data
+- [Tokens API](/api-docs/tokens) - Token transfers and contracts
+- [Payments API](/api-docs/payments) - Payment processing with NorPay
+- [WebSocket API](/api-docs/websocket) - Real-time transaction updates

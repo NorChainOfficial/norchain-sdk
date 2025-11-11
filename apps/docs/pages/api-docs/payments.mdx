@@ -1,0 +1,644 @@
+# Payments API (NorPay)
+
+Process payments, manage subscriptions, handle invoices, and integrate checkout flows with NorPay.
+
+## Overview
+
+NorPay is NorChain's complete payment processing platform, offering:
+
+- **Checkout** - Hosted and embedded payment flows
+- **Subscriptions** - Recurring billing in NOR
+- **Invoices** - Professional invoicing system
+- **Payouts** - Automated merchant settlements
+- **Webhooks** - Real-time payment notifications
+
+All payments are processed in NOR token and integrated with NorLedger for accounting.
+
+## Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/v2/payments/create` | Create payment intent | Yes |
+| GET | `/v2/payments/:id` | Get payment details | Yes |
+| POST | `/v2/payments/:id/confirm` | Confirm payment | Yes |
+| POST | `/v2/payments/:id/cancel` | Cancel payment | Yes |
+| POST | `/v2/subscriptions/create` | Create subscription | Yes |
+| GET | `/v2/subscriptions/:id` | Get subscription | Yes |
+| POST | `/v2/subscriptions/:id/cancel` | Cancel subscription | Yes |
+| POST | `/v2/invoices/create` | Create invoice | Yes |
+| GET | `/v2/invoices/:id` | Get invoice | Yes |
+| POST | `/v2/invoices/:id/send` | Send invoice | Yes |
+| GET | `/v2/merchants/dashboard` | Get merchant stats | Yes |
+
+## Create Payment
+
+Create a new payment intent for one-time payments.
+
+### Request
+
+```bash
+POST /api/v2/payments/create
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+X-API-Key: nk_your_merchant_key
+```
+
+#### Request Body
+
+```json
+{
+  "amount": "1000000000000000000",
+  "currency": "NOR",
+  "description": "Product purchase",
+  "metadata": {
+    "orderId": "order_123",
+    "customerId": "cust_456"
+  },
+  "successUrl": "https://yoursite.com/success",
+  "cancelUrl": "https://yoursite.com/cancel"
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "paymentId": "pay_abc123",
+    "amount": "1000000000000000000",
+    "currency": "NOR",
+    "status": "pending",
+    "checkoutUrl": "https://checkout.norpay.com/session/abc123",
+    "expiresAt": "1640998800",
+    "createdAt": "1640995200"
+  }
+}
+```
+
+### Example
+
+```typescript
+import { NorPayClient } from '@norchain/sdk';
+
+const norpay = new NorPayClient({
+  apiKey: 'nk_your_merchant_key'
+});
+
+const payment = await norpay.payments.create({
+  amount: '1000000000000000000', // 1 NOR
+  currency: 'NOR',
+  description: 'Product purchase',
+  successUrl: 'https://yoursite.com/success',
+  cancelUrl: 'https://yoursite.com/cancel'
+});
+
+// Redirect user to checkout
+window.location.href = payment.checkoutUrl;
+```
+
+```python
+from norchain import NorPayClient
+
+norpay = NorPayClient(api_key='nk_your_merchant_key')
+
+payment = norpay.payments.create(
+    amount='1000000000000000000',
+    currency='NOR',
+    description='Product purchase',
+    success_url='https://yoursite.com/success',
+    cancel_url='https://yoursite.com/cancel'
+)
+
+print(f"Checkout URL: {payment['checkoutUrl']}")
+```
+
+## Get Payment Details
+
+Retrieve information about a payment.
+
+### Request
+
+```bash
+GET /api/v2/payments/:id
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "paymentId": "pay_abc123",
+    "amount": "1000000000000000000",
+    "currency": "NOR",
+    "status": "completed",
+    "description": "Product purchase",
+    "payer": "0x742d35...",
+    "transactionHash": "0xtx...",
+    "metadata": {
+      "orderId": "order_123"
+    },
+    "createdAt": "1640995200",
+    "completedAt": "1640995800"
+  }
+}
+```
+
+### Payment Status Values
+
+- `pending` - Awaiting payment
+- `processing` - Payment in progress
+- `completed` - Payment successful
+- `failed` - Payment failed
+- `canceled` - Payment canceled
+- `refunded` - Payment refunded
+
+## Create Subscription
+
+Create recurring subscription plan.
+
+### Request
+
+```bash
+POST /api/v2/subscriptions/create
+```
+
+#### Request Body
+
+```json
+{
+  "planId": "plan_norpay_pro",
+  "customerId": "cust_456",
+  "trialDays": 14,
+  "metadata": {
+    "company": "Acme Corp"
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "subscriptionId": "sub_xyz789",
+    "planId": "plan_norpay_pro",
+    "customerId": "cust_456",
+    "status": "active",
+    "currentPeriodStart": "1640995200",
+    "currentPeriodEnd": "1643673600",
+    "trialEnd": "1642204800",
+    "amount": "50000000000000000000",
+    "interval": "month"
+  }
+}
+```
+
+### Example
+
+```typescript
+// Create subscription plan
+const plan = await norpay.plans.create({
+  name: 'NorPay Pro',
+  amount: '50000000000000000000', // 50 NOR
+  currency: 'NOR',
+  interval: 'month',
+  features: ['Custom Branding', 'API Webhooks', 'Priority Support']
+});
+
+// Subscribe customer to plan
+const subscription = await norpay.subscriptions.create({
+  planId: plan.planId,
+  customerId: 'cust_456',
+  trialDays: 14
+});
+
+console.log('Subscription created:', subscription.subscriptionId);
+```
+
+## Cancel Subscription
+
+Cancel an active subscription.
+
+### Request
+
+```bash
+POST /api/v2/subscriptions/:id/cancel
+```
+
+#### Request Body
+
+```json
+{
+  "cancelAtPeriodEnd": true,
+  "reason": "Customer requested cancellation"
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "subscriptionId": "sub_xyz789",
+    "status": "canceled",
+    "canceledAt": "1640995200",
+    "endsAt": "1643673600"
+  }
+}
+```
+
+## Create Invoice
+
+Generate professional invoice for services or products.
+
+### Request
+
+```bash
+POST /api/v2/invoices/create
+```
+
+#### Request Body
+
+```json
+{
+  "customer": {
+    "name": "Acme Corporation",
+    "email": "billing@acme.com",
+    "address": "123 Business St"
+  },
+  "items": [
+    {
+      "description": "NorLedger Pro - Monthly",
+      "quantity": 1,
+      "unitPrice": "50000000000000000000",
+      "amount": "50000000000000000000"
+    }
+  ],
+  "currency": "NOR",
+  "dueDate": "1641600000",
+  "notes": "Payment due within 30 days"
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "invoiceId": "inv_def456",
+    "invoiceNumber": "INV-2024-001",
+    "status": "draft",
+    "subtotal": "50000000000000000000",
+    "tax": "0",
+    "total": "50000000000000000000",
+    "currency": "NOR",
+    "dueDate": "1641600000",
+    "pdfUrl": "https://invoices.norpay.com/inv_def456.pdf",
+    "paymentUrl": "https://pay.norpay.com/inv_def456"
+  }
+}
+```
+
+### Example
+
+```typescript
+const invoice = await norpay.invoices.create({
+  customer: {
+    name: 'Acme Corporation',
+    email: 'billing@acme.com'
+  },
+  items: [
+    {
+      description: 'NorLedger Pro - Monthly',
+      quantity: 1,
+      unitPrice: '50000000000000000000',
+      amount: '50000000000000000000'
+    }
+  ],
+  currency: 'NOR',
+  dueDate: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 // 30 days
+});
+
+// Send invoice to customer
+await norpay.invoices.send(invoice.invoiceId);
+
+console.log('Invoice sent:', invoice.invoiceNumber);
+console.log('Payment URL:', invoice.paymentUrl);
+```
+
+## Send Invoice
+
+Email invoice to customer.
+
+### Request
+
+```bash
+POST /api/v2/invoices/:id/send
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "Invoice sent successfully",
+  "result": {
+    "invoiceId": "inv_def456",
+    "sentAt": "1640995200",
+    "recipient": "billing@acme.com"
+  }
+}
+```
+
+## Merchant Dashboard
+
+Get comprehensive merchant statistics and analytics.
+
+### Request
+
+```bash
+GET /api/v2/merchants/dashboard?period={period}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `period` | string | Time period: `today`, `week`, `month`, `year` |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "revenue": {
+      "total": "5000000000000000000000",
+      "payments": "3500000000000000000000",
+      "subscriptions": "1500000000000000000000"
+    },
+    "payments": {
+      "total": 156,
+      "completed": 150,
+      "pending": 4,
+      "failed": 2
+    },
+    "subscriptions": {
+      "active": 45,
+      "trialing": 8,
+      "canceled": 3
+    },
+    "customers": {
+      "total": 123,
+      "new": 15
+    },
+    "topProducts": [
+      {
+        "name": "NorLedger Pro",
+        "revenue": "2250000000000000000000",
+        "count": 45
+      }
+    ]
+  }
+}
+```
+
+## Webhooks
+
+Configure webhooks to receive real-time payment notifications.
+
+### Event Types
+
+- `payment.created` - Payment intent created
+- `payment.completed` - Payment successful
+- `payment.failed` - Payment failed
+- `subscription.created` - Subscription started
+- `subscription.updated` - Subscription modified
+- `subscription.canceled` - Subscription canceled
+- `invoice.created` - Invoice generated
+- `invoice.paid` - Invoice paid
+- `invoice.overdue` - Invoice past due
+
+### Webhook Payload Example
+
+```json
+{
+  "event": "payment.completed",
+  "timestamp": "1640995200",
+  "data": {
+    "paymentId": "pay_abc123",
+    "amount": "1000000000000000000",
+    "currency": "NOR",
+    "status": "completed",
+    "payer": "0x742d35...",
+    "transactionHash": "0xtx...",
+    "metadata": {
+      "orderId": "order_123"
+    }
+  }
+}
+```
+
+### Verifying Webhooks
+
+```typescript
+import crypto from 'crypto';
+
+function verifyWebhook(payload: string, signature: string, secret: string) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+
+  return signature === expectedSignature;
+}
+
+// Express.js example
+app.post('/webhooks/norpay', express.raw({ type: 'application/json' }), (req, res) => {
+  const signature = req.headers['x-norpay-signature'];
+  const payload = req.body.toString();
+
+  if (!verifyWebhook(payload, signature, process.env.NORPAY_WEBHOOK_SECRET)) {
+    return res.status(401).send('Invalid signature');
+  }
+
+  const event = JSON.parse(payload);
+
+  switch (event.event) {
+    case 'payment.completed':
+      // Handle successful payment
+      console.log('Payment completed:', event.data.paymentId);
+      break;
+
+    case 'subscription.created':
+      // Handle new subscription
+      console.log('New subscription:', event.data.subscriptionId);
+      break;
+  }
+
+  res.json({ received: true });
+});
+```
+
+## Checkout Widget
+
+Embed NorPay checkout in your application.
+
+### Hosted Checkout
+
+Redirect users to hosted checkout page:
+
+```typescript
+const payment = await norpay.payments.create({
+  amount: '1000000000000000000',
+  currency: 'NOR',
+  successUrl: 'https://yoursite.com/success',
+  cancelUrl: 'https://yoursite.com/cancel'
+});
+
+// Redirect to hosted checkout
+window.location.href = payment.checkoutUrl;
+```
+
+### Embedded Checkout
+
+Embed checkout widget in your page:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://checkout.norpay.com/v1/checkout.js"></script>
+</head>
+<body>
+  <div id="norpay-checkout"></div>
+
+  <script>
+    const checkout = NorPay.Checkout({
+      apiKey: 'nk_your_merchant_key',
+      amount: '1000000000000000000',
+      currency: 'NOR',
+      description: 'Product purchase',
+      onSuccess: (payment) => {
+        console.log('Payment successful:', payment);
+        window.location.href = '/success';
+      },
+      onCancel: () => {
+        console.log('Payment canceled');
+      }
+    });
+
+    checkout.mount('#norpay-checkout');
+  </script>
+</body>
+</html>
+```
+
+### React Component
+
+```typescript
+import { NorPayCheckout } from '@norchain/react';
+
+function CheckoutPage() {
+  const handleSuccess = (payment) => {
+    console.log('Payment successful:', payment);
+    router.push('/success');
+  };
+
+  return (
+    <NorPayCheckout
+      apiKey="nk_your_merchant_key"
+      amount="1000000000000000000"
+      currency="NOR"
+      description="Product purchase"
+      onSuccess={handleSuccess}
+      onCancel={() => console.log('Canceled')}
+    />
+  );
+}
+```
+
+## NorLedger Integration
+
+All NorPay transactions automatically integrate with NorLedger for accounting.
+
+```typescript
+// Payment creates ledger entries automatically
+const payment = await norpay.payments.create({
+  amount: '1000000000000000000',
+  currency: 'NOR',
+  description: 'Product sale'
+});
+
+// When payment completes, ledger entries are posted:
+// Dr: Customer NOR Wallet    1.00 NOR
+// Cr: Revenue - Product Sales 1.00 NOR
+
+// Query ledger entries
+const ledgerEntries = await norledger.entries.list({
+  referenceType: 'payment',
+  referenceId: payment.paymentId
+});
+```
+
+## Rate Limits
+
+| Plan | Requests/Minute | Requests/Day |
+|------|-----------------|--------------|
+| Starter | 100 | 10,000 |
+| Professional | 1,000 | 100,000 |
+| Enterprise | 10,000 | 1,000,000 |
+
+## Error Responses
+
+### Insufficient Balance
+
+```json
+{
+  "status": "0",
+  "message": "Error! Insufficient balance",
+  "result": null
+}
+```
+
+### Invalid Amount
+
+```json
+{
+  "status": "0",
+  "message": "Error! Amount must be greater than 0",
+  "result": null
+}
+```
+
+### Payment Expired
+
+```json
+{
+  "status": "0",
+  "message": "Error! Payment session expired",
+  "result": null
+}
+```
+
+## Next Steps
+
+- [Account API](/api-docs/account) - Check customer balances
+- [Transactions API](/api-docs/transactions) - Track payment transactions
+- [DeFi API](/api-docs/defi) - Token swaps for payment conversion
+- [Webhooks](/api-docs/developer#webhooks) - Payment notifications
+- [NorLedger API](/api-docs/infrastructure#ledger) - Accounting integration

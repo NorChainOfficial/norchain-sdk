@@ -1,0 +1,608 @@
+# Governance & Compliance API
+
+Access DAO governance, proposal management, voting, and compliance features on NorChain.
+
+## Overview
+
+NorChain's Governance & Compliance API provides:
+
+- **Governance** - DAO proposals, voting, and treasury management
+- **Compliance** - KYC/AML, Travel Rule, and regulatory features
+- **Policy** - Risk scoring and policy enforcement
+
+## Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/v1/governance/proposals` | List proposals | No |
+| GET | `/api/v1/governance/proposals/:id` | Get proposal details | No |
+| POST | `/api/v1/governance/proposals/create` | Create proposal | Yes |
+| POST | `/api/v1/governance/proposals/:id/vote` | Vote on proposal | Yes |
+| GET | `/api/v1/governance/treasury` | Get treasury info | No |
+| POST | `/api/v1/compliance/kyc/submit` | Submit KYC | Yes |
+| GET | `/api/v1/compliance/kyc/status` | Get KYC status | Yes |
+| POST | `/api/v1/compliance/screen` | Screen address | Yes |
+| POST | `/api/v1/policy/check` | Check policy compliance | Yes |
+
+## List Proposals
+
+Retrieve all governance proposals.
+
+### Request
+
+```bash
+GET /api/v1/governance/proposals?status={status}&page={page}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | string | Filter: `active`, `pending`, `executed`, `defeated` |
+| `page` | number | Page number |
+| `offset` | number | Results per page |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "total": 45,
+    "proposals": [
+      {
+        "proposalId": "prop_123",
+        "title": "Increase validator rewards by 10%",
+        "description": "Proposal to increase validator rewards...",
+        "proposer": "0x742d35...",
+        "status": "active",
+        "votesFor": "5000000000000000000000000",
+        "votesAgainst": "1000000000000000000000000",
+        "votesAbstain": "500000000000000000000000",
+        "quorum": "10000000000000000000000000",
+        "createdAt": "1640995200",
+        "votingEnds": "1641600000",
+        "executionETA": "1641686400"
+      }
+    ]
+  }
+}
+```
+
+### Example
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient();
+
+const proposals = await client.governance.getProposals({
+  status: 'active',
+  page: 1,
+  offset: 20
+});
+
+proposals.proposals.forEach(p => {
+  console.log(`${p.title} - ${p.status}`);
+  console.log(`Votes: For ${p.votesFor}, Against ${p.votesAgainst}`);
+});
+```
+
+## Get Proposal Details
+
+Retrieve detailed information about a specific proposal.
+
+### Request
+
+```bash
+GET /api/v1/governance/proposals/:id
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "proposalId": "prop_123",
+    "title": "Increase validator rewards by 10%",
+    "description": "Detailed proposal description...",
+    "proposer": "0x742d35...",
+    "status": "active",
+    "type": "parameter_change",
+    "targets": ["0xgovernor..."],
+    "values": ["0"],
+    "calldatas": ["0x..."],
+    "votesFor": "5000000000000000000000000",
+    "votesAgainst": "1000000000000000000000000",
+    "votesAbstain": "500000000000000000000000",
+    "quorum": "10000000000000000000000000",
+    "quorumReached": false,
+    "voters": [
+      {
+        "address": "0xvoter1...",
+        "vote": "for",
+        "votingPower": "1000000000000000000000000",
+        "reason": "This will benefit the network",
+        "timestamp": "1640996000"
+      }
+    ],
+    "createdAt": "1640995200",
+    "votingStarts": "1640995200",
+    "votingEnds": "1641600000",
+    "executionETA": "1641686400",
+    "discussion": "https://forum.norchain.org/prop_123"
+  }
+}
+```
+
+## Create Proposal
+
+Submit a new governance proposal (requires minimum NOR stake).
+
+### Request
+
+```bash
+POST /api/v1/governance/proposals/create
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+#### Request Body
+
+```json
+{
+  "title": "Increase block gas limit to 30M",
+  "description": "Detailed proposal description with rationale...",
+  "type": "parameter_change",
+  "targets": ["0xgovernor..."],
+  "values": ["0"],
+  "calldatas": ["0xfunctioncall..."],
+  "discussionUrl": "https://forum.norchain.org/discussion"
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "Proposal created successfully",
+  "result": {
+    "proposalId": "prop_124",
+    "transactionHash": "0xtx...",
+    "votingStarts": "1641000000",
+    "votingEnds": "1641604800"
+  }
+}
+```
+
+### Example
+
+```typescript
+const proposal = await client.governance.createProposal({
+  title: 'Increase block gas limit to 30M',
+  description: 'Proposal to increase block gas limit...',
+  type: 'parameter_change',
+  targets: ['0xgovernor...'],
+  values: ['0'],
+  calldatas: ['0xfunctioncall...']
+});
+
+console.log('Proposal created:', proposal.proposalId);
+```
+
+## Vote on Proposal
+
+Cast vote on an active proposal.
+
+### Request
+
+```bash
+POST /api/v1/governance/proposals/:id/vote
+```
+
+#### Request Body
+
+```json
+{
+  "vote": "for",
+  "reason": "This proposal will benefit the network"
+}
+```
+
+**Vote options:** `for`, `against`, `abstain`
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "Vote recorded successfully",
+  "result": {
+    "proposalId": "prop_123",
+    "voter": "0x742d35...",
+    "vote": "for",
+    "votingPower": "1000000000000000000000000",
+    "transactionHash": "0xtx...",
+    "timestamp": "1640996000"
+  }
+}
+```
+
+### Example
+
+```typescript
+const vote = await client.governance.vote('prop_123', {
+  vote: 'for',
+  reason: 'This proposal will improve network performance'
+});
+
+console.log('Vote cast with', vote.votingPower, 'voting power');
+```
+
+## Get Treasury Information
+
+Retrieve DAO treasury balance and allocations.
+
+### Request
+
+```bash
+GET /api/v1/governance/treasury
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "totalBalance": "50000000000000000000000000",
+    "balanceUSD": "125000000.00",
+    "allocations": [
+      {
+        "category": "Validator Rewards",
+        "amount": "20000000000000000000000000",
+        "percentage": "40.0"
+      },
+      {
+        "category": "Development Fund",
+        "amount": "10000000000000000000000000",
+        "percentage": "20.0"
+      },
+      {
+        "category": "Marketing",
+        "amount": "5000000000000000000000000",
+        "percentage": "10.0"
+      },
+      {
+        "category": "Reserve",
+        "amount": "15000000000000000000000000",
+        "percentage": "30.0"
+      }
+    ],
+    "monthlyIncome": "2000000000000000000000000",
+    "monthlyExpenses": "1500000000000000000000000",
+    "revenueStreams": [
+      {
+        "source": "NorPay Fees",
+        "amount": "1000000000000000000000000",
+        "percentage": "50.0"
+      },
+      {
+        "source": "Transaction Fees",
+        "amount": "500000000000000000000000",
+        "percentage": "25.0"
+      },
+      {
+        "source": "Subscriptions",
+        "amount": "500000000000000000000000",
+        "percentage": "25.0"
+      }
+    ]
+  }
+}
+```
+
+## Submit KYC
+
+Submit KYC documentation for verification (requires authentication).
+
+### Request
+
+```bash
+POST /api/v1/compliance/kyc/submit
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+#### Request Body
+
+```json
+{
+  "tier": 2,
+  "personalInfo": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "1990-01-01",
+    "nationality": "NO",
+    "address": {
+      "street": "Main Street 123",
+      "city": "Oslo",
+      "postalCode": "0150",
+      "country": "NO"
+    }
+  },
+  "documents": {
+    "idType": "passport",
+    "idNumber": "N12345678",
+    "idFrontImage": "base64_encoded_image",
+    "idBackImage": "base64_encoded_image",
+    "selfie": "base64_encoded_image"
+  }
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "KYC submitted successfully",
+  "result": {
+    "kycId": "kyc_abc123",
+    "status": "pending",
+    "tier": 2,
+    "submittedAt": "1640995200",
+    "estimatedReview": "1641081600"
+  }
+}
+```
+
+## Get KYC Status
+
+Check KYC verification status.
+
+### Request
+
+```bash
+GET /api/v1/compliance/kyc/status
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "kycId": "kyc_abc123",
+    "status": "approved",
+    "tier": 2,
+    "approvedAt": "1641000000",
+    "expiresAt": "1672536000",
+    "limits": {
+      "dailyLimit": "100000000000",
+      "monthlyLimit": "3000000000000"
+    }
+  }
+}
+```
+
+**KYC Status Values:**
+- `pending` - Under review
+- `approved` - Verification successful
+- `rejected` - Verification failed
+- `expired` - Needs renewal
+
+## Screen Address
+
+Screen an address for AML/sanctions compliance.
+
+### Request
+
+```bash
+POST /api/v1/compliance/screen
+```
+
+**Headers:**
+```
+X-API-Key: nk_your_api_key
+```
+
+#### Request Body
+
+```json
+{
+  "address": "0x742d35...",
+  "checkSanctions": true,
+  "checkRisk": true
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "address": "0x742d35...",
+    "riskScore": 0.15,
+    "riskLevel": "low",
+    "sanctioned": false,
+    "flags": [],
+    "analysis": {
+      "transactionVolume": "high",
+      "knownExchanges": ["binance", "coinbase"],
+      "mixerUsage": false,
+      "darknetMarkets": false
+    },
+    "recommendation": "approve",
+    "timestamp": "1640995200"
+  }
+}
+```
+
+**Risk Levels:**
+- `low` (0.0 - 0.3)
+- `medium` (0.3 - 0.7)
+- `high` (0.7 - 1.0)
+
+**Recommendations:**
+- `approve` - Safe to transact
+- `review` - Manual review recommended
+- `block` - High risk, block transaction
+
+## Check Policy Compliance
+
+Verify transaction compliance with policies.
+
+### Request
+
+```bash
+POST /api/v1/policy/check
+```
+
+#### Request Body
+
+```json
+{
+  "from": "0x742d35...",
+  "to": "0x123abc...",
+  "amount": "1000000000000000000",
+  "token": "0xnor...",
+  "type": "transfer"
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "allowed": true,
+    "policyChecks": [
+      {
+        "policy": "AML Screening",
+        "passed": true,
+        "details": "Both addresses cleared"
+      },
+      {
+        "policy": "Daily Limit",
+        "passed": true,
+        "details": "Within daily limit (75% used)"
+      },
+      {
+        "policy": "Sanctions Check",
+        "passed": true,
+        "details": "No sanctions matches"
+      }
+    ],
+    "riskScore": 0.12,
+    "recommendation": "approve"
+  }
+}
+```
+
+### Example
+
+```typescript
+const compliance = await client.policy.check({
+  from: '0x742d35...',
+  to: '0x123abc...',
+  amount: '1000000000000000000',
+  token: '0xnor...',
+  type: 'transfer'
+});
+
+if (!compliance.allowed) {
+  console.error('Transaction blocked by policy');
+  compliance.policyChecks.forEach(check => {
+    if (!check.passed) {
+      console.error(`Failed: ${check.policy} - ${check.details}`);
+    }
+  });
+} else {
+  console.log('Transaction approved');
+  // Proceed with transaction
+}
+```
+
+## WebSocket Subscriptions
+
+Subscribe to governance events:
+
+```javascript
+const ws = new WebSocket('wss://api.norchain.org');
+
+ws.on('open', () => {
+  // Subscribe to proposal updates
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'governance',
+    proposalId: 'prop_123'
+  }));
+
+  // Subscribe to voting events
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'votes',
+    proposalId: 'prop_123'
+  }));
+});
+
+ws.on('message', (data) => {
+  const event = JSON.parse(data);
+  console.log('Governance event:', event);
+});
+```
+
+## Rate Limits
+
+| Authentication | Requests/Minute | Requests/Day |
+|----------------|-----------------|--------------|
+| API Key | 100 | 10,000 |
+| Premium | 1,000 | 100,000 |
+
+## Error Responses
+
+### Insufficient Voting Power
+
+```json
+{
+  "status": "0",
+  "message": "Error! Insufficient voting power to create proposal",
+  "result": null
+}
+```
+
+### KYC Required
+
+```json
+{
+  "status": "0",
+  "message": "Error! KYC verification required for this operation",
+  "result": {
+    "required": "tier2",
+    "current": "tier0"
+  }
+}
+```
+
+## Next Steps
+
+- [Account API](/api-docs/account) - Check voting power balance
+- [Blockchain API](/api-docs/blockchain) - Validator information
+- [Infrastructure API](/api-docs/infrastructure) - Network monitoring

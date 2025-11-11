@@ -1,0 +1,668 @@
+# DeFi & Trading API
+
+Access decentralized exchange (DEX) features, token swaps, order management, and trading analytics.
+
+## Overview
+
+NorChain's DeFi API provides:
+
+- **Swap** - Token exchange via AMM pools
+- **Orders** - Limit, stop-loss, and DCA orders
+- **Bridge** - Cross-chain asset transfers
+- **Analytics** - Trading data and market insights
+- **Liquidity** - Pool information and APY calculations
+
+## Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/api/v1/swap/quote` | Get swap quote | No |
+| POST | `/api/v1/swap/execute` | Execute swap | Yes |
+| GET | `/api/v1/swap/routes` | Get optimal routes | No |
+| POST | `/api/v1/orders/create` | Create order | Yes |
+| GET | `/api/v1/orders/:id` | Get order details | Yes |
+| POST | `/api/v1/orders/:id/cancel` | Cancel order | Yes |
+| GET | `/api/v1/orders/list` | List user orders | Yes |
+| GET | `/api/v1/bridge/quote` | Get bridge quote | No |
+| POST | `/api/v1/bridge/transfer` | Initiate bridge transfer | Yes |
+| GET | `/api/v1/analytics/markets` | Get market data | No |
+| GET | `/api/v1/analytics/portfolio` | Get portfolio analytics | Yes |
+
+## Get Swap Quote
+
+Get price quote for token swap.
+
+### Request
+
+```bash
+GET /api/v1/swap/quote?fromToken={token}&toToken={token}&amount={amount}&slippage={slippage}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fromToken` | string | Yes | Token to swap from (address or symbol) |
+| `toToken` | string | Yes | Token to swap to (address or symbol) |
+| `amount` | string | Yes | Amount to swap (in token units) |
+| `slippage` | number | No | Max slippage % (default: 0.5) |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "fromToken": {
+      "address": "0xnor...",
+      "symbol": "NOR",
+      "decimals": 18
+    },
+    "toToken": {
+      "address": "0xusdc...",
+      "symbol": "USDC",
+      "decimals": 6
+    },
+    "fromAmount": "1000000000000000000",
+    "toAmount": "2500000",
+    "rate": "2.50",
+    "priceImpact": "0.12",
+    "minimumReceived": "2487500",
+    "route": [
+      {
+        "pool": "0xpool1...",
+        "path": ["NOR", "USDC"],
+        "percentage": 100
+      }
+    ],
+    "estimatedGas": "150000",
+    "expiresAt": "1640995800"
+  }
+}
+```
+
+### Example
+
+```bash
+curl "https://api.norchain.org/api/v1/swap/quote?fromToken=NOR&toToken=USDC&amount=1000000000000000000&slippage=0.5"
+```
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient();
+
+const quote = await client.swap.getQuote({
+  fromToken: 'NOR',
+  toToken: 'USDC',
+  amount: '1000000000000000000', // 1 NOR
+  slippage: 0.5
+});
+
+console.log(`Rate: 1 NOR = ${quote.rate} USDC`);
+console.log(`You'll receive: ${quote.toAmount} USDC`);
+console.log(`Price impact: ${quote.priceImpact}%`);
+```
+
+```python
+from norchain import NorChainClient
+
+client = NorChainClient()
+
+quote = client.swap.get_quote(
+    from_token='NOR',
+    to_token='USDC',
+    amount='1000000000000000000',
+    slippage=0.5
+)
+
+print(f"Rate: 1 NOR = {quote['rate']} USDC")
+print(f"Minimum received: {quote['minimumReceived']} USDC")
+```
+
+## Execute Swap
+
+Execute token swap transaction.
+
+### Request
+
+```bash
+POST /api/v1/swap/execute
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+#### Request Body
+
+```json
+{
+  "fromToken": "0xnor...",
+  "toToken": "0xusdc...",
+  "fromAmount": "1000000000000000000",
+  "toAmountMin": "2487500",
+  "slippage": 0.5,
+  "recipient": "0x742d35...",
+  "deadline": 1640995800
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "swapId": "swap_abc123",
+    "transactionHash": "0xtx...",
+    "fromAmount": "1000000000000000000",
+    "toAmount": "2495000",
+    "status": "pending"
+  }
+}
+```
+
+### Example
+
+```typescript
+const swap = await client.swap.execute({
+  fromToken: 'NOR',
+  toToken: 'USDC',
+  fromAmount: '1000000000000000000',
+  toAmountMin: quote.minimumReceived,
+  slippage: 0.5,
+  recipient: walletAddress
+});
+
+console.log('Swap transaction:', swap.transactionHash);
+
+// Wait for confirmation
+const receipt = await client.transaction.waitForReceipt(swap.transactionHash);
+console.log('Swap completed:', receipt);
+```
+
+## Get Swap Routes
+
+Get optimal routing for token swap.
+
+### Request
+
+```bash
+GET /api/v1/swap/routes?fromToken={token}&toToken={token}&amount={amount}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "route": ["NOR", "USDC"],
+      "pools": ["0xpool1..."],
+      "expectedOutput": "2500000",
+      "priceImpact": "0.12",
+      "gasEstimate": "150000"
+    },
+    {
+      "route": ["NOR", "USDT", "USDC"],
+      "pools": ["0xpool2...", "0xpool3..."],
+      "expectedOutput": "2498000",
+      "priceImpact": "0.15",
+      "gasEstimate": "250000"
+    }
+  ]
+}
+```
+
+## Create Order
+
+Create limit, stop-loss, or DCA order.
+
+### Request
+
+```bash
+POST /api/v1/orders/create
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+#### Request Body
+
+```json
+{
+  "type": "limit",
+  "side": "buy",
+  "fromToken": "0xusdc...",
+  "toToken": "0xnor...",
+  "fromAmount": "1000000",
+  "limitPrice": "2.00",
+  "expiresAt": 1643673600
+}
+```
+
+**Order Types:**
+- `limit` - Execute at specific price
+- `stop-loss` - Execute when price drops below threshold
+- `dca` - Dollar cost averaging (recurring buys)
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "orderId": "ord_xyz789",
+    "type": "limit",
+    "side": "buy",
+    "status": "open",
+    "fromToken": "USDC",
+    "toToken": "NOR",
+    "fromAmount": "1000000",
+    "limitPrice": "2.00",
+    "filled": "0",
+    "createdAt": "1640995200",
+    "expiresAt": "1643673600"
+  }
+}
+```
+
+### Example
+
+```typescript
+// Create limit order
+const limitOrder = await client.orders.create({
+  type: 'limit',
+  side: 'buy',
+  fromToken: 'USDC',
+  toToken: 'NOR',
+  fromAmount: '1000000', // 1 USDC
+  limitPrice: '2.00' // Buy NOR at $2.00
+});
+
+// Create stop-loss order
+const stopLoss = await client.orders.create({
+  type: 'stop-loss',
+  side: 'sell',
+  fromToken: 'NOR',
+  toToken: 'USDC',
+  fromAmount: '1000000000000000000', // 1 NOR
+  stopPrice: '1.80' // Sell if NOR drops to $1.80
+});
+
+// Create DCA order (recurring buy)
+const dca = await client.orders.create({
+  type: 'dca',
+  side: 'buy',
+  fromToken: 'USDC',
+  toToken: 'NOR',
+  fromAmount: '100000', // 0.1 USDC
+  interval: 'daily', // Buy daily
+  occurrences: 30 // For 30 days
+});
+```
+
+## Get Order Details
+
+Retrieve information about an order.
+
+### Request
+
+```bash
+GET /api/v1/orders/:id
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "orderId": "ord_xyz789",
+    "type": "limit",
+    "side": "buy",
+    "status": "filled",
+    "fromToken": "USDC",
+    "toToken": "NOR",
+    "fromAmount": "1000000",
+    "toAmount": "500000000000000000",
+    "limitPrice": "2.00",
+    "executedPrice": "1.98",
+    "filled": "1000000",
+    "transactionHash": "0xtx...",
+    "createdAt": "1640995200",
+    "filledAt": "1640999600"
+  }
+}
+```
+
+## Cancel Order
+
+Cancel an open order.
+
+### Request
+
+```bash
+POST /api/v1/orders/:id/cancel
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "Order canceled successfully",
+  "result": {
+    "orderId": "ord_xyz789",
+    "status": "canceled",
+    "canceledAt": "1640995800"
+  }
+}
+```
+
+## List Orders
+
+Get list of user orders with filters.
+
+### Request
+
+```bash
+GET /api/v1/orders/list?status={status}&type={type}&page={page}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `status` | string | Filter by status: `open`, `filled`, `canceled` |
+| `type` | string | Filter by type: `limit`, `stop-loss`, `dca` |
+| `page` | number | Page number |
+| `offset` | number | Results per page |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "total": 45,
+    "page": 1,
+    "orders": [
+      {
+        "orderId": "ord_xyz789",
+        "type": "limit",
+        "status": "open",
+        "fromToken": "USDC",
+        "toToken": "NOR",
+        "fromAmount": "1000000",
+        "limitPrice": "2.00",
+        "createdAt": "1640995200"
+      }
+    ]
+  }
+}
+```
+
+## Bridge Quote
+
+Get quote for cross-chain asset transfer.
+
+### Request
+
+```bash
+GET /api/v1/bridge/quote?fromChain={chain}&toChain={chain}&token={token}&amount={amount}
+```
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `fromChain` | string | Yes | Source chain: `norchain`, `ethereum`, `bsc` |
+| `toChain` | string | Yes | Destination chain |
+| `token` | string | Yes | Token to bridge |
+| `amount` | string | Yes | Amount to bridge |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "fromChain": "norchain",
+    "toChain": "ethereum",
+    "token": "USDC",
+    "fromAmount": "1000000",
+    "toAmount": "995000",
+    "fee": "5000",
+    "estimatedTime": "600",
+    "bridgeAddress": "0xbridge..."
+  }
+}
+```
+
+## Initiate Bridge Transfer
+
+Start cross-chain asset transfer.
+
+### Request
+
+```bash
+POST /api/v1/bridge/transfer
+```
+
+#### Request Body
+
+```json
+{
+  "fromChain": "norchain",
+  "toChain": "ethereum",
+  "token": "0xusdc...",
+  "amount": "1000000",
+  "recipient": "0x742d35..."
+}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "transferId": "bridge_abc123",
+    "status": "initiated",
+    "transactionHash": "0xtx...",
+    "estimatedArrival": "1641000000",
+    "proofUrl": "https://bridge.norchain.org/proof/bridge_abc123"
+  }
+}
+```
+
+## Get Market Data
+
+Retrieve market information and trading pairs.
+
+### Request
+
+```bash
+GET /api/v1/analytics/markets?symbol={symbol}
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": [
+    {
+      "symbol": "NOR/USDC",
+      "price": "2.50",
+      "change24h": "5.2",
+      "high24h": "2.65",
+      "low24h": "2.35",
+      "volume24h": "5000000",
+      "volumeUSD": "12500000",
+      "liquidity": "10000000",
+      "priceChart": [
+        {
+          "timestamp": "1640995200",
+          "price": "2.45"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Get Portfolio Analytics
+
+Get user portfolio performance and holdings (requires authentication).
+
+### Request
+
+```bash
+GET /api/v1/analytics/portfolio?address={address}
+```
+
+**Headers:**
+```
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "totalValueUSD": "125000.00",
+    "change24h": "3.5",
+    "holdings": [
+      {
+        "token": "NOR",
+        "balance": "50000000000000000000000",
+        "valueUSD": "125000.00",
+        "percentage": "100.0",
+        "change24h": "3.5"
+      }
+    ],
+    "transactions": {
+      "total": 156,
+      "volume": "500000.00"
+    },
+    "pnl": {
+      "realized": "25000.00",
+      "unrealized": "10000.00"
+    }
+  }
+}
+```
+
+## WebSocket Subscriptions
+
+Subscribe to real-time trading data:
+
+```javascript
+const ws = new WebSocket('wss://api.norchain.org');
+
+ws.on('open', () => {
+  // Subscribe to price updates
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'prices',
+    pairs: ['NOR/USDC', 'NOR/USDT']
+  }));
+
+  // Subscribe to order book updates
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'orderbook',
+    pair: 'NOR/USDC'
+  }));
+
+  // Subscribe to trades
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'trades',
+    pair: 'NOR/USDC'
+  }));
+});
+
+ws.on('message', (data) => {
+  const event = JSON.parse(data);
+  console.log('Trading update:', event);
+});
+```
+
+## Rate Limits
+
+| Authentication | Requests/Minute | Requests/Day |
+|----------------|-----------------|--------------|
+| None | 100 | 10,000 |
+| API Key | 1,000 | 100,000 |
+| Premium | 10,000 | 1,000,000 |
+
+## Best Practices
+
+### Handle Slippage
+
+```typescript
+const quote = await client.swap.getQuote({
+  fromToken: 'NOR',
+  toToken: 'USDC',
+  amount: '1000000000000000000',
+  slippage: 0.5 // 0.5% max slippage
+});
+
+// Calculate minimum amount with slippage
+const minReceived = quote.minimumReceived;
+
+const swap = await client.swap.execute({
+  fromToken: 'NOR',
+  toToken: 'USDC',
+  fromAmount: '1000000000000000000',
+  toAmountMin: minReceived,
+  slippage: 0.5
+});
+```
+
+### Monitor Order Status
+
+```typescript
+async function monitorOrder(orderId: string) {
+  let status = 'open';
+
+  while (status === 'open') {
+    const order = await client.orders.get(orderId);
+    status = order.status;
+
+    if (status === 'filled') {
+      console.log('Order filled at price:', order.executedPrice);
+      break;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 5000));
+  }
+}
+```
+
+## Next Steps
+
+- [Account API](/api-docs/account) - Check token balances
+- [Tokens API](/api-docs/tokens) - Token information
+- [Payments API](/api-docs/payments) - Accept crypto payments
+- [WebSocket API](/api-docs/websocket) - Real-time trading data

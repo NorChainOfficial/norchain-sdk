@@ -1,0 +1,28 @@
+{
+  "name": "@norchain/types",
+  "version": "1.0.0",
+  "description": "Shared TypeScript types for NorChain ecosystem",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "norchain",
+    "types",
+    "typescript",
+    "blockchain"
+  ],
+  "author": "NorChain Team",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}

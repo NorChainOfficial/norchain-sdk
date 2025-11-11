@@ -442,5 +442,176 @@ describe('ComplianceService', () => {
       expect(mockScreeningRepository.save).toHaveBeenCalled();
     });
   });
+
+  describe('getRiskScore', () => {
+    it('should return default risk score when no screening exists', async () => {
+      mockScreeningRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.getRiskScore('0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0');
+
+      expect(result).toHaveProperty('address');
+      expect(result.riskScore).toBe(0);
+      expect(result.status).toBe('not_screened');
+      expect(result.lastScreened).toBeNull();
+    });
+
+    it('should return risk score from latest screening', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockScreening = {
+        id: 'screening-123',
+        subject: address,
+        status: ScreeningStatus.CLEARED,
+        results: {
+          riskScore: 25,
+          matches: [],
+        },
+        createdAt: new Date(),
+      };
+
+      mockScreeningRepository.findOne.mockResolvedValue(mockScreening);
+
+      const result = await service.getRiskScore(address);
+
+      expect(result.riskScore).toBe(25);
+      expect(result.status).toBe(ScreeningStatus.CLEARED);
+      expect(result.lastScreened).toBeDefined();
+    });
+
+    it('should handle screening with null results', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockScreening = {
+        id: 'screening-123',
+        subject: address,
+        status: ScreeningStatus.CLEARED,
+        results: null,
+        createdAt: new Date(),
+      };
+
+      mockScreeningRepository.findOne.mockResolvedValue(mockScreening);
+
+      const result = await service.getRiskScore(address);
+
+      expect(result.riskScore).toBe(0);
+      expect(result.matches).toEqual([]);
+    });
+  });
+
+  describe('createCase', () => {
+    it('should create case with related screenings', async () => {
+      const userId = 'user-123';
+      const dto: CreateCaseDto = {
+        subject: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        description: 'High-risk address',
+        severity: CaseSeverity.HIGH,
+        relatedScreenings: ['screening-1', 'screening-2'],
+      };
+
+      const mockCase = {
+        id: 'case-123',
+        ...dto,
+        status: CaseStatus.OPEN,
+        createdAt: new Date(),
+      };
+
+      mockCaseRepository.create.mockReturnValue(mockCase);
+      mockCaseRepository.save.mockResolvedValue(mockCase);
+
+      const result = await service.createCase(userId, dto);
+
+      expect(result).toHaveProperty('case_id');
+      expect(result.severity).toBe(CaseSeverity.HIGH);
+      expect(mockCaseRepository.save).toHaveBeenCalled();
+    });
+
+    it('should create case without related screenings', async () => {
+      const userId = 'user-123';
+      const dto: CreateCaseDto = {
+        subject: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        description: 'Manual case',
+        severity: CaseSeverity.MEDIUM,
+      };
+
+      const mockCase = {
+        id: 'case-123',
+        ...dto,
+        status: CaseStatus.OPEN,
+        relatedScreenings: [],
+        createdAt: new Date(),
+      };
+
+      mockCaseRepository.create.mockReturnValue(mockCase);
+      mockCaseRepository.save.mockResolvedValue(mockCase);
+
+      const result = await service.createCase(userId, dto);
+
+      expect(result).toHaveProperty('case_id');
+      expect(result.severity).toBe(CaseSeverity.MEDIUM);
+    });
+  });
+
+  describe('precheckTravelRule', () => {
+    it('should require Travel Rule for amounts above threshold', async () => {
+      const dto: TravelRulePrecheckDto = {
+        senderAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        recipientAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+        amount: '1500.00',
+        asset: 'NOR',
+      };
+
+      jest.spyOn(service as any, 'checkIfVASP').mockResolvedValue(false);
+
+      const result = await service.precheckTravelRule(dto);
+
+      expect(result.requiresTravelRule).toBe(true);
+    });
+
+    it('should not require Travel Rule for amounts below threshold', async () => {
+      const dto: TravelRulePrecheckDto = {
+        senderAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        recipientAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+        amount: '500.00',
+        asset: 'NOR',
+      };
+
+      jest.spyOn(service as any, 'checkIfVASP').mockResolvedValue(false);
+
+      const result = await service.precheckTravelRule(dto);
+
+      expect(result.requiresTravelRule).toBe(false);
+    });
+
+    it('should detect VASP-to-VASP transfers', async () => {
+      const dto: TravelRulePrecheckDto = {
+        senderAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        recipientAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+        amount: '2000.00',
+        asset: 'NOR',
+      };
+
+      jest.spyOn(service as any, 'checkIfVASP').mockResolvedValue(true);
+
+      const result = await service.precheckTravelRule(dto);
+
+      expect(result.isVASPToVASP).toBe(true);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle getScreening with invalid screening ID', async () => {
+      mockScreeningRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getScreening('user-123', 'non-existent'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should handle getCase with invalid case ID', async () => {
+      mockCaseRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.getCase('user-123', 'non-existent')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
 });
 

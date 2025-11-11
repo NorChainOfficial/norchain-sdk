@@ -1,0 +1,490 @@
+# Blockchain API
+
+Access blockchain state, validator information, and consensus data on the NorChain network.
+
+## Endpoints Overview
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/blockchain/state-root/:blockNumber` | Get state root for block | No |
+| GET | `/blockchain/validators` | Get validator set | No |
+| GET | `/blockchain/consensus/info` | Get consensus information | No |
+| GET | `/blockchain/finality/:blockNumber` | Get finality status | No |
+| GET | `/blockchain/network/stats` | Get network statistics | No |
+
+## Get State Root
+
+Retrieve the state root hash for a specific block. State roots are used for verifying blockchain state and are essential for cross-chain bridges and light clients.
+
+### Request
+
+```bash
+GET /api/v1/blockchain/state-root/:blockNumber
+```
+
+#### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `blockNumber` | string | Yes | Block number or `latest` |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "blockNumber": "1234567",
+    "stateRoot": "0x9f7e2a3b1c5d8e4f6a0b9c7d5e3f1a8b6c4d2e0f9a7b5c3d1e8f6a4b2c0d9e",
+    "timestamp": "1640995200",
+    "blockHash": "0xabc123...",
+    "parentHash": "0xdef456..."
+  }
+}
+```
+
+### Example
+
+```bash
+curl "https://api.norchain.org/api/v1/blockchain/state-root/1234567"
+```
+
+```typescript
+import { NorChainClient } from '@norchain/sdk';
+
+const client = new NorChainClient();
+
+// Get state root for specific block
+const stateRoot = await client.blockchain.getStateRoot(1234567);
+
+// Get state root for latest block
+const latestStateRoot = await client.blockchain.getStateRoot('latest');
+
+console.log('State Root:', stateRoot.stateRoot);
+```
+
+```python
+from norchain import NorChainClient
+
+client = NorChainClient()
+
+# Get state root
+state_root = client.blockchain.get_state_root(1234567)
+print(f"State Root: {state_root['stateRoot']}")
+```
+
+## Get Validators
+
+Retrieve information about the current validator set.
+
+### Request
+
+```bash
+GET /api/v1/blockchain/validators
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "totalValidators": 21,
+    "activeValidators": 21,
+    "epoch": 145,
+    "validators": [
+      {
+        "address": "0x1a2b3c...",
+        "votingPower": "1000000",
+        "proposerPriority": "100",
+        "isActive": true,
+        "uptime": 99.98,
+        "totalBlocks": 5432,
+        "missedBlocks": 1,
+        "commission": "5.00",
+        "stakingAmount": "1000000000000000000000",
+        "delegators": 156,
+        "website": "https://validator1.example.com",
+        "identity": "Validator One",
+        "details": "Professional validator service"
+      }
+    ]
+  }
+}
+```
+
+### Example
+
+```typescript
+const validators = await client.blockchain.getValidators();
+
+console.log(`Total validators: ${validators.totalValidators}`);
+console.log(`Active validators: ${validators.activeValidators}`);
+
+validators.validators.forEach(v => {
+  console.log(`${v.identity}: ${v.uptime}% uptime`);
+});
+```
+
+## Get Consensus Information
+
+Retrieve current consensus state and parameters.
+
+### Request
+
+```bash
+GET /api/v1/blockchain/consensus/info
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "consensusAlgorithm": "Parlia PoSA",
+    "blockTime": 3,
+    "epoch": 145,
+    "epochBlocks": 200,
+    "currentBlock": 1234567,
+    "currentValidator": "0x1a2b3c...",
+    "nextValidator": "0x4d5e6f...",
+    "totalStaked": "21000000000000000000000000",
+    "minStake": "1000000000000000000000",
+    "slashingEnabled": true,
+    "governanceEnabled": true
+  }
+}
+```
+
+### Example
+
+```bash
+curl "https://api.norchain.org/api/v1/blockchain/consensus/info"
+```
+
+```typescript
+const consensus = await client.blockchain.getConsensusInfo();
+
+console.log(`Consensus: ${consensus.consensusAlgorithm}`);
+console.log(`Block time: ${consensus.blockTime}s`);
+console.log(`Total staked: ${consensus.totalStaked} Wei`);
+```
+
+## Get Finality Status
+
+Check if a block has reached finality on the network.
+
+### Request
+
+```bash
+GET /api/v1/blockchain/finality/:blockNumber
+```
+
+#### Path Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `blockNumber` | string | Yes | Block number to check |
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "blockNumber": "1234567",
+    "isFinalized": true,
+    "confirmations": 50,
+    "requiredConfirmations": 21,
+    "finalizedAt": "1640995800",
+    "finalityProof": {
+      "signatures": ["0xsig1...", "0xsig2..."],
+      "validatorCount": 21,
+      "votingPower": "21000000"
+    }
+  }
+}
+```
+
+### Example
+
+```typescript
+const finality = await client.blockchain.getFinality(1234567);
+
+if (finality.isFinalized) {
+  console.log('Block is finalized with', finality.confirmations, 'confirmations');
+} else {
+  console.log('Block not yet finalized');
+}
+```
+
+## Get Network Statistics
+
+Retrieve current network statistics and metrics.
+
+### Request
+
+```bash
+GET /api/v1/blockchain/network/stats
+```
+
+### Response
+
+```json
+{
+  "status": "1",
+  "message": "OK",
+  "result": {
+    "blockHeight": 1234567,
+    "blockTime": 3.02,
+    "tps": 125.5,
+    "peakTps": 450,
+    "gasPrice": "20000000000",
+    "networkHashrate": "1250000000000",
+    "difficulty": "12500000",
+    "circulatingSupply": "50000000000000000000000000",
+    "totalSupply": "100000000000000000000000000",
+    "totalAccounts": 156789,
+    "totalTransactions": 5678901,
+    "totalContracts": 2345,
+    "activeNodes": 150,
+    "networkLoad": 65.4
+  }
+}
+```
+
+### Example
+
+```typescript
+const stats = await client.blockchain.getNetworkStats();
+
+console.log(`Current TPS: ${stats.tps}`);
+console.log(`Gas price: ${stats.gasPrice} Wei`);
+console.log(`Total accounts: ${stats.totalAccounts}`);
+```
+
+## Advanced Features
+
+### NorChain RPC Extensions
+
+NorChain provides custom RPC methods with the `nor_*` prefix for advanced blockchain operations:
+
+#### nor_getStateRoot
+
+```bash
+curl -X POST https://api.norchain.org \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "nor_getStateRoot",
+    "params": ["latest"],
+    "id": 1
+  }'
+```
+
+#### nor_getValidatorSet
+
+```bash
+curl -X POST https://api.norchain.org \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "nor_getValidatorSet",
+    "params": [],
+    "id": 1
+  }'
+```
+
+#### nor_getFinality
+
+```bash
+curl -X POST https://api.norchain.org \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "nor_getFinality",
+    "params": ["0x4d7e6"],
+    "id": 1
+  }'
+```
+
+## WebSocket Subscriptions
+
+Subscribe to real-time blockchain updates:
+
+```javascript
+const ws = new WebSocket('wss://api.norchain.org');
+
+ws.on('open', () => {
+  // Subscribe to new blocks
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'blocks'
+  }));
+
+  // Subscribe to validator updates
+  ws.send(JSON.stringify({
+    event: 'subscribe',
+    channel: 'validators'
+  }));
+});
+
+ws.on('message', (data) => {
+  const event = JSON.parse(data);
+
+  if (event.channel === 'blocks') {
+    console.log('New block:', event.data.blockNumber);
+  }
+
+  if (event.channel === 'validators') {
+    console.log('Validator update:', event.data);
+  }
+});
+```
+
+### Available Channels
+
+- `blocks` - New block notifications
+- `validators` - Validator set changes
+- `consensus` - Consensus state updates
+- `finality` - Block finality events
+
+## GraphQL Queries
+
+Access blockchain data via GraphQL:
+
+```graphql
+query {
+  blockchain {
+    latestBlock {
+      number
+      hash
+      stateRoot
+      timestamp
+      gasUsed
+      gasLimit
+    }
+
+    validators {
+      address
+      votingPower
+      isActive
+      uptime
+      commission
+    }
+
+    consensus {
+      algorithm
+      blockTime
+      epoch
+      totalStaked
+    }
+
+    networkStats {
+      tps
+      gasPrice
+      totalTransactions
+      activeNodes
+    }
+  }
+}
+```
+
+## Rate Limits
+
+| Authentication | Requests/Minute | Requests/Day |
+|----------------|-----------------|--------------|
+| None | 100 | 10,000 |
+| API Key | 1,000 | 100,000 |
+| Premium | 10,000 | 1,000,000 |
+
+## Error Responses
+
+### Invalid Block Number
+
+```json
+{
+  "status": "0",
+  "message": "Error! Invalid block number",
+  "result": null
+}
+```
+
+### Block Not Found
+
+```json
+{
+  "status": "0",
+  "message": "Error! Block not found",
+  "result": null
+}
+```
+
+## Use Cases
+
+### Bridge Integration
+
+```typescript
+// Verify state root for cross-chain bridge
+const sourceStateRoot = await client.blockchain.getStateRoot(blockNumber);
+const finality = await client.blockchain.getFinality(blockNumber);
+
+if (finality.isFinalized) {
+  // Safe to use this state root for bridge verification
+  await bridgeContract.verifyStateRoot(
+    blockNumber,
+    sourceStateRoot.stateRoot,
+    finality.finalityProof
+  );
+}
+```
+
+### Validator Monitoring
+
+```typescript
+// Monitor validator performance
+const validators = await client.blockchain.getValidators();
+
+validators.validators.forEach(v => {
+  if (v.uptime < 99.5) {
+    console.warn(`Validator ${v.identity} has low uptime: ${v.uptime}%`);
+  }
+  if (v.missedBlocks > 10) {
+    console.warn(`Validator ${v.identity} missed ${v.missedBlocks} blocks`);
+  }
+});
+```
+
+### Network Health Dashboard
+
+```typescript
+// Get comprehensive network health metrics
+const [stats, validators, consensus] = await Promise.all([
+  client.blockchain.getNetworkStats(),
+  client.blockchain.getValidators(),
+  client.blockchain.getConsensusInfo()
+]);
+
+const health = {
+  tps: stats.tps,
+  blockTime: stats.blockTime,
+  activeValidators: validators.activeValidators,
+  totalStaked: consensus.totalStaked,
+  networkLoad: stats.networkLoad
+};
+
+console.log('Network Health:', health);
+```
+
+## Next Steps
+
+- [Account API](/api-docs/account) - Account balances and transactions
+- [Transactions API](/api-docs/transactions) - Transaction details
+- [Tokens API](/api-docs/tokens) - Token and contract data
+- [WebSocket API](/api-docs/websocket) - Real-time subscriptions
+- [GraphQL API](/api-docs/graphql) - GraphQL queries

@@ -302,5 +302,225 @@ describe('WalletService', () => {
       ).rejects.toThrow(ForbiddenException);
     });
   });
+
+  describe('getUserWallets', () => {
+    it('should return all wallets for user', async () => {
+      const userId = '1';
+      const mockWallets = [
+        {
+          id: 'wallet-1',
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          name: 'Wallet 1',
+          userId,
+          createdAt: new Date(),
+          importedAt: null,
+        },
+        {
+          id: 'wallet-2',
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+          name: 'Wallet 2',
+          userId,
+          createdAt: new Date(),
+          importedAt: new Date(),
+        },
+      ];
+
+      mockWalletRepository.find.mockResolvedValue(mockWallets);
+
+      const result = await service.getUserWallets(userId);
+
+      expect(result).toHaveLength(2);
+      expect(result[0]).toHaveProperty('address');
+      expect(result[0]).toHaveProperty('name');
+      expect(mockWalletRepository.find).toHaveBeenCalledWith({
+        where: { userId },
+        order: { createdAt: 'ASC' },
+      });
+    });
+
+    it('should return empty array when user has no wallets', async () => {
+      mockWalletRepository.find.mockResolvedValue([]);
+
+      const result = await service.getUserWallets('1');
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('getWallet', () => {
+    it('should return wallet with balance', async () => {
+      const userId = '1';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockWallet = {
+        id: 'wallet-123',
+        address,
+        name: 'Test Wallet',
+        userId,
+        createdAt: new Date(),
+        importedAt: null,
+      };
+
+      mockWalletRepository.findOne.mockResolvedValue(mockWallet);
+      mockRpcService.getBalance.mockResolvedValue(ethers.parseEther('10.0'));
+
+      const result = await service.getWallet(userId, address);
+
+      expect(result).toHaveProperty('address', address);
+      expect(result).toHaveProperty('name', 'Test Wallet');
+      expect(result).toHaveProperty('balance');
+      expect(mockRpcService.getBalance).toHaveBeenCalledWith(address);
+    });
+
+    it('should throw NotFoundException if wallet not found', async () => {
+      mockWalletRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getWallet('1', '0x0000000000000000000000000000000000000000'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('getBalance', () => {
+    it('should return balance for wallet', async () => {
+      const userId = '1';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockWallet = {
+        id: 'wallet-123',
+        address,
+        userId,
+      };
+
+      jest.spyOn(service as any, 'verifyWalletOwnership').mockResolvedValue(mockWallet);
+      mockRpcService.getBalance.mockResolvedValue(ethers.parseEther('5.0'));
+
+      const result = await service.getBalance(userId, address);
+
+      expect(result).toHaveProperty('address', address);
+      expect(result).toHaveProperty('balance');
+      expect(result).toHaveProperty('balanceFormatted', '5.0');
+    });
+
+    it('should throw ForbiddenException if wallet does not belong to user', async () => {
+      jest.spyOn(service as any, 'verifyWalletOwnership').mockRejectedValue(
+        new ForbiddenException('Wallet not found or access denied'),
+      );
+
+      await expect(
+        service.getBalance('1', '0x0000000000000000000000000000000000000000'),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('getTokens', () => {
+    it('should return tokens for wallet', async () => {
+      const userId = '1';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockWallet = {
+        id: 'wallet-123',
+        address,
+        userId,
+      };
+
+      jest.spyOn(service as any, 'verifyWalletOwnership').mockResolvedValue(mockWallet);
+
+      const result = await service.getTokens(userId, address);
+
+      expect(result).toHaveProperty('address', address);
+      expect(result).toHaveProperty('tokens', []);
+    });
+  });
+
+  describe('getTransactions', () => {
+    it('should return transactions for wallet', async () => {
+      const userId = '1';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockWallet = {
+        id: 'wallet-123',
+        address,
+        userId,
+      };
+
+      jest.spyOn(service as any, 'verifyWalletOwnership').mockResolvedValue(mockWallet);
+
+      const result = await service.getTransactions(userId, address);
+
+      expect(result).toHaveProperty('address', address);
+      expect(result).toHaveProperty('transactions', []);
+    });
+  });
+
+  describe('sendTransaction', () => {
+    it('should send transaction successfully', async () => {
+      const userId = '1';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockWallet = {
+        id: 'wallet-123',
+        address,
+        encryptedPrivateKey: 'encrypted-key',
+        userId,
+      };
+
+      const dto = {
+        to: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+        amount: '1.0',
+        password: 'password123',
+        gasLimit: '21000',
+      };
+
+      jest.spyOn(service as any, 'verifyWalletOwnership').mockResolvedValue(mockWallet);
+      jest.spyOn(service as any, 'decryptPrivateKey').mockResolvedValue('private-key');
+      mockRpcService.getProvider.mockReturnValue({
+        sendTransaction: jest.fn(),
+      });
+
+      const mockTx = {
+        hash: '0x1234567890abcdef',
+      };
+
+      const mockProvider = {
+        sendTransaction: jest.fn().mockResolvedValue(mockTx),
+      };
+
+      const mockWalletInstance = {
+        connect: jest.fn().mockReturnValue({
+          sendTransaction: jest.fn().mockResolvedValue(mockTx),
+        }),
+      };
+
+      jest.spyOn(ethers, 'Wallet').mockImplementation(() => mockWalletInstance as any);
+      mockRpcService.getProvider.mockReturnValue(mockProvider);
+
+      const result = await service.sendTransaction(userId, address, dto);
+
+      expect(result).toHaveProperty('hash');
+      expect(result).toHaveProperty('from', address);
+      expect(result).toHaveProperty('to', dto.to);
+    });
+
+    it('should throw ForbiddenException if policy check fails', async () => {
+      const userId = '1';
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockWallet = {
+        id: 'wallet-123',
+        address,
+        userId,
+      };
+
+      const dto = {
+        to: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb1',
+        amount: '1.0',
+        password: 'password123',
+      };
+
+      jest.spyOn(service as any, 'verifyWalletOwnership').mockResolvedValue(mockWallet);
+      mockPolicyService.checkPolicy.mockRejectedValue(
+        new ForbiddenException('Transaction blocked by policy'),
+      );
+
+      await expect(
+        service.sendTransaction(userId, address, dto),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
 });
 

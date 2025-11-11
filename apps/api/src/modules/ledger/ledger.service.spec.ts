@@ -679,6 +679,210 @@ describe('LedgerService', () => {
     });
   });
 
+  describe('resolveAccountIds', () => {
+    it('should resolve account IDs from UUIDs', async () => {
+      const orgId = 'org-123';
+      const accountId = '550e8400-e29b-41d4-a716-446655440000'; // Valid UUID format
+      const lines = [{ account: accountId, amount: '100', direction: LineDirection.DEBIT, currency: 'NOR' }];
+
+      const mockAccount = { id: accountId, code: '1000', orgId };
+      const mockQueryBuilder1 = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([]), // First call (by code) returns empty
+      };
+      const mockQueryBuilder2 = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([mockAccount]), // Second call (by UUID) returns account
+      };
+
+      mockAccountRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1 as any)
+        .mockReturnValueOnce(mockQueryBuilder2 as any);
+
+      const result = await (service as any).resolveAccountIds(orgId, lines);
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toHaveProperty('accountId', accountId);
+    });
+
+    it('should handle mixed codes and UUIDs', async () => {
+      const orgId = 'org-123';
+      const account1 = { id: 'account-1', code: '1000', orgId };
+      const account2Id = '550e8400-e29b-41d4-a716-446655440001'; // Valid UUID format
+      const account2 = { id: account2Id, code: '2000', orgId };
+      const lines = [
+        { account: '1000', amount: '100', direction: LineDirection.DEBIT, currency: 'NOR' },
+        { account: account2Id, amount: '200', direction: LineDirection.CREDIT, currency: 'NOR' },
+      ];
+
+      // Create separate query builders for each call
+      const mockQueryBuilder1 = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([account1]), // First call finds by code
+      };
+
+      const mockQueryBuilder2 = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([account2]), // Second call finds by UUID
+      };
+
+      mockAccountRepository.createQueryBuilder
+        .mockReturnValueOnce(mockQueryBuilder1 as any)
+        .mockReturnValueOnce(mockQueryBuilder2 as any);
+
+      const result = await (service as any).resolveAccountIds(orgId, lines);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].accountId).toBe(account1.id);
+      expect(result[1].accountId).toBe(account2.id);
+    });
+  });
+
+  describe('getAccountStatement', () => {
+    it('should handle empty movements', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+      };
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockLineRepository.createQueryBuilder.mockReturnValue({
+        ...mockQueryBuilder,
+        getMany: jest.fn().mockResolvedValue([]),
+      });
+
+      const result = await service.getAccountStatement(accountId, orgId);
+
+      expect(result.movements).toHaveLength(0);
+      expect(result.finalBalance).toBe('0');
+    });
+
+    it('should handle debit-only movements', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+      };
+
+      const mockLines = [
+        {
+          id: 'line-1',
+          accountId,
+          amount: '100.00',
+          direction: LineDirection.DEBIT,
+          currency: 'NOR',
+        },
+        {
+          id: 'line-2',
+          accountId,
+          amount: '50.00',
+          direction: LineDirection.DEBIT,
+          currency: 'NOR',
+        },
+      ];
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockLineRepository.createQueryBuilder.mockReturnValue({
+        ...mockQueryBuilder,
+        getMany: jest.fn().mockResolvedValue(mockLines),
+      });
+
+      const result = await service.getAccountStatement(accountId, orgId);
+
+      expect(result.movements).toHaveLength(2);
+      // Amount calculation removes decimal: '100.00' -> '10000', '50.00' -> '5000', total = '15000'
+      expect(result.finalBalance).toBe('15000');
+    });
+
+    it('should handle credit-only movements', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+      };
+
+      const mockLines = [
+        {
+          id: 'line-1',
+          accountId,
+          amount: '100.00',
+          direction: LineDirection.CREDIT,
+          currency: 'NOR',
+        },
+      ];
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockLineRepository.createQueryBuilder.mockReturnValue({
+        ...mockQueryBuilder,
+        getMany: jest.fn().mockResolvedValue(mockLines),
+      });
+
+      const result = await service.getAccountStatement(accountId, orgId);
+
+      expect(result.movements).toHaveLength(1);
+      // Credit reduces balance (assuming starting balance is 0)
+      expect(parseInt(result.finalBalance)).toBeLessThan(0);
+    });
+
+    it('should handle mixed debit and credit movements', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+      };
+
+      const mockLines = [
+        {
+          id: 'line-1',
+          accountId,
+          amount: '100.00',
+          direction: LineDirection.DEBIT,
+          currency: 'NOR',
+        },
+        {
+          id: 'line-2',
+          accountId,
+          amount: '50.00',
+          direction: LineDirection.CREDIT,
+          currency: 'NOR',
+        },
+      ];
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockLineRepository.createQueryBuilder.mockReturnValue({
+        ...mockQueryBuilder,
+        getMany: jest.fn().mockResolvedValue(mockLines),
+      });
+
+      const result = await service.getAccountStatement(accountId, orgId);
+
+      expect(result.movements).toHaveLength(2);
+      expect(result.movements[0]).toHaveProperty('runningBalance');
+      expect(result.movements[1]).toHaveProperty('runningBalance');
+    });
+  });
+
   describe('closePeriod', () => {
     it('should calculate Merkle root', async () => {
       const dto: ClosePeriodDto = {
@@ -694,7 +898,16 @@ describe('LedgerService', () => {
           period: dto.period,
           status: JournalEntryStatus.POSTED,
           occurredAt: new Date(),
-          lines: [],
+          eventType: 'payment',
+          eventId: 'event-123',
+          lines: [
+            {
+              id: 'line-1',
+              accountId: 'account-1',
+              amount: '100.00',
+              direction: LineDirection.DEBIT,
+            },
+          ],
         },
       ];
 
@@ -717,6 +930,138 @@ describe('LedgerService', () => {
 
       expect(result).toHaveProperty('merkleRoot');
       expect(mockClosureRepository.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('getAccount', () => {
+    it('should return account by ID', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+        parent: null,
+        children: [],
+      };
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+
+      const result = await service.getAccount(accountId, orgId);
+
+      expect(result).toEqual(mockAccount);
+      expect(mockAccountRepository.findOne).toHaveBeenCalledWith({
+        where: { id: accountId, orgId },
+        relations: ['parent', 'children'],
+      });
+    });
+
+    it('should throw NotFoundException if account not found', async () => {
+      mockAccountRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getAccount('invalid-id', 'org-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('getJournalEntry', () => {
+    it('should return journal entry by ID', async () => {
+      const entryId = 'entry-123';
+      const orgId = 'org-123';
+      const mockEntry = {
+        id: entryId,
+        orgId,
+        eventType: 'payment',
+        eventId: 'event-123',
+        lines: [],
+      };
+
+      mockEntryRepository.findOne.mockResolvedValue(mockEntry);
+
+      const result = await service.getJournalEntry(entryId, orgId);
+
+      expect(result).toEqual(mockEntry);
+      expect(mockEntryRepository.findOne).toHaveBeenCalledWith({
+        where: { id: entryId, orgId },
+        relations: ['lines', 'lines.account'],
+      });
+    });
+
+    it('should throw NotFoundException if entry not found', async () => {
+      mockEntryRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getJournalEntry('invalid-id', 'org-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('getPeriodClosure', () => {
+    it('should return period closure', async () => {
+      const closureId = 'closure-123';
+      const orgId = 'org-123';
+      const mockClosure = {
+        id: closureId,
+        orgId,
+        period: '2024-01',
+        merkleRoot: '0x123',
+      };
+
+      mockClosureRepository.findOne.mockResolvedValue(mockClosure);
+
+      const result = await service.getPeriodClosure(closureId, orgId);
+
+      expect(result).toEqual(mockClosure);
+    });
+
+    it('should throw NotFoundException if closure not found', async () => {
+      mockClosureRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getPeriodClosure('invalid-id', 'org-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('listAccounts', () => {
+    it('should return all accounts for org', async () => {
+      const orgId = 'org-123';
+      const mockAccounts = [
+        {
+          id: 'account-1',
+          code: '1000',
+          name: 'Cash',
+          orgId,
+        },
+      ];
+
+      mockAccountRepository.find.mockResolvedValue(mockAccounts);
+
+      const result = await service.listAccounts(orgId);
+
+      expect(result).toEqual(mockAccounts);
+      expect(mockAccountRepository.find).toHaveBeenCalledWith({
+        where: { orgId },
+        relations: ['parent', 'children'],
+        order: { code: 'ASC' },
+      });
+    });
+
+    it('should filter by status when provided', async () => {
+      const orgId = 'org-123';
+      const status = AccountStatus.ACTIVE;
+
+      mockAccountRepository.find.mockResolvedValue([]);
+
+      await service.listAccounts(orgId, status);
+
+      expect(mockAccountRepository.find).toHaveBeenCalledWith({
+        where: { orgId, status },
+        relations: ['parent', 'children'],
+        order: { code: 'ASC' },
+      });
     });
   });
 });

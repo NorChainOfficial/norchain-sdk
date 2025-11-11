@@ -1,0 +1,28 @@
+{
+  "name": "@norchain/config",
+  "version": "1.0.0",
+  "description": "Shared configuration and constants for NorChain ecosystem",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "norchain",
+    "config",
+    "constants",
+    "blockchain"
+  ],
+  "author": "NorChain Team",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}
