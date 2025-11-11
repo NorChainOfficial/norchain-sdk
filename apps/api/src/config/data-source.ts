@@ -56,6 +56,7 @@ import { MessagingProfile } from '../modules/messaging/entities/profile.entity';
 import { Conversation } from '../modules/messaging/entities/conversation.entity';
 import { Message } from '../modules/messaging/entities/message.entity';
 import { DeviceKey } from '../modules/messaging/entities/device-key.entity';
+import { MessageReaction } from '../modules/messaging/entities/reaction.entity';
 
 // Load environment variables
 config();

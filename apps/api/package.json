@@ -22,6 +22,7 @@
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:generate -d src/migrations/runner.ts",
     "migration:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d src/migrations/runner.ts",
+    "migration:run:direct": "ts-node -r tsconfig-paths/register src/migrations/run-migration.ts",
     "migration:revert": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d src/migrations/runner.ts",
     "migration:create": "typeorm-ts-node-commonjs migration:create",
     "db:setup": "./scripts/setup-supabase.sh",

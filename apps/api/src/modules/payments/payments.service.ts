@@ -2,9 +2,10 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import {
   PaymentInvoice,
   InvoiceStatus,
@@ -16,14 +17,36 @@ import {
   SettlementStatus,
   SettlementType,
 } from './entities/merchant-settlement.entity';
+import { Merchant } from './entities/merchant.entity';
+import { Product } from './entities/product.entity';
+import { Price, BillingCycle } from './entities/price.entity';
+import { Customer } from './entities/customer.entity';
+import { PaymentMethod as PaymentMethodEntity, PaymentMethodKind } from './entities/payment-method.entity';
+import { CheckoutSession } from './entities/checkout-session.entity';
+import { Payment } from './entities/payment.entity';
+import { Refund } from './entities/refund.entity';
+import { Subscription, SubscriptionStatus } from './entities/subscription.entity';
+import { Dispute, DisputeStatus } from './entities/dispute.entity';
+import { WebhookEndpoint } from './entities/webhook-endpoint.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { CreatePOSSessionDto } from './dto/create-pos-session.dto';
+import { CreateProductDto } from './dto/create-product.dto';
+import { CreatePriceDto } from './dto/create-price.dto';
+import { CreateCustomerDto } from './dto/create-customer.dto';
+import { CreateSubscriptionDto } from './dto/create-subscription.dto';
+import { CreateDisputeDto } from './dto/create-dispute.dto';
+import { CreateCheckoutSessionV2Dto } from './dto/create-checkout-session-v2.dto';
 import { RpcService } from '@/common/services/rpc.service';
+import { PolicyService } from '../policy/policy.service';
+import { LedgerService } from '../ledger/ledger.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ethers } from 'ethers';
 import { randomBytes } from 'crypto';
 
 @Injectable()
 export class PaymentsService {
+  private readonly logger = new Logger(PaymentsService.name);
+
   constructor(
     @InjectRepository(PaymentInvoice)
     private readonly invoiceRepository: Repository<PaymentInvoice>,
@@ -31,7 +54,33 @@ export class PaymentsService {
     private readonly posSessionRepository: Repository<POSSession>,
     @InjectRepository(MerchantSettlement)
     private readonly settlementRepository: Repository<MerchantSettlement>,
+    @InjectRepository(Merchant)
+    private readonly merchantRepository: Repository<Merchant>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    @InjectRepository(Price)
+    private readonly priceRepository: Repository<Price>,
+    @InjectRepository(Customer)
+    private readonly customerRepository: Repository<Customer>,
+    @InjectRepository(PaymentMethodEntity)
+    private readonly paymentMethodRepository: Repository<PaymentMethodEntity>,
+    @InjectRepository(CheckoutSession)
+    private readonly checkoutSessionRepository: Repository<CheckoutSession>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
+    @InjectRepository(Refund)
+    private readonly refundRepository: Repository<Refund>,
+    @InjectRepository(Subscription)
+    private readonly subscriptionRepository: Repository<Subscription>,
+    @InjectRepository(Dispute)
+    private readonly disputeRepository: Repository<Dispute>,
+    @InjectRepository(WebhookEndpoint)
+    private readonly webhookEndpointRepository: Repository<WebhookEndpoint>,
     private readonly rpcService: RpcService,
+    private readonly policyService: PolicyService,
+    private readonly ledgerService: LedgerService,
+    private readonly dataSource: DataSource,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
