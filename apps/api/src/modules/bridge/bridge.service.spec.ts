@@ -226,6 +226,134 @@ describe('BridgeService', () => {
       expect(result).toHaveProperty('total', 1);
       expect(result.transfers).toHaveLength(1);
     });
+
+    it('should return empty array when no transfers', async () => {
+      mockBridgeTransferRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getUserTransfers('user-123', 50, 0);
+
+      expect(result.transfers).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('should handle pagination correctly', async () => {
+      mockBridgeTransferRepository.findAndCount.mockResolvedValue([[], 100]);
+
+      const result = await service.getUserTransfers('user-123', 10, 5);
+
+      expect(result.total).toBe(100);
+      expect(mockBridgeTransferRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 10,
+          skip: 5,
+        }),
+      );
+    });
+  });
+
+  describe('createTransfer', () => {
+    it('should handle idempotency key', async () => {
+      const dto: CreateBridgeTransferDto = {
+        srcChain: BridgeChain.NOR,
+        dstChain: BridgeChain.BSC,
+        amount: '1000000000000000000',
+        asset: 'NOR',
+        toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        idempotencyKey: 'idempotent-key-123',
+      };
+
+      const existingTransfer = {
+        id: 'transfer-123',
+        userId: 'user-123',
+        idempotencyKey: 'idempotent-key-123',
+        status: BridgeTransferStatus.PENDING,
+      };
+
+      mockBridgeTransferRepository.findOne.mockResolvedValue(existingTransfer);
+
+      const result = await service.createTransfer('user-123', dto);
+
+      expect(result).toHaveProperty('transfer_id', 'transfer-123');
+      expect(result).toHaveProperty('message', 'Transfer already exists (idempotent)');
+      expect(mockBridgeTransferRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should handle different chain pairs', async () => {
+      const dto: CreateBridgeTransferDto = {
+        srcChain: BridgeChain.ETHEREUM,
+        dstChain: BridgeChain.TRON,
+        amount: '1000000000000000000',
+        asset: 'ETH',
+        toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+      };
+
+      const mockTransfer = {
+        id: 'transfer-123',
+        userId: 'user-123',
+        ...dto,
+        status: BridgeTransferStatus.PENDING_POLICY,
+      };
+
+      mockPolicyService.checkPolicy.mockResolvedValue({ allowed: true });
+      mockBridgeTransferRepository.findOne.mockResolvedValue(null);
+      mockBridgeTransferRepository.create.mockReturnValue(mockTransfer);
+      mockBridgeTransferRepository.save.mockResolvedValue(mockTransfer);
+
+      const result = await service.createTransfer('user-123', dto);
+
+      expect(result).toHaveProperty('transfer_id');
+      expect(result.status).toBe(BridgeTransferStatus.PENDING_POLICY);
+    });
+  });
+
+  describe('getQuote', () => {
+    it('should handle different chain pairs', async () => {
+      const dto: CreateBridgeQuoteDto = {
+        srcChain: BridgeChain.ETHEREUM,
+        dstChain: BridgeChain.TRON,
+        amount: '2000000000000000000',
+        asset: 'ETH',
+      };
+
+      const result = await service.getQuote(dto);
+
+      expect(result.srcChain).toBe(BridgeChain.ETHEREUM);
+      expect(result.dstChain).toBe(BridgeChain.TRON);
+      expect(result.amount).toBe(dto.amount);
+    });
+
+    it('should generate unique quote ID', async () => {
+      const dto: CreateBridgeQuoteDto = {
+        srcChain: BridgeChain.NOR,
+        dstChain: BridgeChain.BSC,
+        amount: '1000000000000000000',
+        asset: 'NOR',
+      };
+
+      const result1 = await service.getQuote(dto);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+      const result2 = await service.getQuote(dto);
+
+      expect(result1.quoteId).not.toBe(result2.quoteId);
+    });
+
+    it('should set expiration time', async () => {
+      const dto: CreateBridgeQuoteDto = {
+        srcChain: BridgeChain.NOR,
+        dstChain: BridgeChain.BSC,
+        amount: '1000000000000000000',
+        asset: 'NOR',
+      };
+
+      const result = await service.getQuote(dto);
+
+      expect(result).toHaveProperty('expiresAt');
+      const expiresAt = new Date(result.expiresAt);
+      const now = new Date();
+      const diff = expiresAt.getTime() - now.getTime();
+      expect(diff).toBeGreaterThan(0);
+      expect(diff).toBeLessThanOrEqual(5 * 60 * 1000); // 5 minutes
+    });
   });
 });
 

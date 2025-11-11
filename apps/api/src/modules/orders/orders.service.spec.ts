@@ -239,6 +239,45 @@ describe('OrdersService', () => {
         order: { createdAt: 'DESC' },
       });
     });
+
+    it('should return empty array when no schedules', async () => {
+      const userAddress = '0x123';
+      dcaScheduleRepository.find.mockResolvedValue([]);
+
+      const result = await service.getDCASchedules(userAddress);
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle empty limit orders list', async () => {
+      const userAddress = '0x123';
+      limitOrderRepository.find.mockResolvedValue([]);
+
+      const result = await service.getLimitOrders(userAddress);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should handle empty stop-loss orders list', async () => {
+      const userAddress = '0x123';
+      stopLossOrderRepository.find.mockResolvedValue([]);
+
+      const result = await service.getStopLossOrders(userAddress);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should handle cancel non-existent order', async () => {
+      const orderId = 'non-existent';
+      limitOrderRepository.update.mockResolvedValue({ affected: 0 } as any);
+
+      const result = await service.cancelLimitOrder(orderId);
+
+      expect(result).toEqual({ success: true });
+      expect(limitOrderRepository.update).toHaveBeenCalled();
+    });
   });
 });
 

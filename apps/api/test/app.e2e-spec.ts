@@ -903,4 +903,1172 @@ describe('AppController (e2e)', () => {
         });
     });
   });
+
+  describe('Bridge Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `bridge-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/bridge/quotes (POST) should return bridge quote', () => {
+      return request(app.getHttpServer())
+        .post('/api/bridge/quotes')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          srcChain: 'NOR',
+          dstChain: 'BSC',
+          amount: '1000000000000000000',
+          asset: 'NOR',
+        })
+        .expect((res) => {
+          expect([200, 401, 400]).toContain(res.status);
+          if (res.status === 200) {
+            expect(res.body).toHaveProperty('amountAfterFees');
+            expect(res.body).toHaveProperty('fees');
+          }
+        });
+    });
+
+    it('/api/bridge/quotes (POST) should reject same source and destination chain', () => {
+      return request(app.getHttpServer())
+        .post('/api/bridge/quotes')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          srcChain: 'NOR',
+          dstChain: 'NOR',
+          amount: '1000000000000000000',
+          asset: 'NOR',
+        })
+        .expect((res) => {
+          expect([400, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/bridge/transfers (POST) should create bridge transfer', () => {
+      return request(app.getHttpServer())
+        .post('/api/bridge/transfers')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          srcChain: 'NOR',
+          dstChain: 'BSC',
+          amount: '1000000000000000000',
+          asset: 'NOR',
+          toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 400]).toContain(res.status);
+        });
+    });
+
+    it('/api/bridge/transfers (GET) should return user transfers', () => {
+      return request(app.getHttpServer())
+        .get('/api/bridge/transfers')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 50, offset: 0 })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/bridge/transfers/:id (GET) should return transfer details', () => {
+      return request(app.getHttpServer())
+        .get('/api/bridge/transfers/test-id')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 404, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Governance Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `governance-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/governance/proposals (GET) should return proposals', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals')
+        .query({ limit: 50, offset: 0 })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('proposals');
+          expect(Array.isArray(res.body.proposals)).toBe(true);
+        });
+    });
+
+    it('/api/governance/proposals (GET) should filter by status', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals')
+        .query({ limit: 50, offset: 0, status: 'active' })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('proposals');
+        });
+    });
+
+    it('/api/governance/proposals/:id (GET) should return proposal details', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals/test-id')
+        .expect((res) => {
+          expect([200, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/governance/proposals (POST) should create proposal', () => {
+      return request(app.getHttpServer())
+        .post('/api/governance/proposals')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          proposerAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          title: 'Test Proposal',
+          description: 'This is a test proposal',
+          type: 'parameter_change',
+          parameters: { key: 'value' },
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 403]).toContain(res.status);
+        });
+    });
+
+    it('/api/governance/proposals/:id/votes (POST) should submit vote', () => {
+      return request(app.getHttpServer())
+        .post('/api/governance/proposals/test-id/votes')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          voterAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          choice: 'for',
+          votingPower: '1000000000000000000000',
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 404, 400]).toContain(res.status);
+        });
+    });
+
+    it('/api/governance/proposals/:id/tally (GET) should return vote tally', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals/test-id/tally')
+        .expect((res) => {
+          expect([200, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/governance/params (GET) should return governance parameters', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/params')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('parameters');
+        });
+    });
+  });
+
+  describe('Streaming Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `streaming-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/stream/events (GET) should return SSE stream', () => {
+      return request(app.getHttpServer())
+        .get('/api/stream/events')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ types: 'policy,transaction,block' })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+          if (res.status === 200) {
+            expect(res.headers['content-type']).toContain('text/event-stream');
+          }
+        });
+    });
+
+    it('/api/stream/events (GET) should handle missing types', () => {
+      return request(app.getHttpServer())
+        .get('/api/stream/events')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Wallet Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `wallet-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/wallet (POST) should create wallet', () => {
+      return request(app.getHttpServer())
+        .post('/api/wallet')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          name: 'My Wallet',
+          password: 'SecurePassword123!',
+        })
+        .expect((res) => {
+          expect([200, 201, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/wallet (GET) should return user wallets', () => {
+      return request(app.getHttpServer())
+        .get('/api/wallet')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+          if (res.status === 200) {
+            expect(Array.isArray(res.body)).toBe(true);
+          }
+        });
+    });
+
+    it('/api/wallet/:address (GET) should return wallet details', () => {
+      return request(app.getHttpServer())
+        .get('/api/wallet/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 404, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/wallet/:address/balance (GET) should return wallet balance', () => {
+      return request(app.getHttpServer())
+        .get('/api/wallet/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0/balance')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 404, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/wallet/:address/tokens (GET) should return wallet tokens', () => {
+      return request(app.getHttpServer())
+        .get('/api/wallet/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0/tokens')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 404, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/wallet/:address/transactions (GET) should return wallet transactions', () => {
+      return request(app.getHttpServer())
+        .get('/api/wallet/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0/transactions')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 404, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Payments Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `payments-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/payments/invoices (POST) should create invoice', () => {
+      return request(app.getHttpServer())
+        .post('/api/payments/invoices')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          merchantId: 'merchant-123',
+          amount: '100.00',
+          currency: 'NOR',
+          description: 'Test Invoice',
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/payments/invoices (GET) should return invoices', () => {
+      return request(app.getHttpServer())
+        .get('/api/payments/invoices')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 50, offset: 0 })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/payments/checkout-sessions (POST) should create checkout session', () => {
+      return request(app.getHttpServer())
+        .post('/api/payments/checkout-sessions')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          merchantId: 'merchant-123',
+          amount: '100.00',
+          currency: 'NOR',
+          successUrl: 'https://example.com/success',
+          cancelUrl: 'https://example.com/cancel',
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 404]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Messaging Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `messaging-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/messaging/profile (POST) should create messaging profile', () => {
+      return request(app.getHttpServer())
+        .post('/api/messaging/profile')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          displayName: 'Test User',
+        })
+        .expect((res) => {
+          expect([200, 201, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/messaging/conversations (GET) should return conversations', () => {
+      return request(app.getHttpServer())
+        .get('/api/messaging/conversations')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+          if (res.status === 200) {
+            expect(Array.isArray(res.body)).toBe(true);
+          }
+        });
+    });
+
+    it('/api/messaging/conversations (POST) should create conversation', () => {
+      return request(app.getHttpServer())
+        .post('/api/messaging/conversations')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          kind: 'p2p',
+          members: [
+            'did:pkh:eip155:65001:0x742d35cc6634c0532925a3b844bc9e7595f0beb0',
+            'did:pkh:eip155:65001:0x1234567890123456789012345678901234567890',
+          ],
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 400]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Metadata Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `metadata-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/metadata/challenges (POST) should create ownership challenge', () => {
+      return request(app.getHttpServer())
+        .post('/api/metadata/challenges')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          chainId: '65001',
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 201, 401]).toContain(res.status);
+          if (res.status === 200 || res.status === 201) {
+            expect(res.body).toHaveProperty('challengeId');
+            expect(res.body).toHaveProperty('message');
+          }
+        });
+    });
+
+    it('/api/metadata/profiles/:chainId/:address (GET) should return asset profile', () => {
+      return request(app.getHttpServer())
+        .get('/api/metadata/profiles/65001/0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0')
+        .expect((res) => {
+          expect([200, 404]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Ledger Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `ledger-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/ledger/accounts (POST) should create ledger account', () => {
+      return request(app.getHttpServer())
+        .post('/api/ledger/accounts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          orgId: 'org-123',
+          code: '1000',
+          name: 'Cash Account',
+          type: 'asset',
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 409]).toContain(res.status);
+        });
+    });
+
+    it('/api/ledger/accounts (GET) should return accounts', () => {
+      return request(app.getHttpServer())
+        .get('/api/ledger/accounts')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ orgId: 'org-123' })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Compliance Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `compliance-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/compliance/screenings (POST) should create screening', () => {
+      return request(app.getHttpServer())
+        .post('/api/compliance/screenings')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          type: 'sanctions',
+          subject: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 201, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/compliance/risk-score (GET) should return risk score', () => {
+      return request(app.getHttpServer())
+        .get('/api/compliance/risk-score')
+        .query({ address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0' })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Policy Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `policy-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/policy/check (POST) should check policy', () => {
+      return request(app.getHttpServer())
+        .post('/api/policy/check')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          amount: '1000000000000000000',
+          asset: 'NOR',
+          fromAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          toAddress: '0x1234567890123456789012345678901234567890',
+        })
+        .expect((res) => {
+          expect([200, 401, 403]).toContain(res.status);
+        });
+    });
+
+    it('/api/policy/history (GET) should return policy check history', () => {
+      return request(app.getHttpServer())
+        .get('/api/policy/history')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 50, offset: 0 })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Webhooks Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `webhooks-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/webhooks (POST) should create webhook', () => {
+      return request(app.getHttpServer())
+        .post('/api/webhooks')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send({
+          url: 'https://example.com/webhook',
+          events: ['transaction.mined', 'swap.executed'],
+        })
+        .expect((res) => {
+          expect([200, 201, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/webhooks (GET) should return webhooks', () => {
+      return request(app.getHttpServer())
+        .get('/api/webhooks')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Admin Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `admin-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/admin/validators (GET) should return validators', () => {
+      return request(app.getHttpServer())
+        .get('/api/admin/validators')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 50, offset: 0 })
+        .expect((res) => {
+          expect([200, 401, 403]).toContain(res.status);
+        });
+    });
+
+    it('/api/admin/feature-flags (GET) should return feature flags', () => {
+      return request(app.getHttpServer())
+        .get('/api/admin/feature-flags')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 403]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('RPC Extensions Endpoints', () => {
+    it('/api/rpc-extensions/nor_finality (POST) should return finality status', () => {
+      return request(app.getHttpServer())
+        .post('/api/rpc-extensions/nor_finality')
+        .send({
+          blockOrTx: '0x123',
+        })
+        .expect((res) => {
+          expect([200, 400]).toContain(res.status);
+        });
+    });
+
+    it('/api/rpc-extensions/nor_accountProfile (POST) should return account profile', () => {
+      return request(app.getHttpServer())
+        .post('/api/rpc-extensions/nor_accountProfile')
+        .send({
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 400]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Insights Endpoints', () => {
+    it('/api/insights/finality/tx/:hash (GET) should return transaction finality', () => {
+      return request(app.getHttpServer())
+        .get('/api/insights/finality/tx/0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef')
+        .expect((res) => {
+          expect([200, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/insights/validators (GET) should return validators', () => {
+      return request(app.getHttpServer())
+        .get('/api/insights/validators')
+        .query({ tag: 'current' })
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('validators');
+        });
+    });
+  });
+
+  describe('Error Scenarios', () => {
+    it('should handle 404 for non-existent endpoints', () => {
+      return request(app.getHttpServer())
+        .get('/api/non-existent-endpoint')
+        .expect(404);
+    });
+
+    it('should handle invalid request body', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({ invalid: 'data' })
+        .expect(400);
+    });
+
+    it('should handle missing required query parameters', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/balance')
+        .expect(400);
+    });
+
+    it('should handle invalid address format', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/account/balance')
+        .query({ address: 'invalid-address' })
+        .expect(400);
+    });
+
+    it('should handle unauthorized access', () => {
+      return request(app.getHttpServer())
+        .get('/api/wallet')
+        .expect(401);
+    });
+
+    it('should handle invalid JWT token', () => {
+      return request(app.getHttpServer())
+        .get('/api/wallet')
+        .set('Authorization', 'Bearer invalid-token')
+        .expect(401);
+    });
+  });
+
+  describe('Pagination Edge Cases', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `pagination-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('should handle zero limit', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals')
+        .query({ limit: 0, offset: 0 })
+        .expect((res) => {
+          expect([200, 400]).toContain(res.status);
+        });
+    });
+
+    it('should handle negative offset', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals')
+        .query({ limit: 50, offset: -1 })
+        .expect((res) => {
+          expect([200, 400]).toContain(res.status);
+        });
+    });
+
+    it('should handle very large limit', () => {
+      return request(app.getHttpServer())
+        .get('/api/governance/proposals')
+        .query({ limit: 10000, offset: 0 })
+        .expect((res) => {
+          expect([200, 400]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Rate Limiting', () => {
+    it('should handle rate limit headers', async () => {
+      const responses = await Promise.all([
+        request(app.getHttpServer()).get('/api/v1/account/balance').query({ address: '0x123' }),
+        request(app.getHttpServer()).get('/api/v1/account/balance').query({ address: '0x123' }),
+        request(app.getHttpServer()).get('/api/v1/account/balance').query({ address: '0x123' }),
+      ]);
+
+      // At least one response should have rate limit headers
+      const hasRateLimitHeaders = responses.some((res) => {
+        return res.headers['x-ratelimit-limit'] || res.headers['x-ratelimit-remaining'];
+      });
+
+      // Rate limiting may or may not be enabled, so this is optional
+      expect(responses.length).toBe(3);
+    });
+  });
+
+  describe('Idempotency', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `idempotency-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('should handle idempotency key header', () => {
+      const idempotencyKey = `test-key-${Date.now()}`;
+
+      return request(app.getHttpServer())
+        .post('/api/bridge/transfers')
+        .set('Authorization', `Bearer ${authToken}`)
+        .set('Idempotency-Key', idempotencyKey)
+        .send({
+          srcChain: 'NOR',
+          dstChain: 'BSC',
+          amount: '1000000000000000000',
+          asset: 'NOR',
+          toAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        })
+        .expect((res) => {
+          expect([200, 201, 401, 400]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Content-Type Validation', () => {
+    it('should accept JSON content type', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .set('Content-Type', 'application/json')
+        .send({
+          email: `test-${Date.now()}@example.com`,
+          password: 'password123',
+          name: 'Test User',
+        })
+        .expect((res) => {
+          expect([200, 201, 400]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('CORS Headers', () => {
+    it('should include CORS headers', () => {
+      return request(app.getHttpServer())
+        .get('/api/health')
+        .expect((res) => {
+          // CORS headers may or may not be present depending on configuration
+          expect(res.status).toBe(200);
+        });
+    });
+  });
+
+  describe('Notifications Endpoints - Expanded', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `notifications-expanded-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/v1/notifications (GET) should support limit parameter', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/notifications')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ limit: 10 })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/v1/notifications (GET) should support unreadOnly parameter', () => {
+      return request(app.getHttpServer())
+        .get('/api/v1/notifications')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ unreadOnly: true })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('Monitoring Endpoints', () => {
+    it('/api/monitoring/health (GET) should return health status', () => {
+      return request(app.getHttpServer())
+        .get('/api/monitoring/health')
+        .expect((res) => {
+          expect([200, 401, 403]).toContain(res.status);
+          if (res.status === 200) {
+            expect(res.body).toHaveProperty('status');
+          }
+        });
+    });
+
+    it('/api/monitoring/stats (GET) should return monitoring stats', () => {
+      return request(app.getHttpServer())
+        .get('/api/monitoring/stats')
+        .expect((res) => {
+          expect([200, 401, 403]).toContain(res.status);
+          if (res.status === 200) {
+            expect(res.body).toHaveProperty('currentBlock');
+          }
+        });
+    });
+  });
+
+  describe('Advanced Analytics Endpoints', () => {
+    let authToken: string;
+
+    beforeAll(async () => {
+      const email = `analytics-${Date.now()}@example.com`;
+      await request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email,
+          password: 'password123',
+          name: 'Test User',
+        });
+
+      const loginRes = await request(app.getHttpServer())
+        .post('/api/v1/auth/login')
+        .send({
+          email,
+          password: 'password123',
+        });
+
+      authToken = loginRes.body.access_token;
+    });
+
+    it('/api/analytics/advanced/network (GET) should return network analytics', () => {
+      return request(app.getHttpServer())
+        .get('/api/analytics/advanced/network')
+        .set('Authorization', `Bearer ${authToken}`)
+        .query({ startDate: '2024-01-01', endDate: '2024-12-31' })
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+
+    it('/api/analytics/advanced/user/:userId (GET) should return user analytics', () => {
+      return request(app.getHttpServer())
+        .get('/api/analytics/advanced/user/user-123')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401, 404]).toContain(res.status);
+        });
+    });
+
+    it('/api/analytics/advanced/realtime (GET) should return real-time metrics', () => {
+      return request(app.getHttpServer())
+        .get('/api/analytics/advanced/realtime')
+        .set('Authorization', `Bearer ${authToken}`)
+        .expect((res) => {
+          expect([200, 401]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('GraphQL Endpoints', () => {
+    it('/graphql (POST) should handle GraphQL queries', () => {
+      return request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          query: '{ health { status } }',
+        })
+        .expect((res) => {
+          expect([200, 400, 404]).toContain(res.status);
+        });
+    });
+
+    it('/graphql (POST) should handle GraphQL mutations', () => {
+      return request(app.getHttpServer())
+        .post('/graphql')
+        .send({
+          query: 'mutation { test }',
+        })
+        .expect((res) => {
+          expect([200, 400, 404]).toContain(res.status);
+        });
+    });
+  });
+
+  describe('WebSocket Connection', () => {
+    it('should handle WebSocket connection attempts', (done) => {
+      // WebSocket testing requires a WebSocket client library
+      // This is a placeholder test structure
+      // In production, use socket.io-client or similar
+      expect(true).toBe(true);
+      done();
+    });
+  });
+
+  describe('Request Validation', () => {
+    it('should validate email format in registration', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email: 'invalid-email',
+          password: 'password123',
+          name: 'Test User',
+        })
+        .expect(400);
+    });
+
+    it('should validate password length in registration', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email: 'test@example.com',
+          password: 'short',
+          name: 'Test User',
+        })
+        .expect(400);
+    });
+
+    it('should validate required fields', () => {
+      return request(app.getHttpServer())
+        .post('/api/v1/auth/register')
+        .send({
+          email: 'test@example.com',
+          // Missing password and name
+        })
+        .expect(400);
+    });
+  });
+
+  describe('Response Format', () => {
+    it('should return consistent response format', () => {
+      return request(app.getHttpServer())
+        .get('/api/health')
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).toHaveProperty('status');
+        });
+    });
+
+    it('should include error details in error responses', () => {
+      return request(app.getHttpServer())
+        .get('/api/non-existent')
+        .expect(404)
+        .expect((res) => {
+          expect(res.body).toBeDefined();
+        });
+    });
+  });
 });

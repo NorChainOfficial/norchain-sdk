@@ -147,7 +147,7 @@ export default function Features() {
         </div>
 
         {/* Infrastructure Connectivity Visualization with Animated Beams */}
-        <div className="relative max-w-7xl mx-auto mb-24" ref={containerRef}>
+        <div className="relative max-w-7xl mx-auto mb-24 hidden lg:block" ref={containerRef}>
           {/* Background glow effects */}
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-orange-500/10 to-yellow-500/5 rounded-3xl blur-3xl" />
 

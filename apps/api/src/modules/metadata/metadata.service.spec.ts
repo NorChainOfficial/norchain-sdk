@@ -27,6 +27,7 @@ describe('MetadataService', () => {
     findOne: jest.fn(),
     find: jest.fn(),
     findAndCount: jest.fn(),
+    createQueryBuilder: jest.fn(),
   };
 
   const mockChallengeRepository = {
@@ -47,6 +48,8 @@ describe('MetadataService', () => {
     create: jest.fn(),
     save: jest.fn(),
     find: jest.fn(),
+    findOne: jest.fn(),
+    count: jest.fn(),
   };
 
   const mockReportRepository = {
@@ -381,14 +384,14 @@ describe('MetadataService', () => {
       mockReportRepository.save.mockResolvedValue(mockReport);
       mockProfileRepository.save.mockResolvedValue({
         ...mockProfile,
-        reviewState: ReviewState.SHADOWED,
+        reviewState: ReviewState.SHADOW,
       });
 
       await service.reportProfile(profileId, 'user-123', reason);
 
       expect(mockProfileRepository.save).toHaveBeenCalledWith(
         expect.objectContaining({
-          reviewState: ReviewState.SHADOWED,
+          reviewState: ReviewState.SHADOW,
         }),
       );
     });

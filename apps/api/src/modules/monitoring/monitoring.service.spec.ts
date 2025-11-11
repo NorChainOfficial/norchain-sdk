@@ -111,6 +111,36 @@ describe('MonitoringService', () => {
 
       await expect(service.getStats()).rejects.toThrow(error);
     });
+
+    it('should handle getFeeData failure', async () => {
+      const blockNumber = 12345;
+      const error = new Error('Fee data failed');
+      rpcService.getBlockNumber.mockResolvedValue(blockNumber);
+      rpcService.getFeeData.mockRejectedValue(error);
+
+      await expect(service.getStats()).rejects.toThrow(error);
+    });
+
+    it('should return stats with all properties', async () => {
+      const blockNumber = 12345;
+      const gasPrice = BigInt('1000000000');
+      rpcService.getBlockNumber.mockResolvedValue(blockNumber);
+      rpcService.getFeeData.mockResolvedValue({
+        gasPrice,
+        maxFeePerGas: null,
+        maxPriorityFeePerGas: null,
+        toJSON: () => ({}),
+      } as any);
+
+      const result = await service.getStats();
+
+      expect(result).toHaveProperty('blocksPerSecond');
+      expect(result).toHaveProperty('txpoolSize');
+      expect(result).toHaveProperty('cpuUsage');
+      expect(result).toHaveProperty('memoryUsage');
+      expect(result).toHaveProperty('currentBlock');
+      expect(result).toHaveProperty('gasPrice');
+    });
   });
 });
 

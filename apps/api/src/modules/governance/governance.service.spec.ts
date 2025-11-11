@@ -328,5 +328,146 @@ describe('GovernanceService', () => {
       expect(result).toHaveProperty('quorumPercentage');
     });
   });
+
+  describe('getProposals', () => {
+    it('should filter proposals by status', async () => {
+      const mockProposals = [
+        {
+          id: 'proposal-1',
+          title: 'Active Proposal',
+          status: ProposalStatus.ACTIVE,
+        },
+      ];
+
+      mockProposalRepository.findAndCount.mockResolvedValue([
+        mockProposals,
+        1,
+      ]);
+
+      const result = await service.getProposals(50, 0, ProposalStatus.ACTIVE);
+
+      expect(result.proposals).toHaveLength(1);
+      expect(mockProposalRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { status: ProposalStatus.ACTIVE },
+        }),
+      );
+    });
+
+    it('should return empty array when no proposals', async () => {
+      mockProposalRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getProposals(50, 0);
+
+      expect(result.proposals).toEqual([]);
+      expect(result.total).toBe(0);
+    });
+
+    it('should handle pagination correctly', async () => {
+      mockProposalRepository.findAndCount.mockResolvedValue([[], 100]);
+
+      const result = await service.getProposals(10, 5);
+
+      expect(result.total).toBe(100);
+      expect(mockProposalRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 10,
+          skip: 5,
+        }),
+      );
+    });
+  });
+
+  describe('createProposal', () => {
+    it('should throw ForbiddenException if insufficient voting power', async () => {
+      const dto: CreateProposalDto = {
+        title: 'Test Proposal',
+        description: 'Test description',
+        type: 'parameter_change' as any,
+        parameters: { key: 'value' },
+      };
+
+      jest.spyOn(service as any, 'checkProposalPermission').mockResolvedValue(false);
+
+      await expect(
+        service.createProposal(
+          'user-123',
+          '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          dto,
+        ),
+      ).rejects.toThrow('Insufficient voting power');
+    });
+
+    it('should handle proposal with start and end times', async () => {
+      const dto: CreateProposalDto = {
+        title: 'Test Proposal',
+        description: 'Test description',
+        type: 'parameter_change' as any,
+        parameters: { key: 'value' },
+        startTime: new Date().toISOString(),
+        endTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+      };
+
+      const mockProposal = {
+        id: 'proposal-123',
+        ...dto,
+        status: ProposalStatus.DRAFT,
+      };
+
+      jest.spyOn(service as any, 'checkProposalPermission').mockResolvedValue(true);
+      mockProposalRepository.create.mockReturnValue(mockProposal);
+      mockProposalRepository.save.mockResolvedValue(mockProposal);
+
+      const result = await service.createProposal(
+        'user-123',
+        '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        dto,
+      );
+
+      expect(result).toHaveProperty('proposal_id');
+    });
+  });
+
+  describe('getTally', () => {
+    it('should calculate total votes correctly', async () => {
+      const proposalId = 'proposal-123';
+      const mockProposal = {
+        id: proposalId,
+        status: ProposalStatus.ACTIVE,
+        forVotes: '1000000000000000000',
+        againstVotes: '500000000000000000',
+        abstainVotes: '200000000000000000',
+        quorum: '1000000000000000000000',
+        threshold: '500000000000000000000',
+        votes: [],
+      };
+
+      mockProposalRepository.findOne.mockResolvedValue(mockProposal);
+
+      const result = await service.getTally(proposalId);
+
+      expect(result.totalVotes).toBe('1700000000000000000');
+    });
+
+    it('should handle zero votes', async () => {
+      const proposalId = 'proposal-123';
+      const mockProposal = {
+        id: proposalId,
+        status: ProposalStatus.ACTIVE,
+        forVotes: '0',
+        againstVotes: '0',
+        abstainVotes: '0',
+        quorum: '1000000000000000000000',
+        threshold: '500000000000000000000',
+        votes: [],
+      };
+
+      mockProposalRepository.findOne.mockResolvedValue(mockProposal);
+
+      const result = await service.getTally(proposalId);
+
+      expect(result.totalVotes).toBe('0');
+    });
+  });
 });
 

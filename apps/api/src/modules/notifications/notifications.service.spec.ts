@@ -247,6 +247,47 @@ describe('NotificationsService', () => {
         where: { userId, read: false },
       });
     });
+
+    it('should return zero when no unread notifications', async () => {
+      const userId = 'user-1';
+      notificationRepository.count.mockResolvedValue(0);
+
+      const result = await service.getUnreadCount(userId);
+
+      expect(result).toBe(0);
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle getUserNotifications with limit', async () => {
+      const userId = 'user-1';
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+        getMany: jest.fn().mockResolvedValue([]),
+      };
+
+      notificationRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder as any);
+
+      await service.getUserNotifications(userId, { limit: 10 });
+
+      expect(mockQueryBuilder.limit).toHaveBeenCalledWith(10);
+    });
+
+    it('should handle markAllAsRead with no unread notifications', async () => {
+      const userId = 'user-1';
+
+      notificationRepository.update.mockResolvedValue({ affected: 0 } as any);
+
+      await service.markAllAsRead(userId);
+
+      expect(notificationRepository.update).toHaveBeenCalledWith(
+        { userId, read: false },
+        expect.objectContaining({ read: true }),
+      );
+    });
   });
 
   describe('delete', () => {

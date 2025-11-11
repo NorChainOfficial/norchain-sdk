@@ -841,4 +841,163 @@ describe('MessagingService', () => {
       expect(result).toHaveProperty('mediaRef');
     });
   });
+
+  describe('getProfileByAddress', () => {
+    it('should return profile by address', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const mockProfile = {
+        did: 'did:pkh:eip155:65001:0x742d35cc6634c0532925a3b844bc9e7595f0beb0',
+        address: address.toLowerCase(),
+        displayName: 'Test User',
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+
+      const result = await service.getProfileByAddress(address);
+
+      expect(result).toEqual(mockProfile);
+      expect(mockProfileRepository.findOne).toHaveBeenCalledWith({
+        where: { did: 'did:pkh:eip155:65001:0x742d35cc6634c0532925a3b844bc9e7595f0beb0' },
+      });
+    });
+
+    it('should return null if profile not found', async () => {
+      const address = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+
+      mockProfileRepository.findOne.mockResolvedValue(null);
+
+      const result = await service.getProfileByAddress(address);
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('listConversations', () => {
+    it('should return conversations for user', async () => {
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const mockConversations = [
+        {
+          id: 'conv_1',
+          members: [userDid, 'did:pkh:eip155:65001:0x222'],
+        },
+        {
+          id: 'conv_2',
+          members: [userDid, 'did:pkh:eip155:65001:0x333'],
+        },
+      ];
+
+      mockConversationRepository.find.mockResolvedValue(mockConversations);
+
+      const result = await service.listConversations(userDid);
+
+      expect(result).toEqual(mockConversations);
+      expect(result).toHaveLength(2);
+    });
+
+    it('should filter out conversations where user is not a member', async () => {
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const mockConversations = [
+        {
+          id: 'conv_1',
+          members: [userDid, 'did:pkh:eip155:65001:0x222'],
+        },
+        {
+          id: 'conv_2',
+          members: ['did:pkh:eip155:65001:0x333', 'did:pkh:eip155:65001:0x444'],
+        },
+      ];
+
+      mockConversationRepository.find.mockResolvedValue(mockConversations);
+
+      const result = await service.listConversations(userDid);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].id).toBe('conv_1');
+    });
+
+    it('should return empty array when no conversations', async () => {
+      const userDid = 'did:pkh:eip155:65001:0x111';
+
+      mockConversationRepository.find.mockResolvedValue([]);
+
+      const result = await service.listConversations(userDid);
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('getMessages', () => {
+    it('should use default limit when not provided', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+
+      const mockConversation = {
+        id: conversationId,
+        members: [userDid, 'did:pkh:eip155:65001:0x222'],
+      };
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+      mockMessageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+
+      const result = await service.getMessages(conversationId, userDid);
+
+      expect(result).toHaveProperty('messages');
+      expect(result).toHaveProperty('nextCursor');
+      expect(mockQueryBuilder.take).toHaveBeenCalledWith(51); // limit + 1
+    });
+
+    it('should use custom limit when provided', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const limit = 100;
+
+      const mockConversation = {
+        id: conversationId,
+        members: [userDid, 'did:pkh:eip155:65001:0x222'],
+      };
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+      mockMessageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockQueryBuilder.getMany.mockResolvedValue([]);
+
+      const result = await service.getMessages(conversationId, userDid, undefined, limit);
+
+      expect(result).toHaveProperty('messages');
+      expect(mockQueryBuilder.take).toHaveBeenCalledWith(limit + 1); // limit + 1
+    });
+  });
+
+  describe('createProfile', () => {
+    it('should update existing profile metadata', async () => {
+      const userId = 'user-123';
+      const dto = {
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        displayName: 'Updated Name',
+        metadata: { newKey: 'newValue' },
+      };
+
+      const existingProfile = {
+        did: 'did:pkh:eip155:65001:0x742d35cc6634c0532925a3b844bc9e7595f0beb0',
+        address: dto.address.toLowerCase(),
+        displayName: 'Old Name',
+        metadata: { oldKey: 'oldValue' },
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(existingProfile);
+      mockProfileRepository.save.mockResolvedValue({
+        ...existingProfile,
+        displayName: dto.displayName,
+        metadata: { ...existingProfile.metadata, ...dto.metadata },
+      });
+
+      const result = await service.createProfile(dto, userId);
+
+      expect(result.displayName).toBe(dto.displayName);
+      expect(result.metadata).toEqual({
+        oldKey: 'oldValue',
+        newKey: 'newValue',
+      });
+    });
+  });
 });
