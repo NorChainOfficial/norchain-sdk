@@ -6,6 +6,7 @@ import { MessagingProfile } from './entities/profile.entity';
 import { Conversation } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { MessageReaction } from './entities/reaction.entity';
+import { DeviceKey } from './entities/device-key.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 
@@ -15,6 +16,7 @@ describe('MessagingService', () => {
   let conversationRepository: Repository<Conversation>;
   let messageRepository: Repository<Message>;
   let reactionRepository: Repository<MessageReaction>;
+  let deviceKeyRepository: Repository<DeviceKey>;
 
   const mockProfileRepository = {
     findOne: jest.fn(),
@@ -56,6 +58,14 @@ describe('MessagingService', () => {
     emit: jest.fn(),
   };
 
+  const mockQueryBuilder = {
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    getMany: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -77,7 +87,7 @@ describe('MessagingService', () => {
           useValue: mockReactionRepository,
         },
         {
-          provide: getRepositoryToken(require('./entities/device-key.entity').DeviceKey),
+          provide: getRepositoryToken(DeviceKey),
           useValue: mockDeviceKeyRepository,
         },
         {
@@ -88,6 +98,11 @@ describe('MessagingService', () => {
     }).compile();
 
     service = module.get<MessagingService>(MessagingService);
+    profileRepository = module.get<Repository<MessagingProfile>>(getRepositoryToken(MessagingProfile));
+    conversationRepository = module.get<Repository<Conversation>>(getRepositoryToken(Conversation));
+    messageRepository = module.get<Repository<Message>>(getRepositoryToken(Message));
+    reactionRepository = module.get<Repository<MessageReaction>>(getRepositoryToken(MessageReaction));
+    deviceKeyRepository = module.get<Repository<DeviceKey>>(getRepositoryToken(DeviceKey));
   });
 
   afterEach(() => {
@@ -116,6 +131,8 @@ describe('MessagingService', () => {
 
       expect(result).toBeDefined();
       expect(result.did).toContain('did:pkh');
+      expect(mockProfileRepository.create).toHaveBeenCalled();
+      expect(mockProfileRepository.save).toHaveBeenCalled();
     });
 
     it('should update existing profile', async () => {
@@ -140,6 +157,7 @@ describe('MessagingService', () => {
       const result = await service.createProfile(dto, 'user_123');
 
       expect(result.displayName).toBe('Updated Name');
+      expect(mockProfileRepository.save).toHaveBeenCalled();
     });
   });
 
@@ -176,6 +194,39 @@ describe('MessagingService', () => {
       );
     });
 
+    it('should create a group conversation', async () => {
+      const dto = {
+        kind: 'group' as any,
+        members: [
+          'did:pkh:eip155:65001:0x111',
+          'did:pkh:eip155:65001:0x222',
+          'did:pkh:eip155:65001:0x333',
+        ],
+        name: 'Test Group',
+      };
+
+      const senderDid = 'did:pkh:eip155:65001:0x111';
+
+      mockConversationRepository.create.mockReturnValue({
+        ...dto,
+        createdBy: senderDid,
+      });
+      mockConversationRepository.save.mockResolvedValue({
+        id: 'conv_123',
+        ...dto,
+        createdBy: senderDid,
+      });
+
+      const result = await service.createConversation(dto, senderDid);
+
+      expect(result).toBeDefined();
+      expect(result.kind).toBe('group');
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'messaging.conversation.created',
+        expect.any(Object),
+      );
+    });
+
     it('should throw BadRequestException if P2P has wrong member count', async () => {
       const dto = {
         kind: 'p2p' as any,
@@ -188,7 +239,70 @@ describe('MessagingService', () => {
         service.createConversation(dto, senderDid),
       ).rejects.toThrow(BadRequestException);
     });
+
+    it('should throw BadRequestException if P2P has more than 2 members', async () => {
+      const dto = {
+        kind: 'p2p' as any,
+        members: [
+          'did:pkh:eip155:65001:0x111',
+          'did:pkh:eip155:65001:0x222',
+          'did:pkh:eip155:65001:0x333',
+        ],
+      };
+
+      const senderDid = 'did:pkh:eip155:65001:0x111';
+
+      await expect(
+        service.createConversation(dto, senderDid),
+      ).rejects.toThrow(BadRequestException);
+    });
   });
+
+  describe('getConversation', () => {
+    it('should return conversation if user is a member', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+
+      const mockConversation = {
+        id: conversationId,
+        members: [userDid, 'did:pkh:eip155:65001:0x222'],
+      };
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+
+      const result = await service.getConversation(conversationId, userDid);
+
+      expect(result).toEqual(mockConversation);
+    });
+
+    it('should throw NotFoundException if conversation not found', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+
+      mockConversationRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getConversation(conversationId, userDid),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw ForbiddenException if user is not a member', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+
+      const mockConversation = {
+        id: conversationId,
+        members: ['did:pkh:eip155:65001:0x222', 'did:pkh:eip155:65001:0x333'],
+      };
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+
+      await expect(
+        service.getConversation(conversationId, userDid),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
 
   describe('sendMessage', () => {
     it('should send a message successfully', async () => {
@@ -226,6 +340,36 @@ describe('MessagingService', () => {
       );
     });
 
+    it('should return existing message if idempotency key matches', async () => {
+      const dto = {
+        conversationId: 'conv_123',
+        cipherText: 'base64:encrypted_data',
+        clientNonce: 'nonce-123',
+      };
+
+      const senderDid = 'did:pkh:eip155:65001:0x111';
+
+      const mockConversation = {
+        id: 'conv_123',
+        members: [senderDid, 'did:pkh:eip155:65001:0x222'],
+      };
+
+      const existingMessage = {
+        id: 'msg_123',
+        conversationId: 'conv_123',
+        senderDid,
+        clientNonce: 'nonce-123',
+      };
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+      mockMessageRepository.findOne.mockResolvedValue(existingMessage);
+
+      const result = await service.sendMessage(dto, senderDid);
+
+      expect(result).toBe(existingMessage);
+      expect(mockMessageRepository.save).not.toHaveBeenCalled();
+    });
+
     it('should throw ForbiddenException if user not in conversation', async () => {
       const dto = {
         conversationId: 'conv_123',
@@ -244,6 +388,302 @@ describe('MessagingService', () => {
       await expect(service.sendMessage(dto, senderDid)).rejects.toThrow(
         ForbiddenException,
       );
+    });
+
+    it('should throw NotFoundException if conversation not found', async () => {
+      const dto = {
+        conversationId: 'invalid_conv',
+        cipherText: 'base64:encrypted_data',
+      };
+
+      const senderDid = 'did:pkh:eip155:65001:0x111';
+
+      mockConversationRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.sendMessage(dto, senderDid)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('getMessages', () => {
+    it('should return messages for a conversation', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const limit = 50;
+
+      const mockConversation = {
+        id: conversationId,
+        members: [userDid, 'did:pkh:eip155:65001:0x222'],
+      };
+
+      const mockMessages = [
+        {
+          id: 'msg_1',
+          conversationId,
+          senderDid: userDid,
+          cipherText: 'encrypted_1',
+          sentAt: new Date(),
+        },
+        {
+          id: 'msg_2',
+          conversationId,
+          senderDid: 'did:pkh:eip155:65001:0x222',
+          cipherText: 'encrypted_2',
+          sentAt: new Date(),
+        },
+      ];
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+      mockMessageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockQueryBuilder.getMany.mockResolvedValue(mockMessages);
+
+      const result = await service.getMessages(conversationId, userDid, undefined, limit);
+
+      expect(result).toHaveProperty('messages');
+      expect(result).toHaveProperty('nextCursor');
+      expect(result.messages).toHaveLength(2);
+    });
+
+    it('should use cursor for pagination', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const cursor = 'msg_2';
+      const limit = 50;
+
+      const mockConversation = {
+        id: conversationId,
+        members: [userDid, 'did:pkh:eip155:65001:0x222'],
+      };
+
+      const mockMessages = [
+        {
+          id: 'msg_3',
+          conversationId,
+          senderDid: userDid,
+          cipherText: 'encrypted_3',
+          sentAt: new Date(),
+        },
+      ];
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+      mockMessageRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockQueryBuilder.getMany.mockResolvedValue(mockMessages);
+
+      const result = await service.getMessages(conversationId, userDid, cursor, limit);
+
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith('message.id < :cursor', { cursor });
+      expect(result.messages).toHaveLength(1);
+    });
+
+    it('should throw ForbiddenException if user not in conversation', async () => {
+      const conversationId = 'conv_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+
+      const mockConversation = {
+        id: conversationId,
+        members: ['did:pkh:eip155:65001:0x222', 'did:pkh:eip155:65001:0x333'],
+      };
+
+      mockConversationRepository.findOne.mockResolvedValue(mockConversation);
+
+      await expect(
+        service.getMessages(conversationId, userDid),
+      ).rejects.toThrow(ForbiddenException);
+    });
+  });
+
+  describe('markDelivered', () => {
+    it('should mark message as delivered', async () => {
+      const messageId = 'msg_123';
+      const recipientDid = 'did:pkh:eip155:65001:0x222';
+
+      const mockMessage = {
+        id: messageId,
+        deliveredTo: [],
+      };
+
+      mockMessageRepository.findOne.mockResolvedValue(mockMessage);
+      mockMessageRepository.save.mockResolvedValue({
+        ...mockMessage,
+        deliveredTo: [recipientDid],
+      });
+
+      await service.markDelivered(messageId, recipientDid);
+
+      expect(mockMessageRepository.save).toHaveBeenCalled();
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'messaging.message.delivered',
+        expect.objectContaining({ messageId, recipientDid }),
+      );
+    });
+
+    it('should not duplicate delivery status', async () => {
+      const messageId = 'msg_123';
+      const recipientDid = 'did:pkh:eip155:65001:0x222';
+
+      const mockMessage = {
+        id: messageId,
+        deliveredTo: [recipientDid],
+      };
+
+      mockMessageRepository.findOne.mockResolvedValue(mockMessage);
+
+      await service.markDelivered(messageId, recipientDid);
+
+      expect(mockMessageRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if message not found', async () => {
+      mockMessageRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.markDelivered('invalid-id', 'did:pkh:eip155:65001:0x222'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('markRead', () => {
+    it('should mark message as read', async () => {
+      const messageId = 'msg_123';
+      const readerDid = 'did:pkh:eip155:65001:0x222';
+
+      const mockMessage = {
+        id: messageId,
+        readBy: [],
+      };
+
+      mockMessageRepository.findOne.mockResolvedValue(mockMessage);
+      mockMessageRepository.save.mockResolvedValue({
+        ...mockMessage,
+        readBy: [readerDid],
+      });
+
+      await service.markRead(messageId, readerDid);
+
+      expect(mockMessageRepository.save).toHaveBeenCalled();
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'messaging.message.read',
+        expect.objectContaining({ messageId, readerDid }),
+      );
+    });
+
+    it('should not duplicate read status', async () => {
+      const messageId = 'msg_123';
+      const readerDid = 'did:pkh:eip155:65001:0x222';
+
+      const mockMessage = {
+        id: messageId,
+        readBy: [readerDid],
+      };
+
+      mockMessageRepository.findOne.mockResolvedValue(mockMessage);
+
+      await service.markRead(messageId, readerDid);
+
+      expect(mockMessageRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if message not found', async () => {
+      mockMessageRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.markRead('invalid-id', 'did:pkh:eip155:65001:0x222'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('registerDeviceKeys', () => {
+    it('should register new device keys', async () => {
+      const did = 'did:pkh:eip155:65001:0x111';
+      const deviceId = 'device-123';
+      const prekeyBundle = 'bundle-123';
+      const signedPrekey = 'signed-123';
+
+      mockDeviceKeyRepository.findOne.mockResolvedValue(null);
+      mockDeviceKeyRepository.create.mockReturnValue({
+        did,
+        deviceId,
+        prekeyBundle,
+        signedPrekey,
+      });
+      mockDeviceKeyRepository.save.mockResolvedValue({
+        id: 'key-123',
+        did,
+        deviceId,
+        prekeyBundle,
+        signedPrekey,
+        lastUsedAt: new Date(),
+      });
+
+      const result = await service.registerDeviceKeys(did, deviceId, prekeyBundle, signedPrekey);
+
+      expect(result).toBeDefined();
+      expect(result.prekeyBundle).toBe(prekeyBundle);
+      expect(mockDeviceKeyRepository.create).toHaveBeenCalled();
+      expect(mockDeviceKeyRepository.save).toHaveBeenCalled();
+    });
+
+    it('should update existing device keys', async () => {
+      const did = 'did:pkh:eip155:65001:0x111';
+      const deviceId = 'device-123';
+      const prekeyBundle = 'new-bundle-123';
+      const signedPrekey = 'new-signed-123';
+
+      const existingDeviceKey = {
+        id: 'key-123',
+        did,
+        deviceId,
+        prekeyBundle: 'old-bundle',
+        signedPrekey: 'old-signed',
+        lastUsedAt: new Date(),
+      };
+
+      mockDeviceKeyRepository.findOne.mockResolvedValue(existingDeviceKey);
+      mockDeviceKeyRepository.save.mockResolvedValue({
+        ...existingDeviceKey,
+        prekeyBundle,
+        signedPrekey,
+        lastUsedAt: new Date(),
+      });
+
+      const result = await service.registerDeviceKeys(did, deviceId, prekeyBundle, signedPrekey);
+
+      expect(result.prekeyBundle).toBe(prekeyBundle);
+      expect(mockDeviceKeyRepository.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('getDeviceKeys', () => {
+    it('should return device keys for a DID', async () => {
+      const did = 'did:pkh:eip155:65001:0x111';
+
+      const mockDeviceKeys = [
+        {
+          id: 'key-1',
+          did,
+          deviceId: 'device-1',
+          prekeyBundle: 'bundle-1',
+          lastUsedAt: new Date(),
+        },
+        {
+          id: 'key-2',
+          did,
+          deviceId: 'device-2',
+          prekeyBundle: 'bundle-2',
+          lastUsedAt: new Date(),
+        },
+      ];
+
+      mockDeviceKeyRepository.find.mockResolvedValue(mockDeviceKeys);
+
+      const result = await service.getDeviceKeys(did);
+
+      expect(result).toEqual(mockDeviceKeys);
+      expect(mockDeviceKeyRepository.find).toHaveBeenCalledWith({
+        where: { did },
+        order: { lastUsedAt: 'DESC' },
+      });
     });
   });
 
@@ -297,6 +737,108 @@ describe('MessagingService', () => {
       expect(result).toBe(existingReaction);
       expect(mockReactionRepository.save).not.toHaveBeenCalled();
     });
+
+    it('should throw NotFoundException if message not found', async () => {
+      mockMessageRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.addReaction('invalid-id', 'did:pkh:eip155:65001:0x111', '👍'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('removeReaction', () => {
+    it('should remove a reaction', async () => {
+      const messageId = 'msg_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const emoji = '👍';
+
+      const mockReaction = {
+        id: 'reaction_123',
+        messageId,
+        userDid,
+        emoji,
+      };
+
+      mockReactionRepository.findOne.mockResolvedValue(mockReaction);
+      mockReactionRepository.remove.mockResolvedValue(mockReaction);
+
+      await service.removeReaction(messageId, userDid, emoji);
+
+      expect(mockReactionRepository.remove).toHaveBeenCalledWith(mockReaction);
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'messaging.reaction.removed',
+        expect.any(Object),
+      );
+    });
+
+    it('should not throw if reaction does not exist', async () => {
+      const messageId = 'msg_123';
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const emoji = '👍';
+
+      mockReactionRepository.findOne.mockResolvedValue(null);
+
+      await service.removeReaction(messageId, userDid, emoji);
+
+      expect(mockReactionRepository.remove).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getReactions', () => {
+    it('should return all reactions for a message', async () => {
+      const messageId = 'msg_123';
+
+      const mockReactions = [
+        {
+          id: 'reaction_1',
+          messageId,
+          userDid: 'did:pkh:eip155:65001:0x111',
+          emoji: '👍',
+          createdAt: new Date(),
+        },
+        {
+          id: 'reaction_2',
+          messageId,
+          userDid: 'did:pkh:eip155:65001:0x222',
+          emoji: '❤️',
+          createdAt: new Date(),
+        },
+      ];
+
+      mockReactionRepository.find.mockResolvedValue(mockReactions);
+
+      const result = await service.getReactions(messageId);
+
+      expect(result).toEqual(mockReactions);
+      expect(mockReactionRepository.find).toHaveBeenCalledWith({
+        where: { messageId },
+        order: { createdAt: 'ASC' },
+      });
+    });
+  });
+
+  describe('generateMediaUploadUrl', () => {
+    it('should generate a signed upload URL', async () => {
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const contentType = 'image/jpeg';
+      const kind = 'photo';
+
+      const result = await service.generateMediaUploadUrl(userDid, contentType, kind);
+
+      expect(result).toHaveProperty('uploadUrl');
+      expect(result).toHaveProperty('mediaRef');
+      expect(result.uploadUrl).toContain('norchain.org');
+    });
+
+    it('should generate URL without kind', async () => {
+      const userDid = 'did:pkh:eip155:65001:0x111';
+      const contentType = 'image/png';
+
+      const result = await service.generateMediaUploadUrl(userDid, contentType);
+
+      expect(result).toHaveProperty('uploadUrl');
+      expect(result).toHaveProperty('mediaRef');
+    });
   });
 });
-

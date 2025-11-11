@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Zap, Activity, Users, Blocks } from "lucide-react";
+import { Globe } from "./Globe";
 
 export default function Hero() {
   const [blockHeight, setBlockHeight] = useState(7542);
@@ -60,7 +62,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen bg-black text-white overflow-hidden">
+    <section className="relative min-h-screen bg-black text-white overflow-hidden pt-20">
       {/* Dribbble-inspired background with advanced gradients */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Large gradient orbs inspired by Web3 designs */}
@@ -88,63 +90,97 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-16 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-16 relative z-10">
         <div className="max-w-7xl mx-auto">
-          
 
-          {/* Bold Dribbble-style typography */}
-          <div className="text-center mb-12 sm:mb-20">
-            <div className="relative mb-6 sm:mb-8">
-              <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[12rem] font-black tracking-tighter leading-none mb-4">
-                <span className="bg-gradient-to-r from-white via-blue-100 to-cyan-200 bg-clip-text text-transparent">
-                  NorChain
-                </span>
-              </h1>
+          {/* Two-column layout: Text + Globe */}
+          <div className="grid lg:grid-cols-2 gap-12 items-center mb-12 sm:mb-20">
+
+            {/* Left: Typography */}
+            <div className="text-center lg:text-left order-2 lg:order-1">
+              <div className="relative mb-6 sm:mb-8">
+                <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-none mb-4">
+                  <span className="bg-gradient-to-r from-white via-blue-100 to-cyan-200 bg-clip-text text-transparent">
+                    NorChain
+                  </span>
+                </h1>
               
-              {/* Accent line under title */}
-              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full opacity-80" />
-            </div>
+                {/* Accent line under title */}
+                <div className="absolute -bottom-2 left-1/2 lg:left-0 transform -translate-x-1/2 lg:translate-x-0 w-32 h-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full opacity-80" />
+              </div>
             
-            <div className="relative mb-8 sm:mb-12">
-              <h2 className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-light tracking-wide text-gray-300 mb-4 sm:mb-6">
-                Next-Generation
-                <span className="block text-xl sm:text-3xl md:text-5xl lg:text-6xl font-semibold bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent mt-1 sm:mt-2">
-                  Blockchain Infrastructure
+              <div className="relative mb-8 sm:mb-12">
+                <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-light tracking-wide text-gray-300 mb-4 sm:mb-6">
+                  The Complete
+                  <span className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent mt-1 sm:mt-2">
+                    Blockchain Operating System
+                  </span>
+                </h2>
+              </div>
+
+              {/* Status badge with modern styling */}
+              <div className="inline-flex items-center gap-2 sm:gap-4 bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 px-4 sm:px-8 py-3 sm:py-5 rounded-3xl mb-6 sm:mb-8 hover:bg-gray-900/80 transition-all duration-300 shadow-2xl">
+                <div className="relative">
+                  <div className="h-4 w-4 bg-emerald-400 rounded-full animate-pulse" />
+                  <div className="absolute inset-0 h-4 w-4 bg-emerald-400 rounded-full animate-ping opacity-30" />
+                </div>
+                <span className="text-gray-200 font-medium text-sm sm:text-xl">
+                  Live Network
                 </span>
-              </h2>
+                <div className="text-cyan-400 font-bold text-sm sm:text-xl">
+                  {apiUptime.toFixed(1)}%
+                </div>
+              </div>
+
+              {/* NorChain OS Badge */}
+              <div className="inline-flex items-center gap-2 sm:gap-3 bg-gradient-to-r from-purple-900/60 via-blue-900/60 to-indigo-900/60 backdrop-blur-xl border border-purple-700/50 px-4 sm:px-6 py-2 sm:py-3 rounded-2xl shadow-lg">
+                <div className="flex items-center gap-1">
+                  <div className="h-2 w-2 bg-purple-400 rounded-full"></div>
+                  <div className="h-2 w-2 bg-blue-400 rounded-full"></div>
+                  <div className="h-2 w-2 bg-indigo-400 rounded-full"></div>
+                </div>
+                <span className="text-purple-200 font-medium text-xs sm:text-sm">
+                  NorChain OS
+                </span>
+                <span className="text-blue-300 font-bold text-xs sm:text-sm">
+                  12 Applications
+                </span>
+              </div>
             </div>
 
-            {/* Status badge with modern styling */}
-            <div className="inline-flex items-center gap-2 sm:gap-4 bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 px-4 sm:px-8 py-3 sm:py-5 rounded-3xl mb-10 sm:mb-16 hover:bg-gray-900/80 transition-all duration-300 shadow-2xl">
-              <div className="relative">
-                <div className="h-4 w-4 bg-emerald-400 rounded-full animate-pulse" />
-                <div className="absolute inset-0 h-4 w-4 bg-emerald-400 rounded-full animate-ping opacity-30" />
-              </div>
-              <span className="text-gray-200 font-medium text-sm sm:text-xl">
-                Live Network
-              </span>
-              <div className="text-cyan-400 font-bold text-sm sm:text-xl">
-                {apiUptime.toFixed(1)}%
+            {/* Right: Interactive Globe */}
+            <div className="order-1 lg:order-2">
+              <Globe className="scale-90 lg:scale-100" />
+              <div className="text-center mt-6">
+                <p className="text-sm text-gray-400 font-medium">
+                  <span className="text-cyan-400 font-bold">15+</span> Global Infrastructure Nodes
+                </p>
               </div>
             </div>
+
           </div>
 
           {/* Modern stats grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 mb-12 sm:mb-20">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-12 sm:mb-20">
             {[
-              { value: blockHeight.toLocaleString(), label: "Blocks Processed", color: "from-cyan-400 to-blue-500", icon: "📦" },
-              { value: `${apiUptime.toFixed(1)}%`, label: "Network Uptime", color: "from-emerald-400 to-green-500", icon: "⚡" },
-              { value: `${Math.round(apiResponseTime)}ms`, label: "API Response", color: "from-blue-400 to-violet-500", icon: "🚀" },
-              { value: `${activeDevs}+`, label: "Active Builders", color: "from-violet-400 to-purple-500", icon: "👨‍💻" }
+              { value: blockHeight.toLocaleString(), label: "Blocks Processed", color: "from-cyan-400 to-blue-500", Icon: Blocks },
+              { value: `${apiUptime.toFixed(1)}%`, label: "Network Uptime", color: "from-emerald-400 to-green-500", Icon: Zap },
+              { value: `${Math.round(apiResponseTime)}ms`, label: "API Response", color: "from-blue-400 to-violet-500", Icon: Activity },
+              { value: `${activeDevs}+`, label: "Active Builders", color: "from-violet-400 to-purple-500", Icon: Users }
             ].map((stat, index) => (
               <div key={index} className="group text-center hover:scale-105 transition-all duration-300">
-                <div className="relative mb-4">
+                <div className="relative mb-6">
                   <div className={`absolute inset-0 bg-gradient-to-r ${stat.color} rounded-2xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`} />
+                  <div className="relative flex justify-center mb-4">
+                    <div className={`p-3 bg-gradient-to-r ${stat.color} rounded-2xl`}>
+                      <stat.Icon className="w-8 h-8 text-white" strokeWidth={2} />
+                    </div>
+                  </div>
                   <div className={`relative bg-gradient-to-r ${stat.color} bg-clip-text text-transparent text-2xl sm:text-4xl md:text-5xl font-black mb-2`}>
                     {stat.value}
                   </div>
                 </div>
-                <div className="text-gray-400 text-xs sm:text-sm font-medium tracking-wider uppercase">
+                <div className="text-gray-400 text-sm sm:text-base font-medium tracking-wide">
                   {stat.label}
                 </div>
               </div>
@@ -154,9 +190,9 @@ export default function Hero() {
           {/* Dribbble-inspired CTA section */}
           <div className="text-center space-y-10">
             <p className="text-lg sm:text-2xl md:text-3xl font-light text-gray-300 max-w-4xl mx-auto leading-relaxed">
-              Enterprise-ready blockchain infrastructure
+              Everything as SaaS, Everything in NOR
               <span className="block mt-2 sm:mt-3 text-base sm:text-xl text-gray-400 font-light">
-                Powering the next generation of decentralized applications
+                12 integrated applications • Payments • Accounting • Messaging • Trading • Governance
               </span>
             </p>
 

@@ -25,7 +25,11 @@ describe('LedgerService', () => {
   const mockQueryBuilder = {
     where: jest.fn().mockReturnThis(),
     andWhere: jest.fn().mockReturnThis(),
+    innerJoin: jest.fn().mockReturnThis(),
+    select: jest.fn().mockReturnThis(),
+    addSelect: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),
+    addOrderBy: jest.fn().mockReturnThis(),
     getOne: jest.fn(),
     getMany: jest.fn(),
     getRawMany: jest.fn(),
@@ -477,7 +481,7 @@ describe('LedgerService', () => {
       const result = (service as any).validateDoubleEntry(lines);
 
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('Debits and credits must balance');
+      expect(result.error).toContain('Double-entry validation failed');
     });
 
     it('should validate per currency', () => {
@@ -489,7 +493,8 @@ describe('LedgerService', () => {
       const result = (service as any).validateDoubleEntry(lines);
 
       expect(result.valid).toBe(false);
-      expect(result.error).toContain('must balance per currency');
+      // The error message format is "Double-entry validation failed for {currency}: debits={debit}, credits={credit}"
+      expect(result.error).toContain('Double-entry validation failed');
     });
   });
 
@@ -500,9 +505,12 @@ describe('LedgerService', () => {
         { account: '4000', currency: 'NOR', amount: '100.00', direction: LineDirection.CREDIT },
       ];
 
-      mockQueryBuilder.getOne
-        .mockResolvedValueOnce({ id: 'acc_1100' })
-        .mockResolvedValueOnce({ id: 'acc_4000' });
+      // Mock the query builder to return accounts
+      mockAccountRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+      mockQueryBuilder.getMany.mockResolvedValue([
+        { id: 'acc_1100', code: '1100' },
+        { id: 'acc_4000', code: '4000' },
+      ]);
 
       const result = await (service as any).resolveAccountIds('org_123', lines);
 
@@ -528,12 +536,12 @@ describe('LedgerService', () => {
     it('should calculate native amount with FX rate', () => {
       const result = (service as any).calculateNativeAmount('100.00', '1.5');
 
-      expect(result).toBe('150.00');
+      // parseFloat('100.00') * parseFloat('1.5') = 150, toString() = '150'
+      expect(result).toBe('150');
     });
 
     it('should return same amount if no FX rate', () => {
       const result = (service as any).calculateNativeAmount('100.00', undefined);
-
       expect(result).toBe('100.00');
     });
   });

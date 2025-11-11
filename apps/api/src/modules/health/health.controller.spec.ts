@@ -82,6 +82,33 @@ describe('HealthController', () => {
       expect(result).toBeDefined();
       expect(healthCheckService.check).toHaveBeenCalled();
     });
+
+    it('should handle database ping check', async () => {
+      await controller.readiness();
+      expect(healthCheckService.check).toHaveBeenCalled();
+      // The pingCheck is called inside the check function passed to healthCheckService.check
+      const checkCalls = healthCheckService.check.mock.calls[0][0];
+      expect(checkCalls).toHaveLength(1);
+      // Execute the check function to verify it calls pingCheck
+      await checkCalls[0]();
+      expect(db.pingCheck).toHaveBeenCalledWith('database');
+    });
+  });
+
+  describe('check', () => {
+    it('should check all health indicators', async () => {
+      await controller.check();
+
+      expect(healthCheckService.check).toHaveBeenCalled();
+      const checkCalls = healthCheckService.check.mock.calls[0][0];
+      expect(checkCalls).toHaveLength(4);
+    });
+
+    it('should handle health check errors gracefully', async () => {
+      healthCheckService.check.mockRejectedValue(new Error('Health check failed'));
+
+      await expect(controller.check()).rejects.toThrow('Health check failed');
+    });
   });
 });
 

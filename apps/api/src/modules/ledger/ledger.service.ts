@@ -457,8 +457,12 @@ export class LedgerService {
   /**
    * Calculate native amount (NOR) from amount and FX rate
    */
-  private calculateNativeAmount(amount: string, fxRate: string): string {
-    return (parseFloat(amount) * parseFloat(fxRate)).toString();
+  private calculateNativeAmount(amount: string, fxRate?: string): string {
+    if (!fxRate) {
+      return amount; // Return original amount if no FX rate provided
+    }
+    const result = parseFloat(amount) * parseFloat(fxRate);
+    return isNaN(result) ? amount : result.toString();
   }
 
   /**

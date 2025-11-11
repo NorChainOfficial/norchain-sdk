@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { MessageSquare, Twitter, Send, Github, FileText, Youtube, CheckCircle2 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export default function Community() {
   const [email, setEmail] = useState("");
@@ -18,53 +20,66 @@ export default function Community() {
     }
   };
 
-  const socialLinks = [
+  const socialLinks: readonly {
+    readonly name: string;
+    readonly Icon: LucideIcon;
+    readonly url: string;
+    readonly members: string;
+    readonly description: string;
+    readonly color: string;
+  }[] = [
     {
       name: "Discord",
-      icon: "💬",
+      Icon: MessageSquare,
       url: "https://discord.gg/noorchain",
       members: "5,000+",
       description: "Join our community discussions",
+      color: "from-indigo-500 to-purple-600",
     },
     {
       name: "Twitter",
-      icon: "🐦",
+      Icon: Twitter,
       url: "https://twitter.com/noorchain",
       members: "12,000+",
       description: "Latest updates and announcements",
+      color: "from-blue-400 to-cyan-500",
     },
     {
       name: "Telegram",
-      icon: "✈️",
+      Icon: Send,
       url: "https://t.me/noorchain",
       members: "8,000+",
       description: "Real-time chat with the team",
+      color: "from-cyan-500 to-blue-600",
     },
     {
       name: "GitHub",
-      icon: "💻",
+      Icon: Github,
       url: "https://github.com/noorchain",
       members: "500+ stars",
       description: "Open source contributions",
+      color: "from-gray-600 to-slate-700",
     },
     {
       name: "Medium",
-      icon: "📝",
+      Icon: FileText,
       url: "https://medium.com/@noor",
       members: "3,000+",
       description: "Technical articles and updates",
+      color: "from-green-500 to-emerald-600",
     },
     {
       name: "YouTube",
-      icon: "📺",
+      Icon: Youtube,
       url: "https://youtube.com/@noorchain",
       members: "2,000+",
       description: "Tutorials and demos",
+      color: "from-red-500 to-pink-600",
     },
-  ];
+  ] as const;
 
   return (
-    <section id="community" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
+    <section id="community" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-br from-purple-500/10 via-blue-500/15 to-indigo-500/10 rounded-full blur-3xl" />
@@ -103,13 +118,13 @@ export default function Community() {
                 
                 <div className="flex items-start gap-6 relative">
                   {/* Modern social icon */}
-                  <div className="relative">
-                    <div className="absolute -inset-2 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
-                    <div className="relative text-4xl h-16 w-16 bg-gradient-to-br from-purple-400 to-blue-500 rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-all duration-500">
-                      {social.icon}
+                  <div className="relative flex-shrink-0">
+                    <div className={`absolute -inset-1 bg-gradient-to-br ${social.color} rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+                    <div className={`relative h-14 w-14 bg-gradient-to-br ${social.color} rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-500`}>
+                      <social.Icon className="h-7 w-7 text-white" strokeWidth={2} />
                     </div>
                   </div>
-                  
+
                   <div className="flex-1">
                     <h3 className="text-xl font-bold mb-2 text-white group-hover:text-purple-300 transition-colors duration-300">
                       {social.name}
@@ -117,7 +132,7 @@ export default function Community() {
                     <div className="text-purple-400 text-sm mb-3 font-semibold">
                       {social.members}
                     </div>
-                    <p className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+                    <p className="text-gray-400 text-base leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
                       {social.description}
                     </p>
                   </div>
@@ -158,9 +173,10 @@ export default function Community() {
               <button
                 type="submit"
                 disabled={subscribed}
-                className="relative px-12 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="relative px-12 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/30 transition-all duration-500 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center gap-2"
               >
-                {subscribed ? "✅ Subscribed!" : "Subscribe"}
+                {subscribed && <CheckCircle2 className="w-5 h-5" />}
+                {subscribed ? "Subscribed!" : "Subscribe"}
               </button>
             </div>
           </form>

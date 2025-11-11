@@ -1,58 +1,60 @@
 "use client";
 
+import { Settings, FileCode, Building2, Zap, HardDrive, Plug2, Wallet, Hammer, CreditCard, PieChart, Globe, BookOpen } from "lucide-react";
+
 export default function TechnologyStack() {
   const technologies = [
     {
       category: "Consensus",
-      name: "Proof of Authority (PoA)",
+      name: "Proof of Stake (PoS)",
       description:
-        "Fast, efficient, and environmentally friendly consensus mechanism",
-      icon: "⚙️",
+        "Energy-efficient consensus with 500+ validators securing the network through NOR staking",
+      Icon: Settings,
     },
     {
       category: "Smart Contracts",
       name: "EVM Compatible",
       description:
-        "Full Ethereum Virtual Machine compatibility with Solidity support",
-      icon: "📜",
+        "Full Ethereum Virtual Machine compatibility with Solidity support for seamless migration",
+      Icon: FileCode,
     },
     {
       category: "Infrastructure",
-      name: "Go Ethereum (Geth)",
-      description: "Built on battle-tested Ethereum infrastructure",
-      icon: "🏗️",
+      name: "NorChain OS Core",
+      description: "Purpose-built blockchain operating system optimized for SaaS applications",
+      Icon: Building2,
     },
     {
-      category: "Networking",
-      name: "P2P Gossip Protocol",
-      description: "Efficient peer-to-peer network communication",
-      icon: "🌐",
+      category: "Performance",
+      name: "3-Second Finality",
+      description: "Ultra-fast transaction confirmation with 10,000+ TPS capacity",
+      Icon: Zap,
     },
     {
       category: "Storage",
-      name: "LevelDB",
-      description: "High-performance key-value storage for blockchain data",
-      icon: "💾",
+      name: "Multi-Layer Architecture",
+      description: "Optimized storage for blockchain data, accounting, and compliance records",
+      Icon: HardDrive,
     },
     {
       category: "APIs",
-      name: "JSON-RPC & WebSocket",
-      description: "Standard Ethereum APIs for seamless integration",
-      icon: "🔌",
+      name: "Unified SDK",
+      description: "Single SDK for all NorChain OS applications with revenue sharing for developers",
+      Icon: Plug2,
     },
   ];
 
   const tools = [
-    { name: "MetaMask", logo: "🦊" },
-    { name: "Hardhat", logo: "⚒️" },
-    { name: "Truffle", logo: "🍫" },
-    { name: "Remix", logo: "🎛️" },
-    { name: "Web3.js", logo: "🌐" },
-    { name: "Ethers.js", logo: "📚" },
+    { name: "MetaMask", Icon: Wallet },
+    { name: "Hardhat", Icon: Hammer },
+    { name: "NorPay SDK", Icon: CreditCard },
+    { name: "NorLedger API", Icon: PieChart },
+    { name: "Web3.js", Icon: Globe },
+    { name: "Ethers.js", Icon: BookOpen },
   ];
 
   return (
-    <section id="technology" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
+    <section id="technology" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
         <div className="absolute top-20 right-20 w-[600px] h-[600px] bg-gradient-to-br from-amber-500/10 via-orange-500/15 to-red-500/10 rounded-full blur-3xl" />
@@ -70,7 +72,7 @@ export default function TechnologyStack() {
             <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 rounded-full" />
           </div>
           <p className="text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed">
-            Built on proven, production-ready blockchain technology
+            Enterprise-grade blockchain operating system powering the complete digital commerce stack
           </p>
         </div>
 
@@ -93,17 +95,17 @@ export default function TechnologyStack() {
                   </div>
                 </div>
 
-                <div className="flex items-start gap-6 relative">
+                <div className="flex items-start gap-5 relative">
                   {/* Modern tech icon */}
-                  <div className="relative">
-                    <div className="absolute -inset-2 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
-                    <div className="relative text-5xl h-16 w-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
-                      {tech.icon}
+                  <div className="relative flex-shrink-0">
+                    <div className="absolute -inset-1 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
+                    <div className="relative h-14 w-14 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-500">
+                      <tech.Icon className="h-7 w-7 text-white" strokeWidth={2} />
                     </div>
                   </div>
-                  
+
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-amber-300 transition-colors duration-300">
+                    <h3 className="text-xl font-bold mb-3 text-white group-hover:text-amber-300 transition-colors duration-300">
                       {tech.name}
                     </h3>
                     <p className="text-gray-400 text-base leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
@@ -126,22 +128,28 @@ export default function TechnologyStack() {
         {/* Modern compatible tools section */}
         <div className="bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-10 shadow-2xl mb-16">
           <h3 className="text-3xl font-bold text-center mb-10 text-white">
-            Works with Your Favorite Tools
+            Complete Developer Ecosystem
           </h3>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tools.map((tool, index) => (
               <div
                 key={tool.name}
-                className="group text-center transition-all duration-300 hover:scale-110"
+                className="group transition-all duration-300 hover:scale-105"
               >
-                <div className="relative mb-4">
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-3xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="relative bg-gray-800/60 backdrop-blur-sm border border-gray-600/40 rounded-3xl p-6 hover:bg-gray-700/60 hover:border-gray-500/50 transition-all duration-300 shadow-lg">
-                    <div className="text-4xl mb-2">{tool.logo}</div>
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="relative bg-gray-800/60 backdrop-blur-sm border border-gray-600/40 rounded-2xl p-6 hover:bg-gray-700/60 hover:border-gray-500/50 transition-all duration-300 shadow-lg">
+                    <div className="flex items-center gap-4">
+                      <div className="relative flex-shrink-0">
+                        <div className="h-12 w-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center">
+                          <tool.Icon className="w-6 h-6 text-white" strokeWidth={2} />
+                        </div>
+                      </div>
+                      <div className="text-lg font-bold text-white group-hover:text-amber-300 transition-colors duration-300">
+                        {tool.name}
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="text-sm font-semibold text-gray-400 group-hover:text-gray-200 transition-colors duration-300">
-                  {tool.name}
                 </div>
               </div>
             ))}

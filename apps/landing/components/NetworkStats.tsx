@@ -112,7 +112,7 @@ export default function NetworkStats() {
   ];
 
   return (
-    <section id="network-stats" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
+    <section id="network-stats" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-br from-green-500/10 via-emerald-500/15 to-cyan-500/10 rounded-full blur-3xl" />
@@ -134,43 +134,52 @@ export default function NetworkStats() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
           {stats.map((stat, index) => (
             <div
               key={stat.label}
-              className="group text-center hover:scale-105 transition-all duration-300"
+              className="group hover:scale-105 transition-all duration-300"
             >
-              <div className="relative mb-6">
+              <div className="relative">
                 <div className={`absolute inset-0 ${
                   stat.highlight ? 'bg-gradient-to-r from-emerald-400 to-green-500' : 'bg-gradient-to-r from-cyan-400 to-blue-500'
                 } rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-300`} />
-                <div className="relative bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-6 hover:bg-gray-900/60 hover:border-gray-600/70 transition-all duration-300 shadow-2xl">
-                  <div className="flex justify-center mb-4">
-                    <div className={`h-16 w-16 ${
-                      stat.highlight ? 'bg-gradient-to-br from-emerald-400 to-green-500' : 'bg-gradient-to-br from-cyan-400 to-blue-500'
-                    } rounded-2xl flex items-center justify-center shadow-lg`}>
-                      <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon}/>
-                      </svg>
+                <div className="relative bg-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8 hover:bg-gray-900/60 hover:border-gray-600/70 transition-all duration-300 shadow-2xl">
+
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="relative flex-shrink-0">
+                      <div className={`absolute -inset-1 ${
+                        stat.highlight ? 'bg-gradient-to-br from-emerald-400 to-green-500' : 'bg-gradient-to-br from-cyan-400 to-blue-500'
+                      } rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+                      <div className={`relative h-14 w-14 ${
+                        stat.highlight ? 'bg-gradient-to-br from-emerald-400 to-green-500' : 'bg-gradient-to-br from-cyan-400 to-blue-500'
+                      } rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-500`}>
+                        <svg className="h-7 w-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={stat.icon}/>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div className="flex-1">
+                      <div className="text-sm text-gray-400 mb-2 font-medium tracking-wider uppercase">
+                        {stat.label}
+                      </div>
+                      <div
+                        className={`text-2xl font-black flex items-center ${
+                          stat.highlight
+                            ? 'bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent'
+                            : 'bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent'
+                        }`}
+                      >
+                        {stat.isStatus && (
+                          <span className="inline-block w-3 h-3 bg-emerald-400 rounded-full mr-2 animate-pulse"></span>
+                        )}
+                        {stat.value}
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="text-sm text-gray-400 mb-3 font-medium tracking-wider uppercase text-center">
-                    {stat.label}
-                  </div>
-                  <div
-                    className={`text-2xl font-black mb-2 flex items-center justify-center ${
-                      stat.highlight 
-                        ? 'bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent' 
-                        : 'bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent'
-                    }`}
-                  >
-                    {stat.isStatus && (
-                      <span className="inline-block w-3 h-3 bg-emerald-400 rounded-full mr-2 animate-pulse"></span>
-                    )}
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-gray-500 text-center">{stat.subtext}</div>
+
+                  <div className="text-base text-gray-500">{stat.subtext}</div>
                 </div>
               </div>
             </div>

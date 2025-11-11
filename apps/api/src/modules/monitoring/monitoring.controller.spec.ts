@@ -1,91 +1,76 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MonitoringController } from './monitoring.controller';
-import { MonitoringService } from './monitoring.service';
-import { PrometheusService } from './services/prometheus.service';
+import { PerformanceMonitorService } from './performance-monitor.service';
 
 describe('MonitoringController', () => {
   let controller: MonitoringController;
-  let monitoringService: jest.Mocked<MonitoringService>;
-  let prometheusService: jest.Mocked<PrometheusService>;
+  let performanceMonitorService: jest.Mocked<PerformanceMonitorService>;
 
   beforeEach(async () => {
-    const mockMonitoringService = {
-      getHealth: jest.fn(),
-      getStats: jest.fn(),
-    };
-    const mockPrometheusService = {
-      getMetrics: jest.fn(),
+    const mockPerformanceMonitorService = {
+      getAllStats: jest.fn(),
+      getHealthMetrics: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [MonitoringController],
       providers: [
         {
-          provide: MonitoringService,
-          useValue: mockMonitoringService,
-        },
-        {
-          provide: PrometheusService,
-          useValue: mockPrometheusService,
+          provide: PerformanceMonitorService,
+          useValue: mockPerformanceMonitorService,
         },
       ],
     }).compile();
 
     controller = module.get<MonitoringController>(MonitoringController);
-    monitoringService = module.get(MonitoringService);
-    prometheusService = module.get(PrometheusService);
+    performanceMonitorService = module.get(PerformanceMonitorService);
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('getMetrics', () => {
-    it('should return Prometheus metrics', async () => {
-      const mockMetrics = '# HELP blocks_per_second Blocks produced per second\nblocks_per_second 0.33\n';
-      prometheusService.getMetrics.mockResolvedValue(mockMetrics);
+  describe('getPerformanceStats', () => {
+    it('should return performance statistics', async () => {
+      const mockStats = [
+        {
+          endpoint: '/api/test',
+          method: 'GET',
+          requestCount: 10,
+          averageDuration: 50,
+          minDuration: 20,
+          maxDuration: 100,
+          errorRate: 0,
+          p50: 50,
+          p95: 95,
+          p99: 99,
+        },
+      ];
+      performanceMonitorService.getAllStats.mockReturnValue(mockStats);
 
-      const result = await controller.getMetrics();
-
-      expect(result).toBe(mockMetrics);
-      expect(prometheusService.getMetrics).toHaveBeenCalled();
-    });
-  });
-
-  describe('getHealth', () => {
-    it('should return health status', async () => {
-      const mockHealth = {
-        status: 'healthy',
-        timestamp: Date.now(),
-        blockNumber: '0x123',
-        uptime: 1000,
-      };
-      monitoringService.getHealth.mockResolvedValue(mockHealth);
-
-      const result = await controller.getHealth();
-
-      expect(result).toEqual(mockHealth);
-      expect(monitoringService.getHealth).toHaveBeenCalled();
-    });
-  });
-
-  describe('getStats', () => {
-    it('should return node statistics', async () => {
-      const mockStats = {
-        blocksPerSecond: 0.33,
-        txpoolSize: 0,
-        cpuUsage: { user: 1000, system: 500 } as NodeJS.CpuUsage,
-        memoryUsage: { heapUsed: 1000000 } as NodeJS.MemoryUsage,
-        currentBlock: '0x123',
-        gasPrice: '0x3b9aca00',
-      };
-      monitoringService.getStats.mockResolvedValue(mockStats);
-
-      const result = await controller.getStats();
+      const result = await controller.getPerformanceStats(3600000);
 
       expect(result).toEqual(mockStats);
-      expect(monitoringService.getStats).toHaveBeenCalled();
+      expect(performanceMonitorService.getAllStats).toHaveBeenCalledWith(3600000);
+    });
+  });
+
+  describe('getHealthMetrics', () => {
+    it('should return health metrics', async () => {
+      const mockHealth = {
+        totalRequests: 100,
+        errors: 2,
+        errorRate: 0.02,
+        averageResponseTime: 50,
+        requestsPerSecond: 0.33,
+        timestamp: new Date().toISOString(),
+      };
+      performanceMonitorService.getHealthMetrics.mockReturnValue(mockHealth);
+
+      const result = await controller.getHealthMetrics();
+
+      expect(result).toEqual(mockHealth);
+      expect(performanceMonitorService.getHealthMetrics).toHaveBeenCalled();
     });
   });
 });
-

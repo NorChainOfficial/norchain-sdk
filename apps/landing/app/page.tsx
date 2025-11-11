@@ -1,6 +1,9 @@
 import Header from "../components/Header";
 import Hero from "../components/Hero";
+import NorChainOS from "../components/NorChainOS";
 import Features from "../components/Features";
+import ApplicationsEcosystem from "../components/ApplicationsEcosystem";
+import TokenEconomy from "../components/TokenEconomy";
 import EcosystemOverview from "../components/EcosystemOverview";
 import DeveloperQuickStart from "../components/DeveloperQuickStart";
 import EnterpriseFeatures from "../components/EnterpriseFeatures";
@@ -17,7 +20,10 @@ export default function Home() {
     <div className="min-h-screen bg-black">
       <Header />
       <Hero />
+      <NorChainOS />
       <Features />
+      <ApplicationsEcosystem />
+      <TokenEconomy />
       <EcosystemOverview />
       <DeveloperQuickStart />
       <EnterpriseFeatures />

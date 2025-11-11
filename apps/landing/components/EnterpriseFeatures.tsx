@@ -66,7 +66,7 @@ export default function EnterpriseFeatures(): JSX.Element {
   ] as const;
 
   return (
-    <section id="enterprise" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
+    <section id="enterprise" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
         <div className="absolute top-20 right-20 w-[600px] h-[600px] bg-gradient-to-br from-indigo-500/10 via-purple-500/15 to-violet-500/10 rounded-full blur-3xl" />

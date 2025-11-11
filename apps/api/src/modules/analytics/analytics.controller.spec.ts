@@ -75,6 +75,50 @@ describe('AnalyticsController', () => {
       expect(result).toEqual(mockResponse);
       expect(service.getTransactionAnalytics).toHaveBeenCalledWith(address, days);
     });
+
+    it('should validate and clamp days to valid range', async () => {
+      const address = '0x123';
+      const mockResponse = ResponseDto.success({
+        address,
+        period: '30 days',
+        totalTransactions: 0,
+        totalSent: '0',
+        totalReceived: '0',
+        netFlow: '0',
+        totalGasUsed: '0',
+        averageGasPerTx: '0',
+        successRate: '0',
+      });
+
+      // Test days < 1
+      service.getTransactionAnalytics.mockResolvedValue(mockResponse);
+      await controller.getTransactionAnalytics(address, 0);
+      expect(service.getTransactionAnalytics).toHaveBeenCalledWith(address, 30);
+
+      // Test days > 365
+      await controller.getTransactionAnalytics(address, 500);
+      expect(service.getTransactionAnalytics).toHaveBeenCalledWith(address, 30);
+    });
+
+    it('should use default days when not provided', async () => {
+      const address = '0x123';
+      const mockResponse = ResponseDto.success({
+        address,
+        period: '30 days',
+        totalTransactions: 0,
+        totalSent: '0',
+        totalReceived: '0',
+        netFlow: '0',
+        totalGasUsed: '0',
+        averageGasPerTx: '0',
+        successRate: '0',
+      });
+      service.getTransactionAnalytics.mockResolvedValue(mockResponse);
+
+      await controller.getTransactionAnalytics(address, 30);
+
+      expect(service.getTransactionAnalytics).toHaveBeenCalledWith(address, 30);
+    });
   });
 
   describe('getNetworkStatistics', () => {

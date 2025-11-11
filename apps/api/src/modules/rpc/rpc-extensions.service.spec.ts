@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { forwardRef } from '@nestjs/common';
 import { RPCExtensionsService } from './rpc-extensions.service';
 import { RpcService } from '@/common/services/rpc.service';
+import { MetadataService } from '../metadata/metadata.service';
 import { ethers } from 'ethers';
 
 describe('RPCExtensionsService', () => {
@@ -18,6 +20,10 @@ describe('RPCExtensionsService', () => {
     getProvider: jest.fn(() => mockProvider),
   };
 
+  const mockMetadataService = {
+    getAssetProfile: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -25,6 +31,10 @@ describe('RPCExtensionsService', () => {
         {
           provide: RpcService,
           useValue: mockRpcService,
+        },
+        {
+          provide: MetadataService,
+          useValue: mockMetadataService,
         },
       ],
     }).compile();

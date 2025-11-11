@@ -126,6 +126,41 @@ describe('AdminService', () => {
         skip: 0,
       });
     });
+
+    it('should return empty array when no validators found', async () => {
+      mockValidatorRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getValidators(50, 0);
+
+      expect(result.validators).toHaveLength(0);
+      expect(result.total).toBe(0);
+    });
+
+    it('should handle pagination correctly', async () => {
+      const mockValidators = [
+        {
+          id: 'validator-1',
+          address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          name: 'Validator 1',
+          status: ValidatorStatus.ACTIVE,
+          stake: '10000000000000000000000',
+          uptime: 99.5,
+          blocksProposed: 1000,
+          blocksMissed: 5,
+          complianceScore: 95,
+          location: 'Oslo',
+          lastActiveAt: new Date(),
+        },
+      ];
+
+      mockValidatorRepository.findAndCount.mockResolvedValue([mockValidators, 10]);
+
+      const result = await service.getValidators(10, 5);
+
+      expect(result).toHaveProperty('limit', 10);
+      expect(result).toHaveProperty('offset', 5);
+      expect(result).toHaveProperty('total', 10);
+    });
   });
 
   describe('getValidator', () => {
@@ -166,6 +201,35 @@ describe('AdminService', () => {
       expect(result).toHaveProperty('validator_id', validatorId);
       expect(result).toHaveProperty('slashingEvents');
       expect(result.slashingEvents).toHaveLength(1);
+    });
+
+    it('should return validator without slashing events', async () => {
+      const validatorId = 'validator-123';
+      const mockValidator = {
+        id: validatorId,
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        name: 'Validator 1',
+        status: ValidatorStatus.ACTIVE,
+        stake: '10000',
+        uptime: 99.5,
+        blocksProposed: 1000,
+        blocksMissed: 5,
+        complianceScore: 95,
+        location: 'Oslo',
+        licenseNumber: 'LIC-001',
+        metadata: {},
+        lastActiveAt: new Date(),
+        createdAt: new Date(),
+      };
+
+      mockValidatorRepository.findOne.mockResolvedValue(mockValidator);
+      mockSlashingRepository.find.mockResolvedValue([]);
+
+      const result = await service.getValidator(validatorId);
+
+      expect(result).toHaveProperty('validator_id', validatorId);
+      expect(result).toHaveProperty('slashingEvents');
+      expect(result.slashingEvents).toHaveLength(0);
     });
 
     it('should throw NotFoundException if validator not found', async () => {
@@ -249,6 +313,41 @@ describe('AdminService', () => {
       expect(result).toHaveProperty('events');
       expect(result.events).toHaveLength(1);
     });
+
+    it('should return empty array when no events found', async () => {
+      mockSlashingRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getSlashingEvents(50, 0);
+
+      expect(result.events).toHaveLength(0);
+      expect(result.total).toBe(0);
+    });
+
+    it('should handle pagination correctly', async () => {
+      const mockEvents = [
+        {
+          id: 'event-1',
+          validatorId: 'validator-1',
+          validator: {
+            address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+          },
+          reason: SlashingReason.DOWNTIME,
+          slashedAmount: '100',
+          description: 'Downtime',
+          txHash: '0x123',
+          blockNumber: 1000,
+          createdAt: new Date(),
+        },
+      ];
+
+      mockSlashingRepository.findAndCount.mockResolvedValue([mockEvents, 5]);
+
+      const result = await service.getSlashingEvents(10, 2);
+
+      expect(result).toHaveProperty('limit', 10);
+      expect(result).toHaveProperty('offset', 2);
+      expect(result).toHaveProperty('total', 5);
+    });
   });
 
   describe('updateParams', () => {
@@ -318,6 +417,33 @@ describe('AdminService', () => {
       expect(result).toHaveProperty('flags');
       expect(result.flags).toHaveLength(1);
     });
+
+    it('should return empty array when no flags exist', async () => {
+      mockFeatureFlagRepository.find.mockResolvedValue([]);
+
+      const result = await service.getFeatureFlags();
+
+      expect(result.flags).toHaveLength(0);
+    });
+
+    it('should return flags with conditions', async () => {
+      const mockFlags = [
+        {
+          id: 'flag-1',
+          key: 'enable_bridge_v2',
+          description: 'Bridge V2',
+          enabled: true,
+          conditions: { percentage: 50, regions: ['US', 'EU'] },
+        },
+      ];
+
+      mockFeatureFlagRepository.find.mockResolvedValue(mockFlags);
+
+      const result = await service.getFeatureFlags();
+
+      expect(result.flags[0]).toHaveProperty('conditions');
+      expect(result.flags[0].conditions).toEqual({ percentage: 50, regions: ['US', 'EU'] });
+    });
   });
 
   describe('getAuditLog', () => {
@@ -355,6 +481,41 @@ describe('AdminService', () => {
         take: 100,
         skip: 0,
       });
+    });
+
+    it('should filter by userId only', async () => {
+      mockAuditLogRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      await service.getAuditLog(100, 0, 'user-123');
+
+      expect(mockAuditLogRepository.findAndCount).toHaveBeenCalledWith({
+        where: { userId: 'user-123' },
+        order: { createdAt: 'DESC' },
+        take: 100,
+        skip: 0,
+      });
+    });
+
+    it('should filter by resourceType only', async () => {
+      mockAuditLogRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      await service.getAuditLog(100, 0, undefined, 'validator');
+
+      expect(mockAuditLogRepository.findAndCount).toHaveBeenCalledWith({
+        where: { resourceType: 'validator' },
+        order: { createdAt: 'DESC' },
+        take: 100,
+        skip: 0,
+      });
+    });
+
+    it('should return empty array when no logs found', async () => {
+      mockAuditLogRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      const result = await service.getAuditLog(100, 0);
+
+      expect(result.logs).toHaveLength(0);
+      expect(result.total).toBe(0);
     });
   });
 });

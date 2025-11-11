@@ -72,7 +72,7 @@ print(f"Balance: {w3.from_wei(balance, 'ether')} NOR")`,
   ] as const;
 
   return (
-    <section id="developer-tools" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-20 relative overflow-hidden">
+    <section id="developer-tools" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-20 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/10 via-cyan-500/15 to-blue-500/10 rounded-full blur-3xl" />

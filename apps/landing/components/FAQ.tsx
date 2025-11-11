@@ -19,7 +19,7 @@ export default function FAQ() {
         },
         {
           q: "Is Noor truly decentralized?",
-          a: "Noor uses Proof of Authority (PoA) consensus with 500+ validators globally. While more centralized than Ethereum's PoS, this enables our ultra-low fees and fast finality. We're working toward full decentralization by Q4 2025.",
+          a: "NorChain uses Proof of Stake (PoS) consensus with 500+ validators globally. Validators stake NOR tokens to secure the network and earn rewards, enabling ultra-low fees and fast finality while maintaining decentralization.",
         },
       ],
     },
@@ -79,7 +79,7 @@ export default function FAQ() {
       questions: [
         {
           q: "What consensus mechanism does Noor use?",
-          a: "Proof of Authority (PoA) with 500+ validators. This enables our fast finality and low fees while maintaining security through reputable validator nodes.",
+          a: "Proof of Stake (PoS) with 500+ validators. Validators stake NOR tokens to secure the network, enabling fast finality and low fees while maintaining true decentralization.",
         },
         {
           q: "Is Noor secure?",
@@ -94,7 +94,7 @@ export default function FAQ() {
   ];
 
   return (
-    <section id="faq" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-20 relative overflow-hidden">
+    <section id="faq" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-20 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-br from-pink-500/10 via-rose-500/15 to-red-500/10 rounded-full blur-3xl" />

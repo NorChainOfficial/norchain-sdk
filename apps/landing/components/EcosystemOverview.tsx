@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { Code2, Zap, Search, FileCode, Lock, BarChart3, Boxes, Cpu, Wallet } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface DeveloperEcosystemComponent {
   readonly name: string;
@@ -8,7 +10,7 @@ interface DeveloperEcosystemComponent {
   readonly category: string;
   readonly link: string;
   readonly color: string;
-  readonly iconPath: string;
+  readonly Icon: LucideIcon;
 }
 
 export default function EcosystemOverview() {
@@ -21,7 +23,7 @@ export default function EcosystemOverview() {
       category: "Core API",
       link: "https://api.norchain.org/api-docs",
       color: "from-blue-600 to-blue-700",
-      iconPath: "M10 20l4-16m18 4l4 4-4 4M6 16l-4-4 4-4",
+      Icon: Code2,
     },
     {
       name: "WebSocket Streams",
@@ -29,7 +31,7 @@ export default function EcosystemOverview() {
       category: "Real-time",
       link: "https://docs.norchain.org/websockets",
       color: "from-green-600 to-green-700",
-      iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
+      Icon: Zap,
     },
     {
       name: "Block Explorer API",
@@ -37,7 +39,7 @@ export default function EcosystemOverview() {
       category: "Data Access",
       link: "https://explorer.norchain.org/api",
       color: "from-purple-600 to-purple-700",
-      iconPath: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
+      Icon: Search,
     },
     {
       name: "Smart Contract Tools",
@@ -45,7 +47,7 @@ export default function EcosystemOverview() {
       category: "Development",
       link: "https://docs.norchain.org/smart-contracts",
       color: "from-amber-600 to-amber-700",
-      iconPath: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+      Icon: FileCode,
     },
     {
       name: "Authentication SDKs",
@@ -53,7 +55,7 @@ export default function EcosystemOverview() {
       category: "Security",
       link: "https://docs.norchain.org/auth",
       color: "from-red-600 to-red-700",
-      iconPath: "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
+      Icon: Lock,
     },
     {
       name: "Analytics Suite",
@@ -61,7 +63,7 @@ export default function EcosystemOverview() {
       category: "Analytics",
       link: "https://analytics.norchain.org",
       color: "from-cyan-600 to-cyan-700",
-      iconPath: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+      Icon: BarChart3,
     },
     {
       name: "Monitoring Tools",
@@ -69,7 +71,7 @@ export default function EcosystemOverview() {
       category: "DevOps",
       link: "https://monitor.norchain.org",
       color: "from-indigo-600 to-indigo-700",
-      iconPath: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z",
+      Icon: Cpu,
     },
     {
       name: "Test Networks",
@@ -77,7 +79,7 @@ export default function EcosystemOverview() {
       category: "Testing",
       link: "https://testnet.norchain.org",
       color: "from-emerald-600 to-emerald-700",
-      iconPath: "M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547A8.014 8.014 0 004 21h4.722a8.014 8.014 0 00.962-3.428L10 16.5l.316 1.072A8.014 8.014 0 0011.278 21H16a8.014 8.014 0 00-.244-5.572z",
+      Icon: Boxes,
     },
     {
       name: "Client Libraries",
@@ -85,12 +87,12 @@ export default function EcosystemOverview() {
       category: "SDKs",
       link: "https://docs.norchain.org/sdks",
       color: "from-pink-600 to-pink-700",
-      iconPath: "M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
+      Icon: Wallet,
     },
   ] as const;
 
   return (
-    <section id="ecosystem" className="py-32 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
+    <section id="ecosystem" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-20 w-[500px] h-[500px] bg-gradient-to-br from-purple-500/10 via-violet-500/15 to-blue-500/10 rounded-full blur-3xl" />
@@ -151,20 +153,19 @@ export default function EcosystemOverview() {
                   </div>
                 </div>
 
-                {/* Icon with enhanced depth and glow */}
-                <div className="relative mb-8">
-                  <div className={`absolute -inset-2 bg-gradient-to-br ${component.color} rounded-3xl blur-xl opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
-                  <div className={`relative h-20 w-20 bg-gradient-to-br ${component.color} rounded-3xl flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-all duration-500`}>
-                    <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={component.iconPath}/>
-                    </svg>
+                {/* Icon and Title in one line */}
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="relative flex-shrink-0">
+                    <div className={`absolute -inset-1 bg-gradient-to-br ${component.color} rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500`} />
+                    <div className={`relative h-14 w-14 bg-gradient-to-br ${component.color} rounded-2xl flex items-center justify-center shadow-xl transform group-hover:scale-110 transition-all duration-500`}>
+                      <component.Icon className="h-7 w-7 text-white" strokeWidth={2} />
+                    </div>
                   </div>
-                </div>
 
-                {/* Enhanced typography */}
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-300 transition-colors duration-300">
-                  {component.name}
-                </h3>
+                  <h3 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300">
+                    {component.name}
+                  </h3>
+                </div>
                 
                 <p className="text-gray-400 text-base font-normal leading-relaxed mb-8 group-hover:text-gray-300 transition-colors duration-300">
                   {component.description}
