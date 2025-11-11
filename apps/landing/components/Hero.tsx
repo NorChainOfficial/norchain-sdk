@@ -62,7 +62,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative min-h-screen bg-black text-white overflow-hidden pt-20">
+    <section className="relative min-h-screen bg-black text-white overflow-hidden pt-8 sm:pt-12 lg:pt-20">
       {/* Dribbble-inspired background with advanced gradients */}
       <div className="absolute inset-0 overflow-hidden">
         {/* Large gradient orbs inspired by Web3 designs */}
@@ -90,7 +90,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-16 sm:py-16 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16 relative z-10">
         <div className="max-w-7xl mx-auto">
 
           {/* Two-column layout: Text + Globe */}
@@ -151,7 +151,7 @@ export default function Hero() {
             {/* Right: Interactive Globe */}
             <div className="order-1 lg:order-2">
               <Globe className="scale-90 lg:scale-100" />
-              <div className="text-center mt-6">
+              <div className="text-center mt-6 hidden lg:block">
                 <p className="text-sm text-gray-400 font-medium">
                   <span className="text-cyan-400 font-bold">15+</span> Global Infrastructure Nodes
                 </p>

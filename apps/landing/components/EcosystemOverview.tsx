@@ -22,7 +22,7 @@ export default function EcosystemOverview() {
       description: "Complete Ethereum-compatible API with enhanced features for enterprise applications",
       category: "Core API",
       link: "https://api.norchain.org/api-docs",
-      color: "from-blue-600 to-blue-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: Code2,
     },
     {
@@ -30,7 +30,7 @@ export default function EcosystemOverview() {
       description: "Real-time block, transaction, and event streaming for responsive applications",
       category: "Real-time",
       link: "https://docs.norchain.org/websockets",
-      color: "from-green-600 to-green-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: Zap,
     },
     {
@@ -38,7 +38,7 @@ export default function EcosystemOverview() {
       description: "Comprehensive blockchain data access with advanced filtering and analytics",
       category: "Data Access",
       link: "https://explorer.norchain.org/api",
-      color: "from-purple-600 to-purple-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: Search,
     },
     {
@@ -46,7 +46,7 @@ export default function EcosystemOverview() {
       description: "Development tools, testing frameworks, and deployment utilities for smart contracts",
       category: "Development",
       link: "https://docs.norchain.org/smart-contracts",
-      color: "from-amber-600 to-amber-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: FileCode,
     },
     {
@@ -54,7 +54,7 @@ export default function EcosystemOverview() {
       description: "Secure authentication and authorization libraries for multiple programming languages",
       category: "Security",
       link: "https://docs.norchain.org/auth",
-      color: "from-red-600 to-red-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: Lock,
     },
     {
@@ -62,7 +62,7 @@ export default function EcosystemOverview() {
       description: "Business intelligence tools and APIs for blockchain analytics and insights",
       category: "Analytics",
       link: "https://analytics.norchain.org",
-      color: "from-cyan-600 to-cyan-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: BarChart3,
     },
     {
@@ -70,7 +70,7 @@ export default function EcosystemOverview() {
       description: "Infrastructure monitoring, alerting, and performance optimization tools",
       category: "DevOps",
       link: "https://monitor.norchain.org",
-      color: "from-indigo-600 to-indigo-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: Cpu,
     },
     {
@@ -78,7 +78,7 @@ export default function EcosystemOverview() {
       description: "Staging and development environments with faucets and testing utilities",
       category: "Testing",
       link: "https://testnet.norchain.org",
-      color: "from-emerald-600 to-emerald-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: Boxes,
     },
     {
@@ -86,7 +86,7 @@ export default function EcosystemOverview() {
       description: "Official SDKs and libraries for JavaScript, Python, Go, and other popular languages",
       category: "SDKs",
       link: "https://docs.norchain.org/sdks",
-      color: "from-pink-600 to-pink-700",
+      color: "from-cyan-500 to-blue-600",
       Icon: Wallet,
     },
   ] as const;
@@ -95,21 +95,21 @@ export default function EcosystemOverview() {
     <section id="ecosystem" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-8 relative overflow-hidden">
       {/* Background elements inspired by Dribbble designs */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-[500px] h-[500px] bg-gradient-to-br from-purple-500/10 via-violet-500/15 to-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-[600px] h-[600px] bg-gradient-to-tl from-cyan-500/10 via-blue-500/15 to-emerald-500/10 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
+        <div className="absolute top-20 left-20 w-[500px] h-[500px] bg-gradient-to-br from-cyan-500/10 via-blue-500/15 to-cyan-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-[600px] h-[600px] bg-gradient-to-tl from-blue-500/10 via-cyan-500/15 to-blue-400/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
         {/* Bold Dribbble-inspired section header */}
         <div className="text-center mb-24">
           <div className="relative inline-block mb-8">
-            <h2 className="text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
+            <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
               Developer Tools
             </h2>
-            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500 rounded-full" />
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-400 rounded-full" />
           </div>
-          <p className="text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed mb-4">
+          <p className="text-lg sm:text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed mb-4">
             Comprehensive suite of developer tools, APIs, and infrastructure services
           </p>
           <p className="text-xl text-gray-500 max-w-3xl mx-auto leading-relaxed">
@@ -199,29 +199,29 @@ export default function EcosystemOverview() {
         {/* Modern CTA Section */}
         <div className="text-center">
           <div className="relative inline-block">
-            <div className="absolute -inset-6 bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-600 rounded-3xl blur-xl opacity-20" />
+            <div className="absolute -inset-6 bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-500 rounded-3xl blur-xl opacity-20" />
             <a
               href="https://docs.norchain.org/getting-started"
               target="_blank"
               rel="noopener noreferrer"
-              className="relative group inline-flex items-center gap-4 px-16 py-6 bg-gradient-to-r from-blue-600 via-violet-600 to-cyan-600 text-white rounded-3xl font-bold text-xl tracking-wide hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-500 hover:scale-105"
+              className="relative group inline-flex items-center gap-4 px-16 py-6 bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-500 text-white rounded-3xl font-bold text-xl tracking-wide hover:shadow-2xl hover:shadow-cyan-500/30 transition-all duration-500 hover:scale-105"
             >
               <span className="relative">Start Building</span>
               <svg className="w-6 h-6 transition-transform group-hover:translate-x-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-              
+
               {/* Button overlay effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
             </a>
           </div>
         </div>
 
         {/* Enhanced floating elements */}
-        <div className="absolute top-40 left-40 w-3 h-3 bg-cyan-400 rounded-full animate-pulse opacity-60" />
-        <div className="absolute top-60 right-32 w-2 h-2 bg-violet-400 rounded-full animate-pulse opacity-50" style={{animationDelay: '1s'}} />
-        <div className="absolute bottom-40 left-20 w-4 h-4 bg-blue-400 rounded-lg rotate-45 animate-pulse opacity-40" style={{animationDelay: '2s'}} />
-        <div className="absolute bottom-60 right-40 w-2 h-2 bg-emerald-400 rounded-full animate-pulse opacity-60" style={{animationDelay: '3s'}} />
+        <div className="absolute top-40 left-40 w-3 h-3 bg-cyan-500 rounded-full animate-pulse opacity-60" />
+        <div className="absolute top-60 right-32 w-2 h-2 bg-blue-500 rounded-full animate-pulse opacity-50" style={{animationDelay: '1s'}} />
+        <div className="absolute bottom-40 left-20 w-4 h-4 bg-cyan-600 rounded-lg rotate-45 animate-pulse opacity-40" style={{animationDelay: '2s'}} />
+        <div className="absolute bottom-60 right-40 w-2 h-2 bg-blue-600 rounded-full animate-pulse opacity-60" style={{animationDelay: '3s'}} />
       </div>
     </section>
   );

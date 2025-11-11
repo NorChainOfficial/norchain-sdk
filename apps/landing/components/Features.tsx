@@ -102,16 +102,16 @@ export default function Features() {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
         {/* Bold Dribbble-inspired section header */}
         <div className="text-center mb-16 sm:mb-24">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 border border-blue-500/30 rounded-full mb-6">
-            <Server className="w-4 h-4 text-blue-400" />
-            <span className="text-sm font-semibold text-blue-400">Enterprise-Grade Platform</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/30 rounded-full mb-6">
+            <Server className="w-4 h-4 text-amber-400" />
+            <span className="text-sm font-semibold text-amber-400">Enterprise-Grade Platform</span>
           </div>
 
           <div className="relative inline-block mb-6 sm:mb-8">
             <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
               Infrastructure
             </h2>
-            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500 rounded-full" />
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-amber-500 via-orange-500 to-yellow-500 rounded-full" />
           </div>
           <p className="text-lg sm:text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed mb-8">
             Production-ready blockchain infrastructure trusted by enterprises worldwide
@@ -120,10 +120,10 @@ export default function Features() {
           {/* Live Stats Bar */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
             {[
-              { value: 3, suffix: "s", label: "Block Finality", Icon: Zap, color: "from-yellow-400 to-orange-500" },
-              { value: 10000, suffix: "+", label: "TPS Capacity", Icon: Activity, color: "from-green-400 to-emerald-500", format: (n: number) => `${(n/1000).toFixed(0)}K` },
-              { value: 99.9, suffix: "%", label: "Uptime SLA", Icon: CheckCircle2, color: "from-blue-400 to-cyan-500", decimalPlaces: 1 },
-              { value: 100, prefix: "<", suffix: "ms", label: "API Response", Icon: TrendingUp, color: "from-purple-400 to-pink-500" }
+              { value: 3, suffix: "s", label: "Block Finality", Icon: Zap, color: "from-amber-400 to-orange-500" },
+              { value: 10000, suffix: "+", label: "TPS Capacity", Icon: Activity, color: "from-amber-400 to-orange-500", format: (n: number) => `${(n/1000).toFixed(0)}K` },
+              { value: 99.9, suffix: "%", label: "Uptime SLA", Icon: CheckCircle2, color: "from-amber-400 to-orange-500", decimalPlaces: 1 },
+              { value: 100, prefix: "<", suffix: "ms", label: "API Response", Icon: TrendingUp, color: "from-amber-400 to-orange-500" }
             ].map((stat, idx) => (
               <div key={idx} className="bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-4 hover:bg-gray-900/80 transition-all duration-300 hover:scale-105 group">
                 <div className="flex justify-center mb-2">
@@ -149,13 +149,13 @@ export default function Features() {
         {/* Infrastructure Connectivity Visualization with Animated Beams */}
         <div className="relative max-w-7xl mx-auto mb-24" ref={containerRef}>
           {/* Background glow effects */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/10 to-cyan-500/5 rounded-3xl blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 via-orange-500/10 to-yellow-500/5 rounded-3xl blur-3xl" />
 
           <div className="relative flex items-center justify-center py-40 px-4" style={{ minHeight: '700px' }}>
             {/* Central Core Node */}
             <Circle
               ref={coreRef}
-              className="border-4 border-blue-500 bg-gradient-to-br from-blue-500 to-purple-600 shadow-2xl shadow-blue-500/50 p-8"
+              className="border-4 border-amber-500 bg-gradient-to-br from-amber-400 to-orange-500 shadow-2xl shadow-amber-500/50 p-8"
             >
               <Server className="w-16 h-16 text-white" strokeWidth={2.5} />
             </Circle>
@@ -163,7 +163,7 @@ export default function Features() {
             {/* Security Node - Top Left */}
             <Circle
               ref={securityRef}
-              className="absolute top-10 left-1/4 border-4 border-cyan-500 bg-gradient-to-br from-cyan-400 to-blue-500 p-6"
+              className="absolute top-10 left-1/4 border-4 border-amber-500 bg-gradient-to-br from-amber-400 to-orange-500 p-6"
             >
               <Shield className="w-12 h-12 text-white" strokeWidth={2.5} />
             </Circle>
@@ -171,7 +171,7 @@ export default function Features() {
             {/* Performance Node - Top Right */}
             <Circle
               ref={performanceRef}
-              className="absolute top-10 right-1/4 border-4 border-purple-500 bg-gradient-to-br from-blue-400 to-purple-500 p-6"
+              className="absolute top-10 right-1/4 border-4 border-amber-500 bg-gradient-to-br from-amber-400 to-orange-500 p-6"
             >
               <Zap className="w-12 h-12 text-white" strokeWidth={2.5} />
             </Circle>
@@ -179,7 +179,7 @@ export default function Features() {
             {/* Scale Node - Bottom Left */}
             <Circle
               ref={scaleRef}
-              className="absolute bottom-10 left-1/4 border-4 border-pink-500 bg-gradient-to-br from-purple-400 to-pink-500 p-6"
+              className="absolute bottom-10 left-1/4 border-4 border-amber-500 bg-gradient-to-br from-amber-400 to-orange-500 p-6"
             >
               <Globe className="w-12 h-12 text-white" strokeWidth={2.5} />
             </Circle>
@@ -187,7 +187,7 @@ export default function Features() {
             {/* Compliance Node - Bottom Right */}
             <Circle
               ref={complianceRef}
-              className="absolute bottom-10 right-1/4 border-4 border-green-500 bg-gradient-to-br from-green-400 to-cyan-500 p-6"
+              className="absolute bottom-10 right-1/4 border-4 border-amber-500 bg-gradient-to-br from-amber-400 to-orange-500 p-6"
             >
               <Lock className="w-12 h-12 text-white" strokeWidth={2.5} />
             </Circle>
@@ -197,8 +197,8 @@ export default function Features() {
               containerRef={containerRef}
               fromRef={coreRef}
               toRef={securityRef}
-              gradientStartColor="#3b82f6"
-              gradientStopColor="#06b6d4"
+              gradientStartColor="#fbbf24"
+              gradientStopColor="#f97316"
               duration={3}
               pathWidth={6}
               pathOpacity={0.3}
@@ -208,8 +208,8 @@ export default function Features() {
               containerRef={containerRef}
               fromRef={coreRef}
               toRef={performanceRef}
-              gradientStartColor="#3b82f6"
-              gradientStopColor="#a855f7"
+              gradientStartColor="#fbbf24"
+              gradientStopColor="#f97316"
               duration={3}
               delay={0.5}
               pathWidth={6}
@@ -220,8 +220,8 @@ export default function Features() {
               containerRef={containerRef}
               fromRef={coreRef}
               toRef={scaleRef}
-              gradientStartColor="#8b5cf6"
-              gradientStopColor="#ec4899"
+              gradientStartColor="#fbbf24"
+              gradientStopColor="#f97316"
               duration={3}
               delay={1}
               pathWidth={6}
@@ -232,8 +232,8 @@ export default function Features() {
               containerRef={containerRef}
               fromRef={coreRef}
               toRef={complianceRef}
-              gradientStartColor="#10b981"
-              gradientStopColor="#06b6d4"
+              gradientStartColor="#fbbf24"
+              gradientStopColor="#f97316"
               duration={3}
               delay={1.5}
               pathWidth={6}
@@ -244,40 +244,40 @@ export default function Features() {
             {/* Labels for each node - Enhanced visibility */}
             {/* Top Left - Security */}
             <div className="absolute top-0 left-[15%] transform -translate-x-1/2 -translate-y-full mb-4">
-              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-cyan-500/50 rounded-2xl px-6 py-3 shadow-2xl">
-                <p className="text-xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Enterprise Security</p>
+              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-amber-500/50 rounded-2xl px-6 py-3 shadow-2xl">
+                <p className="text-xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Enterprise Security</p>
                 <p className="text-xs text-gray-400 mt-1">HSM Validators & Audits</p>
               </div>
             </div>
 
             {/* Top Right - Performance */}
             <div className="absolute top-0 right-[15%] transform translate-x-1/2 -translate-y-full mb-4">
-              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-purple-500/50 rounded-2xl px-6 py-3 shadow-2xl">
-                <p className="text-xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">High Performance</p>
+              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-amber-500/50 rounded-2xl px-6 py-3 shadow-2xl">
+                <p className="text-xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">High Performance</p>
                 <p className="text-xs text-gray-400 mt-1">10K+ TPS • 3s Finality</p>
               </div>
             </div>
 
             {/* Bottom Left - Scale */}
             <div className="absolute bottom-0 left-[15%] transform -translate-x-1/2 translate-y-full mt-4">
-              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-pink-500/50 rounded-2xl px-6 py-3 shadow-2xl">
-                <p className="text-xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Global Scale</p>
+              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-amber-500/50 rounded-2xl px-6 py-3 shadow-2xl">
+                <p className="text-xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Global Scale</p>
                 <p className="text-xs text-gray-400 mt-1">99.9% Uptime SLA</p>
               </div>
             </div>
 
             {/* Bottom Right - Compliance */}
             <div className="absolute bottom-0 right-[15%] transform translate-x-1/2 translate-y-full mt-4">
-              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-green-500/50 rounded-2xl px-6 py-3 shadow-2xl">
-                <p className="text-xl font-black bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">Compliance Ready</p>
+              <div className="bg-gray-900/90 backdrop-blur-xl border-2 border-amber-500/50 rounded-2xl px-6 py-3 shadow-2xl">
+                <p className="text-xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">Compliance Ready</p>
                 <p className="text-xs text-gray-400 mt-1">GDPR • SOC 2 • Audits</p>
               </div>
             </div>
 
             {/* Center - Core */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 translate-y-24 text-center">
-              <div className="bg-gray-900/90 backdrop-blur-xl border-4 border-blue-500/50 rounded-3xl px-8 py-4 shadow-2xl">
-                <p className="text-3xl font-black bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-1">NorChain Core</p>
+              <div className="bg-gray-900/90 backdrop-blur-xl border-4 border-amber-500/50 rounded-3xl px-8 py-4 shadow-2xl">
+                <p className="text-3xl font-black bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent mb-1">NorChain Core</p>
                 <p className="text-sm text-gray-300 font-semibold">Unified Infrastructure Platform</p>
               </div>
             </div>
@@ -302,7 +302,7 @@ export default function Features() {
                 title: "Enterprise SLA",
                 desc: "99.9% uptime guarantee with dedicated support and monitoring",
                 Icon: Award,
-                color: "from-blue-500 to-cyan-500",
+                color: "from-emerald-400 to-green-500",
                 metricValue: 99.9,
                 metricSuffix: "%",
                 decimalPlaces: 1
@@ -311,7 +311,7 @@ export default function Features() {
                 title: "Global CDN",
                 desc: "Edge nodes in 15+ regions for low-latency worldwide access",
                 Icon: Globe,
-                color: "from-purple-500 to-pink-500",
+                color: "from-emerald-400 to-green-500",
                 metricValue: 15,
                 metricSuffix: "+ Regions"
               },
@@ -319,28 +319,28 @@ export default function Features() {
                 title: "Auto-Scaling",
                 desc: "Dynamic resource allocation handling traffic spikes seamlessly",
                 Icon: TrendingUp,
-                color: "from-green-500 to-emerald-500",
+                color: "from-emerald-400 to-green-500",
                 metric: "Auto"
               },
               {
                 title: "SOC 2 Certified",
                 desc: "Bank-grade security with regular third-party audits",
                 Icon: Shield,
-                color: "from-red-500 to-orange-500",
+                color: "from-emerald-400 to-green-500",
                 metric: "SOC 2"
               },
               {
                 title: "24/7 Monitoring",
                 desc: "Real-time alerts and automated incident response",
                 Icon: Activity,
-                color: "from-yellow-500 to-amber-500",
+                color: "from-emerald-400 to-green-500",
                 metric: "24/7"
               },
               {
                 title: "Developer Support",
                 desc: "Dedicated technical support team and comprehensive documentation",
                 Icon: Users,
-                color: "from-indigo-500 to-blue-500",
+                color: "from-emerald-400 to-green-500",
                 metric: "24/7"
               }
             ].map((item, idx) => (
@@ -366,7 +366,7 @@ export default function Features() {
                     </div>
                   </div>
 
-                  <h4 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-300 transition-colors duration-300">
+                  <h4 className="text-xl font-bold text-white mb-3 group-hover:text-emerald-300 transition-colors duration-300">
                     {item.title}
                   </h4>
                   <p className="text-base text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">

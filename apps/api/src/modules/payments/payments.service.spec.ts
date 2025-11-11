@@ -1327,5 +1327,175 @@ describe('PaymentsService', () => {
       expect(result).toHaveProperty('hmacSecret');
       expect(result.events).toEqual(events);
     });
+
+    it('should generate unique HMAC secret for each webhook', async () => {
+      const orgId = 'org-123';
+      const userId = 'user-123';
+      const url = 'https://example.com/webhook';
+      const events = ['payment.succeeded'];
+
+      const mockWebhook1 = {
+        id: 'webhook-1',
+        orgId,
+        url,
+        hmacSecret: 'secret-1',
+        events,
+      };
+      const mockWebhook2 = {
+        id: 'webhook-2',
+        orgId,
+        url,
+        hmacSecret: 'secret-2',
+        events,
+      };
+
+      mockWebhookEndpointRepository.create
+        .mockReturnValueOnce(mockWebhook1)
+        .mockReturnValueOnce(mockWebhook2);
+      mockWebhookEndpointRepository.save
+        .mockResolvedValueOnce(mockWebhook1)
+        .mockResolvedValueOnce(mockWebhook2);
+
+      const result1 = await service.registerWebhook(orgId, url, events, userId);
+      const result2 = await service.registerWebhook(orgId, url, events, userId);
+
+      expect(result1.hmacSecret).not.toBe(result2.hmacSecret);
+    });
+  });
+
+  describe('processPayment', () => {
+    it('should handle payment with block number', async () => {
+      const sessionId = 'session-123';
+      const txHash = '0x123';
+      const payerAddress = '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0';
+      const blockNo = 12345;
+
+      const mockSession = {
+        id: 'session-123',
+        status: CheckoutSessionStatus.PENDING,
+        merchantId: 'merchant-123',
+        amount: '100.00',
+        currency: 'NOR',
+        sessionId: 'session-123',
+      };
+
+      const mockPayment = {
+        id: 'payment-123',
+        paymentId: 'pay_123',
+        merchantId: 'merchant-123',
+        amount: '100.00',
+        currency: 'NOR',
+        txHash,
+        blockNo,
+        status: PaymentStatus.CONFIRMING,
+      };
+
+      const mockMerchant = {
+        id: 'merchant-123',
+        orgId: 'org-123',
+      };
+
+      mockCheckoutSessionRepository.findOne.mockResolvedValue(mockSession);
+      mockPaymentRepository.create.mockReturnValue(mockPayment);
+      mockPaymentRepository.save.mockResolvedValue(mockPayment);
+      mockCheckoutSessionRepository.save.mockResolvedValue({
+        ...mockSession,
+        status: CheckoutSessionStatus.PAID,
+      });
+      mockMerchantRepository.findOne.mockResolvedValue(mockMerchant);
+      jest.spyOn(service as any, 'postPaymentToLedger').mockResolvedValue(undefined);
+      jest.spyOn(service as any, 'sendWebhook').mockResolvedValue(undefined);
+
+      const result = await service.processPayment(
+        sessionId,
+        txHash,
+        payerAddress,
+        blockNo,
+      );
+
+      expect(result).toHaveProperty('blockNo', blockNo);
+      expect(result.txHash).toBe(txHash);
+    });
+  });
+
+  describe('createRefund', () => {
+    it('should handle partial refund', async () => {
+      const userId = 'org-123';
+      const dto: CreateRefundDto = {
+        paymentId: 'pay_123',
+        amount: '50.00', // Partial refund
+        recipientAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+      };
+
+      const mockPayment = {
+        id: 'payment-123',
+        paymentId: 'pay_123',
+        merchantId: 'merchant-123',
+        amount: '100.00',
+        currency: 'NOR',
+        payerAddress: '0x123',
+      };
+
+      const mockMerchant = {
+        id: 'merchant-123',
+        orgId: 'org-123',
+      };
+
+      const mockRefund = {
+        id: 'refund-123',
+        refundId: 'refund_123',
+        paymentId: 'pay_123',
+        amount: dto.amount,
+        status: RefundStatus.PENDING,
+      };
+
+      mockPaymentRepository.findOne.mockResolvedValue(mockPayment);
+      mockMerchantRepository.findOne.mockResolvedValue(mockMerchant);
+      mockPolicyService.checkPolicy.mockResolvedValue({
+        allowed: true,
+        status: 'allowed',
+        checks: [],
+        riskScore: 10,
+        requiresReview: false,
+        auditHash: 'hash-123',
+      });
+      mockRefundRepository.create.mockReturnValue(mockRefund);
+      mockRefundRepository.save.mockResolvedValue(mockRefund);
+      jest.spyOn(service as any, 'processRefund').mockResolvedValue(undefined);
+
+      const result = await service.createRefund(dto, userId);
+
+      expect(result).toHaveProperty('refundId');
+      expect(result.amount).toBe(dto.amount);
+    });
+  });
+
+  describe('cancelSubscription', () => {
+    it('should emit subscription.canceled event', async () => {
+      const subscriptionId = 'subscription-123';
+      const userId = 'user-123';
+
+      const mockSubscription = {
+        id: subscriptionId,
+        status: SubscriptionStatus.ACTIVE,
+        canceledAt: null,
+      };
+
+      mockSubscriptionRepository.findOne.mockResolvedValue(mockSubscription);
+      mockSubscriptionRepository.save.mockResolvedValue({
+        ...mockSubscription,
+        status: SubscriptionStatus.CANCELED,
+        canceledAt: new Date(),
+      });
+
+      await service.cancelSubscription(subscriptionId, userId);
+
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'subscription.canceled',
+        expect.objectContaining({
+          subscriptionId,
+        }),
+      );
+    });
   });
 });

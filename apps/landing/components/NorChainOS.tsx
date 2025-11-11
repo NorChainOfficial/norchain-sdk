@@ -14,7 +14,7 @@ export default function NorChainOS() {
       purpose: "Consensus + Execution",
       poweredBy: "Proof of Stake (PoS)",
       Icon: Gauge,
-      color: "from-blue-500 to-cyan-500",
+      color: "from-cyan-500 to-blue-500",
       description: "High-performance blockchain with 3-second finality and 10,000+ TPS capacity",
       features: ["PoS Consensus", "EVM Compatible", "Sub-cent fees", "Enterprise SLA"]
     },
@@ -24,7 +24,7 @@ export default function NorChainOS() {
       purpose: "Payments, Billing, Subscriptions",
       poweredBy: "Smart Contracts + API",
       Icon: CreditCard,
-      color: "from-green-500 to-emerald-500",
+      color: "from-cyan-500 to-blue-500",
       description: "Complete payment infrastructure for Web3, like Stripe for blockchain",
       features: ["Hosted Checkout", "Recurring Billing", "Invoice System", "Merchant Portal"]
     },
@@ -34,7 +34,7 @@ export default function NorChainOS() {
       purpose: "Accounting & ERP",
       poweredBy: "On-chain Anchored Books",
       Icon: PieChart,
-      color: "from-purple-500 to-violet-500",
+      color: "from-cyan-500 to-blue-500",
       description: "First blockchain-anchored accounting system with daily audit trails",
       features: ["Double-entry", "VAT/Tax", "Payroll", "Blockchain Proof"]
     },
@@ -44,7 +44,7 @@ export default function NorChainOS() {
       purpose: "E2EE Messaging + Payments",
       poweredBy: "WebRTC + XMTP",
       Icon: MessageSquare,
-      color: "from-pink-500 to-rose-500",
+      color: "from-cyan-500 to-blue-500",
       description: "Web3 super messenger combining chat, calls, and seamless payments",
       features: ["End-to-end Encryption", "Voice/Video Calls", "In-chat Payments", "Business Profiles"]
     },
@@ -54,7 +54,7 @@ export default function NorChainOS() {
       purpose: "Markets + Liquidity",
       poweredBy: "AMM + Order Books",
       Icon: RefreshCw,
-      color: "from-orange-500 to-amber-500",
+      color: "from-cyan-500 to-blue-500",
       description: "Complete trading ecosystem from simple swaps to professional trading",
       features: ["AMM Swaps", "Order Books", "Limit Orders", "Portfolio Analytics"]
     },
@@ -64,7 +64,7 @@ export default function NorChainOS() {
       purpose: "Policy + Revenue Allocation",
       poweredBy: "On-chain Voting",
       Icon: Landmark,
-      color: "from-indigo-500 to-blue-500",
+      color: "from-cyan-500 to-blue-500",
       description: "Decentralized governance with transparent treasury management",
       features: ["Proposal System", "Token Voting", "Treasury Splits", "Revenue Sharing"]
     },
@@ -74,7 +74,7 @@ export default function NorChainOS() {
       purpose: "Trust + Regulation",
       poweredBy: "ML Risk Engine",
       Icon: Shield,
-      color: "from-red-500 to-pink-500",
+      color: "from-cyan-500 to-blue-500",
       description: "Enterprise-grade compliance for KYC/AML and regulatory requirements",
       features: ["Address Screening", "Travel Rule", "Case Management", "Audit Reports"]
     },
@@ -84,7 +84,7 @@ export default function NorChainOS() {
       purpose: "Build + Monetize",
       poweredBy: "SDKs + Marketplace",
       Icon: Code2,
-      color: "from-teal-500 to-cyan-500",
+      color: "from-cyan-500 to-blue-500",
       description: "Complete developer ecosystem with APIs, SDKs, and monetization tools",
       features: ["API Playground", "SDK Library", "Usage Analytics", "Revenue Sharing"]
     }
@@ -94,9 +94,9 @@ export default function NorChainOS() {
     <section id="norchain-os" className="py-20 bg-gradient-to-b from-black via-gray-950 to-black scroll-mt-20 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-br from-purple-500/10 via-blue-500/15 to-indigo-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-gradient-to-tl from-blue-500/10 via-purple-500/15 to-violet-500/10 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
+        <div className="absolute top-20 left-20 w-[600px] h-[600px] bg-gradient-to-br from-cyan-500/10 via-blue-500/15 to-cyan-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-gradient-to-tl from-blue-500/10 via-cyan-500/15 to-blue-400/10 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:100px_100px]" />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
@@ -106,16 +106,16 @@ export default function NorChainOS() {
             <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter text-white">
               NorChain OS
             </h2>
-            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 rounded-full" />
+            <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-400 rounded-full" />
           </div>
           <p className="text-lg sm:text-2xl text-gray-400 font-light max-w-4xl mx-auto leading-relaxed mb-6">
             The complete blockchain operating system for digital commerce
           </p>
           <div className="inline-flex items-center gap-4 bg-gray-900/60 backdrop-blur-xl border border-gray-700/50 px-6 py-3 rounded-2xl">
             <div className="flex items-center gap-1">
-              <div className="h-2 w-2 bg-purple-400 rounded-full animate-pulse"></div>
+              <div className="h-2 w-2 bg-cyan-400 rounded-full animate-pulse"></div>
               <div className="h-2 w-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></div>
-              <div className="h-2 w-2 bg-indigo-400 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
+              <div className="h-2 w-2 bg-cyan-500 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
             </div>
             <span className="text-white font-semibold">8 Integrated Layers</span>
           </div>
@@ -152,7 +152,7 @@ export default function NorChainOS() {
                     </div>
                   </div>
 
-                  <h3 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors duration-300">
+                  <h3 className="text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors duration-300">
                     {layer.product}
                   </h3>
                 </div>
@@ -240,42 +240,42 @@ export default function NorChainOS() {
                   title: "Unified Economy",
                   desc: "Single token (NOR) powers all applications, subscriptions, and transactions. No fragmentation, complete interoperability.",
                   Icon: Coins,
-                  color: "from-yellow-500 to-orange-500",
+                  color: "from-purple-500 to-blue-500",
                   metric: "1 Token"
                 },
                 {
                   title: "Zero Integration Friction",
                   desc: "All 8 applications share the same infrastructure, APIs, and user accounts. Build once, access everything.",
                   Icon: Layers,
-                  color: "from-blue-500 to-cyan-500",
+                  color: "from-purple-500 to-blue-500",
                   metric: "8 Apps"
                 },
                 {
                   title: "Enterprise Security",
                   desc: "Bank-grade security, SOC 2 certified infrastructure, and built-in compliance frameworks from day one.",
                   Icon: Lock,
-                  color: "from-red-500 to-pink-500",
+                  color: "from-purple-500 to-blue-500",
                   metric: "SOC 2"
                 },
                 {
                   title: "True SaaS Model",
                   desc: "Everything as a service with transparent pricing. Pay-as-you-go with NOR tokens, no hidden fees.",
                   Icon: TrendingUp,
-                  color: "from-green-500 to-emerald-500",
+                  color: "from-purple-500 to-blue-500",
                   metric: "SaaS"
                 },
                 {
                   title: "Developer Revenue Share",
                   desc: "Build applications on NorChain OS and earn from the ecosystem. 90/10 revenue split on marketplace.",
                   Icon: Code2,
-                  color: "from-purple-500 to-violet-500",
+                  color: "from-purple-500 to-blue-500",
                   metric: "90/10"
                 },
                 {
                   title: "Global Infrastructure",
                   desc: "Distributed nodes across multiple regions. 3-second finality with 99.9% uptime guarantee.",
                   Icon: Globe,
-                  color: "from-cyan-500 to-blue-500",
+                  color: "from-purple-500 to-blue-500",
                   metric: "99.9%"
                 }
               ].map((benefit, index) => (

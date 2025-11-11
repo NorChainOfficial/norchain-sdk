@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, DataSource, SelectQueryBuilder } from 'typeorm';
 import { LedgerService } from './ledger.service';
 import { LedgerAccount } from './entities/ledger-account.entity';
-import { JournalEntry } from './entities/journal-entry.entity';
+import { JournalEntry, JournalEntryStatus } from './entities/journal-entry.entity';
 import { JournalLine } from './entities/journal-line.entity';
 import { PeriodClosure } from './entities/period-closure.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -543,6 +543,180 @@ describe('LedgerService', () => {
     it('should return same amount if no FX rate', () => {
       const result = (service as any).calculateNativeAmount('100.00', undefined);
       expect(result).toBe('100.00');
+    });
+
+    it('should handle zero amount', () => {
+      const result = (service as any).calculateNativeAmount('0', '1.5');
+      expect(result).toBe('0');
+    });
+
+    it('should handle negative FX rate', () => {
+      const result = (service as any).calculateNativeAmount('100.00', '-1.5');
+      expect(result).toBe('-150');
+    });
+  });
+
+  describe('getAccountStatement', () => {
+    it('should return statement with date range', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+      const fromDate = new Date('2025-01-01');
+      const toDate = new Date('2025-01-31');
+
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+      };
+
+      const mockLines = [
+        {
+          id: 'line-1',
+          accountId,
+          amount: '100.00',
+          direction: LineDirection.DEBIT,
+          currency: 'NOR',
+          entry: { occurredAt: new Date('2025-01-15'), createdAt: new Date() },
+        },
+        {
+          id: 'line-2',
+          accountId,
+          amount: '50.00',
+          direction: LineDirection.CREDIT,
+          currency: 'NOR',
+          entry: { occurredAt: new Date('2025-01-20'), createdAt: new Date() },
+        },
+      ];
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockLineRepository.createQueryBuilder.mockReturnValue({
+        ...mockQueryBuilder,
+        getMany: jest.fn().mockResolvedValue(mockLines),
+      });
+
+      const result = await service.getAccountStatement(
+        accountId,
+        orgId,
+        fromDate,
+        toDate,
+      );
+
+      expect(result).toHaveProperty('account');
+      expect(result).toHaveProperty('movements');
+      expect(result).toHaveProperty('finalBalance');
+      expect(result.fromDate).toEqual(fromDate);
+      expect(result.toDate).toEqual(toDate);
+    });
+
+    it('should return statement without date range', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+      };
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockLineRepository.createQueryBuilder.mockReturnValue({
+        ...mockQueryBuilder,
+        getMany: jest.fn().mockResolvedValue([]),
+      });
+
+      const result = await service.getAccountStatement(accountId, orgId);
+
+      expect(result).toHaveProperty('account');
+      expect(result.fromDate).toBeNull();
+      expect(result.toDate).toBeNull();
+      expect(result.movements).toHaveLength(0);
+    });
+
+    it('should calculate running balance correctly', async () => {
+      const accountId = 'account-123';
+      const orgId = 'org-123';
+
+      const mockAccount = {
+        id: accountId,
+        code: '1000',
+        name: 'Cash',
+        orgId,
+      };
+
+      const mockLines = [
+        {
+          id: 'line-1',
+          accountId,
+          amount: '100.00',
+          direction: LineDirection.DEBIT,
+          currency: 'NOR',
+          entry: { occurredAt: new Date(), createdAt: new Date() },
+        },
+        {
+          id: 'line-2',
+          accountId,
+          amount: '30.00',
+          direction: LineDirection.CREDIT,
+          currency: 'NOR',
+          entry: { occurredAt: new Date(), createdAt: new Date() },
+        },
+      ];
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockLineRepository.createQueryBuilder.mockReturnValue({
+        ...mockQueryBuilder,
+        getMany: jest.fn().mockResolvedValue(mockLines),
+      });
+
+      const result = await service.getAccountStatement(accountId, orgId);
+
+      expect(result.movements).toHaveLength(2);
+      expect(result.movements[0]).toHaveProperty('runningBalance');
+      expect(result.movements[1]).toHaveProperty('runningBalance');
+      expect(result.finalBalance).toBeDefined();
+    });
+  });
+
+  describe('closePeriod', () => {
+    it('should calculate Merkle root', async () => {
+      const dto: ClosePeriodDto = {
+        orgId: 'org-123',
+        period: '2025-01',
+      };
+      const userId = 'user-123';
+
+      const mockEntries = [
+        {
+          id: 'entry-1',
+          orgId: dto.orgId,
+          period: dto.period,
+          status: JournalEntryStatus.POSTED,
+          occurredAt: new Date(),
+          lines: [],
+        },
+      ];
+
+      mockClosureRepository.findOne.mockResolvedValue(null);
+      mockEntryRepository.find.mockResolvedValue(mockEntries);
+      mockClosureRepository.create.mockReturnValue({
+        id: 'closure-123',
+        period: dto.period,
+        orgId: dto.orgId,
+        merkleRoot: 'hash-123',
+      });
+      mockClosureRepository.save.mockResolvedValue({
+        id: 'closure-123',
+        period: dto.period,
+        orgId: dto.orgId,
+        merkleRoot: 'hash-123',
+      });
+
+      const result = await service.closePeriod(dto, userId);
+
+      expect(result).toHaveProperty('merkleRoot');
+      expect(mockClosureRepository.save).toHaveBeenCalled();
     });
   });
 });

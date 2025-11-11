@@ -357,6 +357,234 @@ describe('MetadataService', () => {
       expect(result).toBeDefined();
       expect(mockReportRepository.save).toHaveBeenCalled();
     });
+
+    it('should auto-shadow profile with high-risk keywords', async () => {
+      const profileId = 'profile-123';
+      const reason = 'This is a phishing scam';
+
+      const mockProfile = {
+        id: profileId,
+        chainId: '65001',
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        reviewState: ReviewState.CLEAN,
+      };
+
+      const mockReport = {
+        id: 'report-123',
+        profileId,
+        reporterId: 'user-123',
+        reason,
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+      mockReportRepository.create.mockReturnValue(mockReport);
+      mockReportRepository.save.mockResolvedValue(mockReport);
+      mockProfileRepository.save.mockResolvedValue({
+        ...mockProfile,
+        reviewState: ReviewState.SHADOWED,
+      });
+
+      await service.reportProfile(profileId, 'user-123', reason);
+
+      expect(mockProfileRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          reviewState: ReviewState.SHADOWED,
+        }),
+      );
+    });
+  });
+
+  describe('searchProfiles', () => {
+    it('should search profiles by query', async () => {
+      const query = 'test token';
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
+      const result = await service.searchProfiles(query);
+
+      expect(result).toHaveProperty('profiles');
+      expect(result).toHaveProperty('total');
+      expect(result).toHaveProperty('limit');
+      expect(result).toHaveProperty('offset');
+      expect(mockQueryBuilder.where).toHaveBeenCalled();
+    });
+
+    it('should filter by tag', async () => {
+      const tag = 'defi';
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
+      await service.searchProfiles(undefined, tag);
+
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        ':tag = ANY(profile.tags)',
+        { tag },
+      );
+    });
+
+    it('should filter by trust level', async () => {
+      const trustLevel = TrustLevel.OWNER_VERIFIED;
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
+      await service.searchProfiles(undefined, undefined, trustLevel);
+
+      expect(mockQueryBuilder.andWhere).toHaveBeenCalledWith(
+        'profile.trustLevel = :trustLevel',
+        { trustLevel },
+      );
+    });
+
+    it('should use default limit and offset', async () => {
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        orderBy: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      mockProfileRepository.createQueryBuilder.mockReturnValue(mockQueryBuilder);
+
+      const result = await service.searchProfiles();
+
+      expect(result.limit).toBe(50);
+      expect(result.offset).toBe(0);
+      expect(mockQueryBuilder.take).toHaveBeenCalledWith(50);
+      expect(mockQueryBuilder.skip).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe('addAttestation', () => {
+    it('should add community attestation', async () => {
+      const profileId = 'profile-123';
+      const signerAddress = '0x1234567890123456789012345678901234567890';
+      const signature = '0xsignature';
+
+      const mockProfile = {
+        id: profileId,
+        chainId: '65001',
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        trustLevel: TrustLevel.OWNER_VERIFIED,
+      };
+
+      const mockAttestation = {
+        id: 'attestation-123',
+        profileId,
+        signerAddress,
+        signature,
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+      mockAttestationRepository.findOne.mockResolvedValue(null);
+      mockAttestationRepository.create.mockReturnValue(mockAttestation);
+      mockAttestationRepository.save.mockResolvedValue(mockAttestation);
+      mockAttestationRepository.count.mockResolvedValue(2);
+
+      const result = await service.addAttestation(
+        profileId,
+        signerAddress,
+        signature,
+      );
+
+      expect(result).toBeDefined();
+      expect(mockAttestationRepository.save).toHaveBeenCalled();
+    });
+
+    it('should upgrade to community verified when threshold reached', async () => {
+      const profileId = 'profile-123';
+      const signerAddress = '0x1234567890123456789012345678901234567890';
+      const signature = '0xsignature';
+
+      const mockProfile = {
+        id: profileId,
+        chainId: '65001',
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+        trustLevel: TrustLevel.OWNER_VERIFIED,
+      };
+
+      const mockAttestation = {
+        id: 'attestation-123',
+        profileId,
+        signerAddress,
+        signature,
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+      mockAttestationRepository.findOne.mockResolvedValue(null);
+      mockAttestationRepository.create.mockReturnValue(mockAttestation);
+      mockAttestationRepository.save.mockResolvedValue(mockAttestation);
+      mockAttestationRepository.count.mockResolvedValue(3);
+      mockProfileRepository.save.mockResolvedValue({
+        ...mockProfile,
+        trustLevel: TrustLevel.COMMUNITY_VERIFIED,
+      });
+
+      await service.addAttestation(profileId, signerAddress, signature);
+
+      expect(mockProfileRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          trustLevel: TrustLevel.COMMUNITY_VERIFIED,
+        }),
+      );
+    });
+
+    it('should throw NotFoundException if profile not found', async () => {
+      mockProfileRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.addAttestation('invalid-id', '0x123', '0xsig'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw BadRequestException if already attested', async () => {
+      const profileId = 'profile-123';
+      const signerAddress = '0x1234567890123456789012345678901234567890';
+
+      const mockProfile = {
+        id: profileId,
+        chainId: '65001',
+        address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0',
+      };
+
+      const existingAttestation = {
+        id: 'existing-123',
+        profileId,
+        signerAddress,
+      };
+
+      mockProfileRepository.findOne.mockResolvedValue(mockProfile);
+      mockAttestationRepository.findOne.mockResolvedValue(existingAttestation);
+
+      await expect(
+        service.addAttestation(profileId, signerAddress, '0xsig'),
+      ).rejects.toThrow(BadRequestException);
+    });
   });
 });
 
