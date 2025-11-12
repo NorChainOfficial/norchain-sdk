@@ -30,8 +30,8 @@ COPY package*.json ./
 
 # Install production dependencies only
 # Use --legacy-peer-deps to handle peer dependency conflicts
-# Include optional dependencies for GraphQL/Apollo
-RUN if [ -f package-lock.json ]; then npm ci --omit=dev --legacy-peer-deps --include=optional || npm install --production --legacy-peer-deps --include=optional; else npm install --production --legacy-peer-deps --include=optional; fi && npm cache clean --force
+# Don't omit dev dependencies - some are needed for runtime (like apollo-server-express)
+RUN if [ -f package-lock.json ]; then npm ci --legacy-peer-deps || npm install --legacy-peer-deps; else npm install --legacy-peer-deps; fi && npm cache clean --force
 
 # Copy built application
 COPY --from=builder /app/dist ./dist

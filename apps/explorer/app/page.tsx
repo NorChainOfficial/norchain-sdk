@@ -1,26 +1,19 @@
 import React from 'react';
 import Link from 'next/link';
 import { apiClient, formatTimeAgo, formatAddress, formatHash, formatNumber, weiToXhn } from '@/lib/api-client';
-import { dexService } from '@/lib/dex-service';
 import { WalletConnector } from '@/components/wallet/WalletConnector';
-import { BuyWithCard } from '@/components/fiat/BuyWithCard';
-import { TokenPriceChart } from '@/components/charts/TokenPriceChart';
-import BridgeWidget from '@/components/bridge/BridgeWidget';
 
 export const revalidate = 3; // Revalidate every 3 seconds for live data
 
 export default async function HomePage(): Promise<JSX.Element> {
-  // Fetch live data from API and DEX
-  let stats, latestBlocks, latestTransactions, xhtPrice, volume24h, priceChange24h;
+  // Fetch live data from API
+  let stats, latestBlocks, latestTransactions;
 
   try {
-    [stats, latestBlocks, latestTransactions, xhtPrice, volume24h, priceChange24h] = await Promise.all([
+    [stats, latestBlocks, latestTransactions] = await Promise.all([
       apiClient.getStats(),
       apiClient.getBlocks({ page: 1, per_page: 5 }),
       apiClient.getTransactions({ page: 1, per_page: 5 }),
-      dexService.getNORPrice(),
-      dexService.get24hVolume(),
-      dexService.get24hPriceChange(),
     ]);
   } catch (error) {
     console.error('Failed to fetch data:', error);
@@ -34,23 +27,10 @@ export default async function HomePage(): Promise<JSX.Element> {
     };
     latestBlocks = { data: [] };
     latestTransactions = { data: [] };
-    xhtPrice = { priceInBTCBR: 0.0000024, priceInUSD: null };
-    volume24h = 45200;
-    priceChange24h = 2.3;
   }
 
   const blocks = latestBlocks?.data || [];
   const transactions = latestTransactions?.transactions || [];
-
-  // Format price for display
-  const displayPrice = xhtPrice?.priceInUSD
-    ? `$${xhtPrice.priceInUSD.toFixed(7)}`
-    : xhtPrice?.priceInUSDT
-    ? `${xhtPrice.priceInUSDT.toFixed(7)} USDT`
-    : '0.0000';
-  const priceChangeColor = (priceChange24h || 0) >= 0 ? 'text-green-400' : 'text-red-400';
-  const priceChangeSymbol = (priceChange24h || 0) >= 0 ? '↑' : '↓';
-  const formattedVolume = volume24h ? `$${(volume24h / 1000).toFixed(1)}K` : '$0';
   return (
     <div className="max-w-[1400px] mx-auto px-6 py-8">
         {/* Network Stats Banner - PROFESSIONAL */}
@@ -98,11 +78,6 @@ export default async function HomePage(): Promise<JSX.Element> {
             <div className="text-2xl font-semibold text-white mb-1">{(Number(stats?.gasPrice || 0) / 1e9).toFixed(2)} Gwei</div>
             <div className="text-sm text-gray-400">Current gas</div>
           </div>
-        </div>
-
-        {/* Token Price Chart - TradingView Style */}
-        <div className="mb-8">
-          <TokenPriceChart />
         </div>
 
         {/* Main Content Grid - FULL WIDTH */}
@@ -196,163 +171,6 @@ export default async function HomePage(): Promise<JSX.Element> {
           </div>
         </div>
 
-        {/* Buy NOR Section - INTERACTIVE */}
-        <div className="mb-8 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-indigo-600/20 rounded-2xl border border-blue-500/30 overflow-hidden">
-          <div className="p-8 md:p-10">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              {/* Left Side - Content */}
-              <div>
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/20 border border-blue-400/30 rounded-full mb-4">
-                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                  <span className="text-blue-300 text-sm font-medium">DEX Live</span>
-                </div>
-
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                  Buy <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">NOR</span> Instantly
-                </h2>
-
-                <p className="text-gray-300 text-lg mb-6">
-                  Start trading on NorSwap with zero gas fees and lightning-fast swaps. Connect your wallet and swap tokens in seconds.
-                </p>
-
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                    <div className="text-gray-400 text-sm mb-1">Current Price</div>
-                    <div className="text-white text-xl font-bold">{displayPrice}</div>
-                    <div className={`${priceChangeColor} text-sm`}>
-                      {priceChangeSymbol} {Math.abs(priceChange24h || 0).toFixed(1)}%
-                    </div>
-                  </div>
-                  <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
-                    <div className="text-gray-400 text-sm mb-1">24h Volume</div>
-                    <div className="text-white text-xl font-bold">{formattedVolume}</div>
-                    <div className="text-blue-400 text-sm">Live from DEX</div>
-                  </div>
-                </div>
-
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link
-                    href="/dex"
-                    className="h-14 px-8 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-lg font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/50 flex items-center justify-center"
-                  >
-                    <svg className="w-6 h-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Start Swapping
-                  </Link>
-                  <Link
-                    href="/buy"
-                    className="h-14 px-8 bg-slate-800 hover:bg-slate-700 text-white font-medium rounded-xl transition-all border border-slate-600 flex items-center justify-center"
-                  >
-                    <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    How to Buy
-                  </Link>
-                </div>
-              </div>
-
-              {/* Right Side - Visual/Interactive */}
-              <div className="relative">
-                {/* Animated Circles Background */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-20">
-                  <div className="w-64 h-64 bg-blue-500 rounded-full blur-3xl animate-pulse"></div>
-                  <div className="w-48 h-48 bg-purple-500 rounded-full blur-3xl animate-pulse absolute" style={{ animationDelay: '1s' }}></div>
-                </div>
-
-                {/* Steps Card */}
-                <div className="relative bg-slate-800/80 backdrop-blur-sm rounded-2xl border border-slate-700 p-6">
-                  <h3 className="text-white text-xl font-bold mb-4">Quick Start Guide</h3>
-
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                        1
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">Connect Wallet</div>
-                        <div className="text-gray-400 text-sm">Install MetaMask and connect</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                        2
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">Add Nor Network</div>
-                        <div className="text-gray-400 text-sm">One-click network setup</div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-4">
-                      <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                        3
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">Start Swapping</div>
-                        <div className="text-gray-400 text-sm">Trade instantly on DEX</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Quick Stats Footer */}
-                  <div className="mt-6 pt-4 border-t border-slate-700 flex items-center justify-between text-sm">
-                    <div className="text-gray-400">
-                      <span className="text-white font-medium">0.3%</span> Trading Fee
-                    </div>
-                    <div className="text-gray-400">
-                      <span className="text-white font-medium">~3s</span> Swap Time
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Buy with Credit/Debit Card Section */}
-        <div className="mb-8">
-          <BuyWithCard defaultCrypto="NOR" />
-        </div>
-
-        {/* Bridge Assets from BSC Section */}
-        <div className="mb-8">
-          <div className="bg-gradient-to-br from-slate-800 via-purple-900/20 to-slate-800 rounded-2xl border border-purple-500/30 overflow-hidden p-8">
-            <div className="max-w-4xl mx-auto text-center mb-8">
-              <h2 className="text-3xl font-bold text-white mb-3">
-                Bridge Assets from <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400">BSC</span>
-              </h2>
-              <p className="text-gray-300 text-lg mb-2">
-                Transfer BNB, USDT, and ETH from Binance Smart Chain in just 30 seconds
-              </p>
-              <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>0.2% Fee</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>30 Second Transfer</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <span>Multi-Sig Secure</span>
-                </div>
-              </div>
-            </div>
-            <BridgeWidget />
-          </div>
-        </div>
-
         {/* Feature Cards Grid - PROFESSIONAL */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {/* Verified Contracts - REAL DATA */}
@@ -395,22 +213,23 @@ export default async function HomePage(): Promise<JSX.Element> {
             </div>
           </Link>
 
-          {/* DEX & Swap */}
+          {/* Tokens - REAL DATA */}
           <Link
-            href="/dex"
+            href="/tokens"
             className="group bg-slate-800 rounded-lg p-6 border border-slate-700 hover:border-purple-600 transition-all"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="h-12 w-12 flex-shrink-0 bg-purple-600/10 rounded-lg flex items-center justify-center">
                 <svg className="h-6 w-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">Swap Tokens</h3>
-            <p className="text-gray-400 mb-4 text-sm">Trade with best rates</p>
+            <h3 className="text-lg font-semibold text-white mb-2">Tokens</h3>
+            <p className="text-gray-400 mb-4 text-sm">Browse all tokens</p>
             <div className="flex items-baseline space-x-2">
-              <div className="text-2xl font-semibold text-indigo-400">DEX Live</div>
+              <div className="text-3xl font-semibold text-white">{formatNumber(stats?.totalTokens || 0)}</div>
+              <div className="text-sm text-gray-500">tokens</div>
             </div>
           </Link>
 
@@ -436,28 +255,7 @@ export default async function HomePage(): Promise<JSX.Element> {
         </div>
 
         {/* Quick Actions - FULL WIDTH */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Transfer */}
-          <div className="bg-slate-800 rounded-lg border border-slate-700 p-6 hover:border-blue-600 transition-all">
-            <div className="flex items-center space-x-4 mb-6">
-              <div className="h-12 w-12 flex-shrink-0 bg-blue-600/10 rounded-lg flex items-center justify-center">
-                <svg className="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-white">Transfer Tokens</h3>
-                <p className="text-sm text-gray-400">Send any token instantly</p>
-              </div>
-            </div>
-            <Link
-              href="/transfer"
-              className="block w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg flex items-center justify-center transition-colors"
-            >
-              Start Transfer
-            </Link>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Verify Contract */}
           <div className="bg-slate-800 rounded-lg border border-slate-700 p-6 hover:border-emerald-600 transition-all">
             <div className="flex items-center space-x-4 mb-6">
@@ -479,7 +277,7 @@ export default async function HomePage(): Promise<JSX.Element> {
             </Link>
           </div>
 
-          {/* AI Decoder */}
+          {/* Transaction Decoder */}
           <div className="bg-slate-800 rounded-lg border border-slate-700 p-6 hover:border-purple-600 transition-all">
             <div className="flex items-center space-x-4 mb-6">
               <div className="h-12 w-12 flex-shrink-0 bg-purple-600/10 rounded-lg flex items-center justify-center">
@@ -488,15 +286,15 @@ export default async function HomePage(): Promise<JSX.Element> {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">AI Decoder</h3>
-                <p className="text-sm text-gray-400">Analyze transactions with AI</p>
+                <h3 className="text-lg font-semibold text-white">Transaction Decoder</h3>
+                <p className="text-sm text-gray-400">Decode and analyze transactions</p>
               </div>
             </div>
             <Link
               href="/ai-decoder"
               className="block w-full h-12 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg flex items-center justify-center transition-colors"
             >
-              Analyze Now
+              Decode Now
             </Link>
           </div>
         </div>

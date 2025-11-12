@@ -151,23 +151,13 @@ export const Footer = (): JSX.Element => {
                 </a>
               </li>
               <li>
-                <Link href="/enterprise" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  API & Tools
-                </Link>
-              </li>
-              <li>
-                <Link href="/swap" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Token Swap
-                </Link>
-              </li>
-              <li>
-                <Link href="/transfer" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  Transfer
+                <Link href="/api" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  API & Documentation
                 </Link>
               </li>
               <li>
                 <Link href="/ai-decoder" className="text-gray-400 hover:text-white text-sm transition-colors">
-                  AI Decoder
+                  Transaction Decoder
                 </Link>
               </li>
             </ul>

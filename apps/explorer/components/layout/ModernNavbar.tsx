@@ -46,25 +46,36 @@ export const ModernNavbar = (): JSX.Element => {
             </Link>
 
             <Link
-              href="/dex"
+              href="/blocks"
               className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                isActive('/dex')
+                isActive('/blocks')
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              DEX
+              Blocks
             </Link>
 
             <Link
-              href="/staking"
+              href="/transactions"
               className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                isActive('/staking')
+                isActive('/transactions')
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              Staking
+              Transactions
+            </Link>
+
+            <Link
+              href="/accounts"
+              className={`px-3 py-2 rounded-lg font-medium transition-all ${
+                isActive('/accounts')
+                  ? 'bg-indigo-600 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              Accounts
             </Link>
 
             <Link
@@ -90,67 +101,37 @@ export const ModernNavbar = (): JSX.Element => {
             </Link>
 
             <Link
-              href="/governance"
+              href="/validators"
               className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                isActive('/governance')
+                isActive('/validators')
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              Governance
+              Validators
             </Link>
 
             <Link
-              href="/crowdfunding"
+              href="/analytics"
               className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                isActive('/crowdfunding')
+                isActive('/analytics')
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              Crowdfunding
+              Analytics
             </Link>
 
             <Link
-              href="/charity"
+              href="/api"
               className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                isActive('/charity')
+                isActive('/api')
                   ? 'bg-indigo-600 text-white shadow-md'
                   : 'text-slate-300 hover:text-white hover:bg-slate-800'
               }`}
             >
-              Charity
+              API
             </Link>
-
-            <Link
-              href="/bridge"
-              className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                isActive('/bridge')
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              Bridge
-            </Link>
-
-            <Link
-              href="/arbitrage"
-              className={`px-3 py-2 rounded-lg font-medium transition-all ${
-                isActive('/arbitrage')
-                  ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800'
-              }`}
-            >
-              Arbitrage
-            </Link>
-            <a
-              href="https://norchain.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-2 rounded-lg font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
-            >
-              About
-            </a>
           </div>
 
           {/* Wallet Connection */}
@@ -219,22 +200,31 @@ export const ModernNavbar = (): JSX.Element => {
               Home
             </Link>
             <Link
-              href="/dex"
+              href="/blocks"
               className={`block px-4 py-2 rounded-lg font-medium transition-all ${
-                isActive('/dex') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                isActive('/blocks') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
               }`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              DEX
+              Blocks
             </Link>
             <Link
-              href="/staking"
+              href="/transactions"
               className={`block px-4 py-2 rounded-lg font-medium transition-all ${
-                isActive('/staking') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                isActive('/transactions') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
               }`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              Staking
+              Transactions
+            </Link>
+            <Link
+              href="/accounts"
+              className={`block px-4 py-2 rounded-lg font-medium transition-all ${
+                isActive('/accounts') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+              }`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Accounts
             </Link>
             <Link
               href="/tokens"
@@ -255,59 +245,32 @@ export const ModernNavbar = (): JSX.Element => {
               Contracts
             </Link>
             <Link
-              href="/governance"
+              href="/validators"
               className={`block px-4 py-2 rounded-lg font-medium transition-all ${
-                isActive('/governance') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                isActive('/validators') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
               }`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              Governance
+              Validators
             </Link>
             <Link
-              href="/crowdfunding"
+              href="/analytics"
               className={`block px-4 py-2 rounded-lg font-medium transition-all ${
-                isActive('/crowdfunding') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                isActive('/analytics') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
               }`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              Crowdfunding
+              Analytics
             </Link>
             <Link
-              href="/charity"
+              href="/api"
               className={`block px-4 py-2 rounded-lg font-medium transition-all ${
-                isActive('/charity') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
+                isActive('/api') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
               }`}
               onClick={() => setMobileMenuOpen(false)}
             >
-              Charity
+              API
             </Link>
-            <Link
-              href="/bridge"
-              className={`block px-4 py-2 rounded-lg font-medium transition-all ${
-                isActive('/bridge') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
-              }`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Bridge
-            </Link>
-            <Link
-              href="/arbitrage"
-              className={`block px-4 py-2 rounded-lg font-medium transition-all ${
-                isActive('/arbitrage') ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800'
-              }`}
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Arbitrage
-            </Link>
-            <a
-              href="https://norchain.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block px-4 py-2 rounded-lg font-medium text-slate-300 hover:bg-slate-800 transition-all"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              About
-            </a>
 
             {/* Mobile Wallet Connection */}
             <div className="pt-4 px-2 border-t border-slate-800">

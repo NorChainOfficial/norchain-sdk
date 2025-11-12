@@ -62,46 +62,32 @@ export const Header = (): JSX.Element => {
               </Link>
             </div>
 
-            {/* DeFi Section */}
+            {/* Network Section */}
             <div className="flex items-center gap-1 px-2 border-r border-gray-300 dark:border-gray-700">
               <Link
-                href="/dex"
-                className="px-3 py-2 text-gray-800 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all font-semibold flex items-center gap-1 text-sm"
-              >
-                <span>💱</span>
-                DEX
-              </Link>
-              <Link
-                href="/staking"
+                href="/validators"
                 className="px-3 py-2 text-gray-800 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all font-semibold flex items-center gap-1 text-sm"
               >
-                <span>💰</span>
-                Staking
+                <span>✓</span>
+                Validators
+              </Link>
+              <Link
+                href="/analytics"
+                className="px-3 py-2 text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all font-semibold flex items-center gap-1 text-sm"
+              >
+                <span>📊</span>
+                Analytics
               </Link>
             </div>
 
-            {/* Governance & Social Section */}
+            {/* Tools Section */}
             <div className="flex items-center gap-1 px-2">
               <Link
-                href="/governance"
-                className="px-3 py-2 text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all font-semibold flex items-center gap-1 text-sm"
+                href="/api"
+                className="px-3 py-2 text-gray-800 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all font-semibold flex items-center gap-1 text-sm"
               >
-                <span>🗳️</span>
-                Governance
-              </Link>
-              <Link
-                href="/crowdfunding"
-                className="px-3 py-2 text-gray-800 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all font-semibold flex items-center gap-1 text-sm"
-              >
-                <span>🚀</span>
-                Crowdfunding
-              </Link>
-              <Link
-                href="/charity"
-                className="px-3 py-2 text-gray-800 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all font-semibold flex items-center gap-1 text-sm"
-              >
-                <span>❤️</span>
-                Charity
+                <span>🔧</span>
+                API
               </Link>
             </div>
           </nav>
@@ -209,68 +195,46 @@ export const Header = (): JSX.Element => {
               </div>
             </Link>
 
-            {/* DeFi Section */}
+            {/* Network Section */}
             <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 mt-4">
-              DeFi Services
+              Network
             </div>
 
             <Link
-              href="/dex"
-              className="block px-4 py-3 text-gray-800 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-lg">💱</span>
-                DEX (Swap Tokens)
-              </div>
-            </Link>
-
-            <Link
-              href="/staking"
+              href="/validators"
               className="block px-4 py-3 text-gray-800 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-all font-medium"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <div className="flex items-center gap-3">
-                <span className="text-lg">💰</span>
-                Staking (Earn Rewards)
+                <span className="text-lg">✓</span>
+                Validators
               </div>
             </Link>
 
-            {/* Governance & Social Section */}
-            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 mt-4">
-              Governance & Social Impact
-            </div>
-
             <Link
-              href="/governance"
+              href="/analytics"
               className="block px-4 py-3 text-gray-800 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all font-medium"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <div className="flex items-center gap-3">
-                <span className="text-lg">🗳️</span>
-                Governance (Vote on Proposals)
+                <span className="text-lg">📊</span>
+                Analytics
               </div>
             </Link>
 
-            <Link
-              href="/crowdfunding"
-              className="block px-4 py-3 text-gray-800 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-all font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-lg">🚀</span>
-                Crowdfunding (Fund Projects)
-              </div>
-            </Link>
+            {/* Tools Section */}
+            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider px-4 py-2 mt-4">
+              Developer Tools
+            </div>
 
             <Link
-              href="/charity"
-              className="block px-4 py-3 text-gray-800 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all font-medium"
+              href="/api"
+              className="block px-4 py-3 text-gray-800 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-all font-medium"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <div className="flex items-center gap-3">
-                <span className="text-lg">❤️</span>
-                Charity (Make Donations)
+                <span className="text-lg">🔧</span>
+                API & Documentation
               </div>
             </Link>
           </nav>
