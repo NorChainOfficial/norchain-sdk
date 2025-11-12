@@ -33,7 +33,9 @@ describe('TransactionAI', () => {
     customRender(<TransactionAI {...defaultProps} />);
 
     expect(screen.getByText(/AI Transaction Analysis/i)).toBeInTheDocument();
-    expect(screen.getByRole('status', { hidden: true })).toBeInTheDocument();
+    // Check for loading spinner
+    const loader = document.querySelector('.animate-spin');
+    expect(loader).toBeInTheDocument();
   });
 
   it('should render transaction analysis', async () => {
@@ -128,7 +130,8 @@ describe('TransactionAI', () => {
     customRender(<TransactionAI {...defaultProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Unusual Activity Detected/i)).toBeInTheDocument();
+      const anomalyTexts = screen.getAllByText(/Unusual Activity Detected/i);
+      expect(anomalyTexts.length).toBeGreaterThan(0);
     });
   });
 

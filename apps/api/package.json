@@ -43,6 +43,7 @@
     "docs:generate": "node scripts/generate-docs.js"
   },
   "dependencies": {
+    "@apollo/server": "4.12.2",
     "@nestjs/apollo": "13.2.1",
     "@nestjs/axios": "^3.0.1",
     "@nestjs/cache-manager": "^2.1.1",

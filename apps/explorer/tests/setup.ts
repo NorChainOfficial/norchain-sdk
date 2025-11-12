@@ -29,11 +29,14 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock Next.js Link component
-vi.mock('next/link', () => ({
-  default: ({ children, href }: { children: React.ReactNode; href: string }) => {
-    return <a href={href}>{children}</a>;
-  },
-}));
+vi.mock('next/link', () => {
+  const React = require('react');
+  return {
+    default: ({ children, href }: { children: React.ReactNode; href: string }) => {
+      return React.createElement('a', { href }, children);
+    },
+  };
+});
 
 // Mock fetch globally
 global.fetch = vi.fn();

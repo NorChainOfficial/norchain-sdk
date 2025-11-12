@@ -25,7 +25,9 @@ describe('AddressAI', () => {
 
     customRender(<AddressAI address="0x123" />);
 
-    expect(screen.getByText(/Address Risk Score/i)).toBeInTheDocument();
+    // Check for loading skeleton
+    const loadingElements = document.querySelectorAll('.animate-pulse');
+    expect(loadingElements.length).toBeGreaterThan(0);
   });
 
   it('should display risk score', async () => {

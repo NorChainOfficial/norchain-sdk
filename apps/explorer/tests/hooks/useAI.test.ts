@@ -34,8 +34,11 @@ vi.mock('@/lib/api-client', () => ({
 
 const wrapper = ({ children }: { children: React.ReactNode }) => {
   const queryClient = createTestQueryClient();
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  const React = require('react');
+  return React.createElement(
+    QueryClientProvider,
+    { client: queryClient },
+    children
   );
 };
 
