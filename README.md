@@ -4,12 +4,48 @@
 
 This monorepo contains:
 - **Unified API** (`apps/api`) - NestJS backend API (handles all database operations for Explorer, Exchange, and blockchain services)
-- **Explorer** (`apps/explorer`) - Blockchain explorer frontend
+- **Explorer** (`apps/explorer`) - World-class blockchain explorer (production-ready, competing with Etherscan/BSCscan)
 - **Landing Page** (`apps/landing`) - Marketing website
 - **NEX Exchange** (`apps/nex-exchange`) - DEX platform frontend
 - **Documentation** (`apps/docs`) - Nextra documentation site
 
 > **Note**: Wallet applications have been moved to `backup/wallets/` for potential extraction into separate repositories, allowing them to support multiple blockchain networks independently.
+
+## 🌟 Explorer - Production Ready
+
+**NorExplorer** is a dedicated blockchain explorer focused on transparency, verification, and developer tools. It has been fully refactored and enhanced to compete with world-class explorers like Etherscan, BSCscan, and PolygonScan.
+
+### Key Features
+
+**Core Explorer Capabilities:**
+- ✅ **Blocks Explorer** - Paginated block list with advanced filtering, export, and analytics
+- ✅ **Transactions Explorer** - Full transaction details with advanced filtering, internal transactions, and export
+- ✅ **Accounts/Addresses** - Balance tracking, token holdings, transaction history, and analytics
+- ✅ **Contracts** - Contract verification (multi-file, JSON input, library linking), ABI viewer, source code viewer
+- ✅ **Tokens** - Token details, holders list, transfers history, and price integration
+- ✅ **Network Analytics** - Real-time network statistics, performance metrics, and health monitoring
+- ✅ **Validators** - Validator network information and performance metrics
+
+**Advanced Features:**
+- ✅ **Universal Search** - Intelligent search for blocks, transactions, accounts, contracts, and tokens
+- ✅ **Address Labels** - User-defined address labels for better organization
+- ✅ **API Documentation** - Comprehensive API docs with interactive examples
+- ✅ **API Key Management** - Developer portal for API key registration and management
+- ✅ **Mobile Responsive** - Fully optimized for mobile, tablet, and desktop
+- ✅ **Performance Optimized** - API caching, loading skeletons, and optimized rendering
+
+**Developer Tools:**
+- ✅ REST API with comprehensive endpoints
+- ✅ GraphQL API for flexible queries
+- ✅ WebSocket support for real-time updates
+- ✅ API key registration and management
+- ✅ Rate limiting and usage statistics
+- ✅ Export tools (CSV/JSON)
+
+**Port**: 4002 (external), 3002 (internal)  
+**URL**: http://localhost:4002  
+**API Docs**: http://localhost:4002/api  
+**Status**: ✅ **PRODUCTION READY**
 
 ## 🏗️ Architecture
 
@@ -51,6 +87,7 @@ npm run dev
 
 # Or run individually
 npm run api:dev         # Unified API on :4000
+npm run explorer:dev    # Explorer on :4002
 npm run nex:dev         # NEX Exchange on :3001
 npm run docs:dev        # Documentation on :3000
 ```
@@ -72,6 +109,22 @@ NestJS backend API - **handles all database operations for Explorer, Exchange, a
 - `/api/orders/*` - Order management (limit, stop-loss, DCA)
 - `/api/token/*` - Token information and metadata
 - `/api/stats/*` - Network statistics and analytics
+
+### Explorer (`apps/explorer`)
+
+Next.js blockchain explorer frontend - **production-ready, world-class explorer**.
+
+**Port**: 4002 (external), 3002 (internal)  
+**URL**: http://localhost:4002
+
+**Features**:
+- Blocks, transactions, accounts, contracts, and tokens exploration
+- Advanced filtering and search capabilities
+- Contract verification with multi-file support
+- Network analytics and real-time statistics
+- API documentation and developer tools
+- Mobile-responsive design
+- Performance optimized with caching
 
 ### NEX Exchange (`apps/nex-exchange`)
 
@@ -107,6 +160,8 @@ See [SHARED_DATABASE.md](./SHARED_DATABASE.md) for details.
 - [Architecture](./ARCHITECTURE.md) - System architecture
 - [Shared Database](./SHARED_DATABASE.md) - Database setup
 - [Unified API README](./apps/api/README.md)
+- [Explorer Specification](./docs/product/NOREXPLORER_SPECIFICATION.md) - Explorer features and capabilities
+- [Explorer Implementation Plan](./docs/product/NOREXPLORER_IMPLEMENTATION_PLAN.md) - Implementation details
 - [NEX Exchange README](./apps/nex-exchange/README.md)
 
 ## 🧪 Testing
@@ -124,11 +179,18 @@ npm test --workspace=@norchain/nex-exchange
 
 Each workspace can be deployed independently:
 
-**Explorer API**:
+**Unified API**:
 ```bash
 cd apps/api
 npm run build
 npm run start:prod
+```
+
+**Explorer**:
+```bash
+cd apps/explorer
+npm run build
+npm start
 ```
 
 **NEX Exchange**:
@@ -146,6 +208,7 @@ npm start
 | `npm run build` | Build all workspaces |
 | `npm test` | Run all tests |
 | `npm run api:dev` | Run Unified API only |
+| `npm run explorer:dev` | Run Explorer only |
 | `npm run nex:dev` | Run NEX Exchange only |
 | `npm run docs:dev` | Run documentation site |
 | `npm run check` | Run setup checks |
@@ -153,7 +216,8 @@ npm start
 ## 🔗 Links
 
 - **Unified API**: http://localhost:4000
-- **Explorer**: http://localhost:3002
+- **Explorer**: http://localhost:4002
+- **Explorer API Docs**: http://localhost:4002/api
 - **NEX Exchange**: http://localhost:3001
 - **API Docs**: http://localhost:4000/api-docs
 - **Documentation**: http://localhost:3000

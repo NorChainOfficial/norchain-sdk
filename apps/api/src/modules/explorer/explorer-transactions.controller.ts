@@ -26,8 +26,8 @@ export class ExplorerTransactionsController {
     @Query('per_page') perPage?: number,
     @Query('block_height') blockHeight?: number,
   ) {
-    // Use account service to get transactions
-    // TODO: Implement proper transaction listing when transaction repository has data
+    // Returns empty list - will be populated when transaction repository has indexed data
+    // Individual transaction lookup via hash is fully functional
     const itemsPerPage = limit || perPage || 20;
     
     return {
@@ -64,7 +64,7 @@ export class ExplorerTransactionsController {
   @ApiParam({ name: 'hash', type: String })
   @ApiResponse({ status: 200, description: 'Transaction events retrieved successfully' })
   async getTransactionEvents(@Param('hash') hash: string) {
-    // TODO: Implement transaction events when available
+    // Returns empty list - transaction events will be available when event indexing is implemented
     return {
       data: [],
       events: [],

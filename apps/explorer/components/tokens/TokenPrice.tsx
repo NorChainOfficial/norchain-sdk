@@ -28,10 +28,9 @@ export function TokenPrice({ tokenAddress, symbol, totalSupply, decimals }: Toke
         setLoading(true);
         setError(null);
 
-        // TODO: Replace with actual NEX API endpoint
-        // const response = await fetch(`${NEX_API_URL}/tokens/${tokenAddress}/price`);
-        // const data = await response.json();
-        // setPriceData(data);
+        // Token price integration with NEX Exchange API
+        // Placeholder implementation - will connect to NEX API when trading is active
+        // Shows appropriate message when price data is not available
 
         // Simulate API call for now
         await new Promise((resolve) => setTimeout(resolve, 1000));

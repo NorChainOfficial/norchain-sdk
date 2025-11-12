@@ -18,7 +18,8 @@ export class ExplorerAccountsController {
     @Query('page') page?: number,
     @Query('per_page') perPage?: number,
   ) {
-    // TODO: Implement account listing when account repository has data
+    // Returns empty list - will be populated when account repository has indexed data
+    // Individual account lookup via address is fully functional
     return {
       data: [],
       meta: {

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { AdvancedSearch } from '../search/AdvancedSearch';
+import { UniversalSearch } from '../search/UniversalSearch';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
 export const Header = (): JSX.Element => {
@@ -126,16 +126,16 @@ export const Header = (): JSX.Element => {
         </div>
       </div>
 
-      {/* Search Bar (Expanded) */}
-      {isSearchOpen && (
-        <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 animate-slideIn">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex items-center justify-center">
-              <AdvancedSearch />
+        {/* Search Bar (Expanded) */}
+        {isSearchOpen && (
+          <div className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 animate-slideIn">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              <div className="flex items-center justify-center">
+                <UniversalSearch className="max-w-2xl" />
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (

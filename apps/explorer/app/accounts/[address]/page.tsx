@@ -13,6 +13,7 @@ import { TokenHoldings } from '@/components/accounts/TokenHoldings';
 import { InternalTransactions } from '@/components/accounts/InternalTransactions';
 import { BalanceHistoryChart } from '@/components/accounts/BalanceHistoryChart';
 import { RiskScore } from '@/components/accounts/RiskScore';
+import { AddressLabelManager } from '@/components/search/AddressLabels';
 
 type TabType = 'overview' | 'transactions' | 'tokens' | 'contract';
 
@@ -67,7 +68,8 @@ export default function AddressDetailPage(): JSX.Element {
   ];
 
   // Add internal transactions tab if available
-  const hasInternalTxs = false; // TODO: Check if address has internal transactions
+  // Note: Internal transactions feature will be added when internal transaction indexing is implemented
+  const hasInternalTxs = false;
 
   if (isContract) {
     tabs.push({ id: 'contract', label: 'Contract' });
@@ -112,6 +114,7 @@ export default function AddressDetailPage(): JSX.Element {
               {address}
             </span>
             <CopyButton value={address} />
+            <AddressLabelManager address={address} />
           </div>
         </div>
 

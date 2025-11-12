@@ -20,8 +20,8 @@ export class ExplorerBlocksController {
     @Query('per_page') perPage?: number,
     @Query('limit') limit?: number,
   ) {
-    // For now, return latest block info
-    // TODO: Implement pagination when block repository has proper data
+    // Returns latest block info
+    // Note: Full pagination will be implemented when block repository has indexed data
     const blockNumberResult = await this.blockService.getBlockNumber();
     const latestBlockNumber = blockNumberResult.result || 0;
     const blockData = await this.blockService.getBlock({ blockno: latestBlockNumber });

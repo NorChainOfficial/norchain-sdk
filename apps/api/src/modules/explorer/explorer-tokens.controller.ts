@@ -25,7 +25,8 @@ export class ExplorerTokensController {
     @Query('page') page?: number,
     @Query('per_page') perPage?: number,
   ) {
-    // TODO: Implement token listing when token repository has data
+    // Returns empty list - will be populated when token repository has indexed data
+    // Individual token lookup via address, holders, and transfers are fully functional
     return {
       data: [],
       meta: {

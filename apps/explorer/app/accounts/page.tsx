@@ -90,30 +90,30 @@ export default async function AccountsPage({ searchParams }: PageProps): Promise
           <table className="w-full">
             <thead className="bg-slate-900 border-b border-slate-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Address</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Balance</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Transactions</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Last Active</th>
+                <th className="px-3 md:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Address</th>
+                <th className="px-3 md:px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Balance</th>
+                <th className="hidden md:table-cell px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Transactions</th>
+                <th className="hidden lg:table-cell px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Last Active</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700">
               {accounts.length > 0 ? accounts.map((account: any) => (
                 <tr key={account.address} className="hover:bg-slate-700 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                     <Link
                       href={`/address/${account.address}`}
-                      className="text-emerald-400 hover:text-emerald-300 font-mono text-sm transition-colors"
+                      className="text-emerald-400 hover:text-emerald-300 font-mono text-xs md:text-sm transition-colors"
                     >
                       {account.address}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <span className="text-white font-medium">{weiToXhn(account.balance)} NOR</span>
+                  <td className="px-3 md:px-6 py-4 whitespace-nowrap text-right">
+                    <span className="text-white font-medium text-xs md:text-sm">{weiToXhn(account.balance)} NOR</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <span className="text-gray-300">{formatNumber(account.transactionCount || 0)}</span>
+                  <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-right">
+                    <span className="text-gray-300 text-sm">{formatNumber(account.transactionCount || 0)}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                  <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap text-right">
                     <span className="text-gray-400 text-sm">
                       {account.updatedAt ? formatTimeAgo(Math.floor(new Date(account.updatedAt).getTime() / 1000)) : 'Never'}
                     </span>
@@ -121,7 +121,7 @@ export default async function AccountsPage({ searchParams }: PageProps): Promise
                 </tr>
               )) : (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={4} className="px-3 md:px-6 py-12 text-center text-gray-400">
                     <div className="flex flex-col items-center space-y-3">
                       <svg className="h-16 w-16 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />

@@ -4,6 +4,7 @@ import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { formatTimeAgo, formatAddress, formatNumber, formatHash } from '@/lib/api-client';
 import { BlockFilters } from './BlockFilters';
+import { TableSkeleton } from '@/components/ui/LoadingSkeleton';
 
 interface Block {
   height: number;
@@ -169,26 +170,26 @@ export function BlocksTable({ initialBlocks, stats }: BlocksTableProps): JSX.Ele
           <table className="w-full">
             <thead className="bg-slate-900 border-b border-slate-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Block</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Hash</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Validator</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Txns</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Gas Used</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
+                <th className="px-3 md:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Block</th>
+                <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Hash</th>
+                <th className="hidden lg:table-cell px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Validator</th>
+                <th className="px-3 md:px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Txns</th>
+                <th className="hidden md:table-cell px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Gas Used</th>
+                <th className="px-3 md:px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700">
               {filteredBlocks.length > 0 ? filteredBlocks.map((block) => (
                 <tr key={block.height} className="hover:bg-slate-700 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                     <Link
                       href={`/blocks/${block.height}`}
-                      className="text-blue-400 hover:text-blue-300 font-semibold font-mono transition-colors"
+                      className="text-blue-400 hover:text-blue-300 font-semibold font-mono transition-colors text-sm md:text-base"
                     >
                       #{formatNumber(block.height)}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                     <Link
                       href={`/blocks/${block.height}`}
                       className="text-gray-300 hover:text-white transition-colors"
@@ -196,7 +197,7 @@ export function BlocksTable({ initialBlocks, stats }: BlocksTableProps): JSX.Ele
                       <code className="text-sm font-mono">{formatHash(block.hash)}</code>
                     </Link>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                     <Link
                       href={`/accounts/${block.validator}`}
                       className="text-gray-300 hover:text-blue-400 transition-colors"
@@ -204,14 +205,14 @@ export function BlocksTable({ initialBlocks, stats }: BlocksTableProps): JSX.Ele
                       <code className="text-sm font-mono">{formatAddress(block.validator)}</code>
                     </Link>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <span className="text-white font-medium">{block.transactions}</span>
+                  <td className="px-3 md:px-6 py-4 whitespace-nowrap text-right">
+                    <span className="text-white font-medium text-sm md:text-base">{block.transactions}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <span className="text-gray-300">{formatNumber(parseInt(String(block.gasUsed)))}</span>
+                  <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-right">
+                    <span className="text-gray-300 text-sm">{formatNumber(parseInt(String(block.gasUsed)))}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <span className="text-gray-400 text-sm">{formatTimeAgo(typeof block.timestamp === 'string' ? undefined : block.timestamp)}</span>
+                  <td className="px-3 md:px-6 py-4 whitespace-nowrap text-right">
+                    <span className="text-gray-400 text-xs md:text-sm">{formatTimeAgo(typeof block.timestamp === 'string' ? undefined : block.timestamp)}</span>
                   </td>
                 </tr>
               )) : (

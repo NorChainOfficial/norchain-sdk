@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { getBlockchainService } from '@/lib/blockchain-service';
+import { UniversalSearch } from '../search/UniversalSearch';
 
 export const SearchBar = (): JSX.Element => {
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
   const [gasPrice, setGasPrice] = useState<string>('0');
   const [latestBlock, setLatestBlock] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -45,60 +43,14 @@ export const SearchBar = (): JSX.Element => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-
-    // Detect what type of search this is
-    const query = searchQuery.trim();
-
-    if (query.startsWith('0x')) {
-      if (query.length === 66) {
-        // Transaction hash
-        router.push(`/tx/${query}`);
-      } else if (query.length === 42) {
-        // Address (could be contract or account)
-        router.push(`/address/${query}`);
-      }
-    } else if (!isNaN(Number(query))) {
-      // Block number
-      router.push(`/block/${query}`);
-    }
-
-    setSearchQuery('');
-  };
-
   return (
     <div className="bg-slate-950 border-b border-slate-800">
       <div className="max-w-[1400px] mx-auto px-6 py-3">
         <div className="flex items-center gap-6">
-          {/* Search Form */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-2xl">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by Address / Txn Hash / Block / Token..."
-                className="w-full h-12 pl-12 pr-24 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all text-sm"
-                aria-label="Search the blockchain"
-              />
-              <svg
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <button
-                type="submit"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 px-4 py-1.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-semibold rounded-md transition-all shadow-md hover:shadow-lg"
-              >
-                Search
-              </button>
-            </div>
-          </form>
+          {/* Universal Search */}
+          <div className="flex-1 max-w-2xl">
+            <UniversalSearch placeholder="Search by Address / Txn Hash / Block / Token..." />
+          </div>
 
           {/* Live Stats */}
           <div className="hidden lg:flex items-center gap-4">

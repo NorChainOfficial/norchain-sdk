@@ -207,14 +207,14 @@ export function TransactionsTable({ initialTransactions, stats }: TransactionsTa
           <table className="w-full">
             <thead className="bg-slate-900 border-b border-slate-700">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tx Hash</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Block</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">From</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">To</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Value</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Gas</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
+                <th className="px-3 md:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tx Hash</th>
+                <th className="hidden md:table-cell px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Block</th>
+                <th className="px-3 md:px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="hidden lg:table-cell px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">From</th>
+                <th className="hidden lg:table-cell px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">To</th>
+                <th className="px-3 md:px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Value</th>
+                <th className="hidden md:table-cell px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Gas</th>
+                <th className="px-3 md:px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Time</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-700">
@@ -223,40 +223,40 @@ export function TransactionsTable({ initialTransactions, stats }: TransactionsTa
                 const isFailed = tx.status === false || tx.status === 'failed';
                 return (
                   <tr key={tx.hash} className="hover:bg-slate-700 transition-colors">
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                       <Link
                         href={`/tx/${tx.hash}`}
-                        className="text-purple-400 hover:text-purple-300 font-mono text-sm transition-colors"
+                        className="text-purple-400 hover:text-purple-300 font-mono text-xs md:text-sm transition-colors"
                       >
                         {formatHash(tx.hash)}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap">
                       <Link
                         href={`/blocks/${tx.blockHeight}`}
-                        className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                        className="text-blue-400 hover:text-blue-300 font-semibold transition-colors text-sm"
                       >
                         #{formatNumber(tx.blockHeight)}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                       {isSuccess && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+                        <span className="inline-flex items-center px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-md text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
                           Success
                         </span>
                       )}
                       {isFailed && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
+                        <span className="inline-flex items-center px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-md text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
                           Failed
                         </span>
                       )}
                       {!isSuccess && !isFailed && (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                        <span className="inline-flex items-center px-2 py-0.5 md:px-2.5 md:py-0.5 rounded-md text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
                           Pending
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                       <Link
                         href={`/accounts/${tx.fromAddress}`}
                         className="text-gray-300 hover:text-blue-400 transition-colors"
@@ -264,7 +264,7 @@ export function TransactionsTable({ initialTransactions, stats }: TransactionsTa
                         <code className="text-sm font-mono">{formatAddress(tx.fromAddress)}</code>
                       </Link>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="hidden lg:table-cell px-6 py-4 whitespace-nowrap">
                       {tx.toAddress ? (
                         <Link
                           href={`/accounts/${tx.toAddress}`}
@@ -276,16 +276,16 @@ export function TransactionsTable({ initialTransactions, stats }: TransactionsTa
                         <span className="text-emerald-400 text-sm">Contract Creation</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <span className="text-white font-medium">
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-right">
+                      <span className="text-white font-medium text-xs md:text-sm">
                         {typeof tx.value === 'string' ? weiToXhn(tx.value) : (tx.value / 1e18).toFixed(4)} NOR
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <span className="text-gray-300">{formatNumber(parseInt(String(tx.gasUsed || '0')))}</span>
+                    <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-right">
+                      <span className="text-gray-300 text-sm">{formatNumber(parseInt(String(tx.gasUsed || '0')))}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right">
-                      <span className="text-gray-400 text-sm">
+                    <td className="px-3 md:px-6 py-4 whitespace-nowrap text-right">
+                      <span className="text-gray-400 text-xs md:text-sm">
                         {formatTimeAgo(typeof tx.timestamp === 'string' ? undefined : tx.timestamp)}
                       </span>
                     </td>
@@ -293,7 +293,7 @@ export function TransactionsTable({ initialTransactions, stats }: TransactionsTa
                 );
               }) : (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={8} className="px-3 md:px-6 py-12 text-center text-gray-400">
                     {transactions.length === 0 ? (
                       <div className="flex flex-col items-center space-y-3">
                         <svg className="h-16 w-16 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

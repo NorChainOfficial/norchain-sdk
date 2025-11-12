@@ -12,6 +12,7 @@ import { AccountModule } from '../account/account.module';
 import { StatsModule } from '../stats/stats.module';
 import { ContractModule } from '../contract/contract.module';
 import { TokenModule } from '../token/token.module';
+import { GasModule } from '../gas/gas.module';
 import { Transaction } from '../transaction/entities/transaction.entity';
 import { TokenHolder } from '../token/entities/token-holder.entity';
 
@@ -23,6 +24,7 @@ import { TokenHolder } from '../token/entities/token-holder.entity';
     StatsModule,
     ContractModule,
     TokenModule,
+    GasModule,
     TypeOrmModule.forFeature([Transaction]),
   ],
   controllers: [

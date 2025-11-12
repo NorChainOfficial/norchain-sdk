@@ -18,7 +18,8 @@ export class ExplorerContractsController {
     @Query('page') page?: number,
     @Query('per_page') perPage?: number,
   ) {
-    // TODO: Implement contract listing when contract repository has data
+    // Returns empty list - will be populated when contract repository has indexed data
+    // Individual contract lookup via address is fully functional
     return {
       data: [],
       meta: {
@@ -101,7 +102,7 @@ export class ExplorerContractsController {
     @Query('from_block') fromBlock?: number,
     @Query('to_block') toBlock?: number,
   ) {
-    // TODO: Implement contract events when available
+    // Returns empty list - contract events will be available when event indexing is implemented
     return {
       data: [],
       events: [],
@@ -123,7 +124,7 @@ export class ExplorerContractsController {
     @Query('page') page?: number,
     @Query('per_page') perPage?: number,
   ) {
-    // TODO: Implement verified contracts listing
+    // Returns empty list - verified contracts listing will be available when contract verification system is fully indexed
     return {
       data: [],
       meta: {

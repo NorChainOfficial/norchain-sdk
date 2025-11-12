@@ -1,4 +1,5 @@
 import { BitcoinBRApi } from './api';
+import { apiCache } from './api-cache';
 
 // Connect to Unified API
 // For server-side (SSR), use API_URL (Docker internal networking)
@@ -59,11 +60,16 @@ export function weiToXhn(wei: string | number | undefined | null): string {
 
 export const apiClient = {
   getBlocks: async ({ page = 1, per_page = 20 }: { page?: number; per_page?: number }) => {
+    const cacheKey = apiCache.generateKey(`${API_BASE_URL}/blocks`, { page, per_page });
+    const cached = apiCache.get(cacheKey);
+    if (cached) return cached;
+
     const response = await fetch(`${API_BASE_URL}/blocks?page=${page}&per_page=${per_page}`);
     if (!response.ok) throw new Error('Failed to fetch blocks');
     const result = await response.json();
-    // Unwrap backend response format: {success: true, data: {...}}
-    return result.data || result;
+    const data = result.data || result;
+    apiCache.set(cacheKey, data, 10000); // Cache for 10 seconds
+    return data;
   },
 
   getBlock: async (height: number) => {
@@ -127,10 +133,16 @@ export const apiClient = {
   },
 
   getStats: async () => {
+    const cacheKey = apiCache.generateKey(`${API_BASE_URL}/stats`);
+    const cached = apiCache.get(cacheKey);
+    if (cached) return cached;
+
     const response = await fetch(`${API_BASE_URL}/stats`);
     if (!response.ok) throw new Error('Failed to fetch stats');
     const result = await response.json();
-    return result.data || result;
+    const data = result.data || result;
+    apiCache.set(cacheKey, data, 5000); // Cache for 5 seconds (stats change frequently)
+    return data;
   },
 
   // Contract API methods
@@ -209,5 +221,40 @@ export const apiClient = {
     if (!response.ok) throw new Error('Failed to fetch token transfers');
     const result = await response.json();
     return result.data || result.transfers || result;
+  },
+
+  // Analytics API methods
+  getNetworkStatistics: async () => {
+    const response = await fetch(`${API_BASE_URL}/analytics/network`);
+    if (!response.ok) throw new Error('Failed to fetch network statistics');
+    const result = await response.json();
+    return result.data || result.result || result;
+  },
+
+  getNetworkAnalytics: async (startDate?: string, endDate?: string) => {
+    let url = `${API_BASE_URL}/analytics/network`;
+    const params = new URLSearchParams();
+    if (startDate) params.append('startDate', startDate);
+    if (endDate) params.append('endDate', endDate);
+    if (params.toString()) url += `?${params.toString()}`;
+    
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Failed to fetch network analytics');
+    const result = await response.json();
+    return result.data || result.result || result;
+  },
+
+  getRealTimeMetrics: async () => {
+    const response = await fetch(`${API_BASE_URL}/analytics/realtime`);
+    if (!response.ok) throw new Error('Failed to fetch real-time metrics');
+    const result = await response.json();
+    return result.data || result.result || result;
+  },
+
+  getTransactionAnalytics: async (address: string, days: number = 30) => {
+    const response = await fetch(`${API_BASE_URL}/analytics/transactions?address=${address}&days=${days}`);
+    if (!response.ok) throw new Error('Failed to fetch transaction analytics');
+    const result = await response.json();
+    return result.data || result.result || result;
   },
 };
