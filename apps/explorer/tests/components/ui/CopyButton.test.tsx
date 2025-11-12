@@ -61,13 +61,15 @@ describe('CopyButton', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/Copied!/i)).toBeInTheDocument();
-    });
+    }, { timeout: 1000 });
 
-    vi.advanceTimersByTime(2000);
+    // Advance time past the 2000ms timeout
+    vi.advanceTimersByTime(2500);
 
     await waitFor(() => {
-      expect(screen.queryByText(/Copied!/i)).not.toBeInTheDocument();
-    });
+      const copiedText = screen.queryByText(/Copied!/i);
+      expect(copiedText).not.toBeInTheDocument();
+    }, { timeout: 500 });
 
     vi.useRealTimers();
   });

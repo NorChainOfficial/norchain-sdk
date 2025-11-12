@@ -4,17 +4,19 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
+import { Card } from '@/components/ui/Card';
 import { render as customRender } from '../../utils/test-utils';
 
-// Card component may not exist, create a simple test
 describe('Card', () => {
-  it('should render card-like components', () => {
-    // Test that card-like divs can be rendered
-    const { container } = customRender(
-      <div className="card bg-white rounded-lg p-4">Card Content</div>
-    );
-    expect(container.querySelector('.card')).toBeInTheDocument();
+  it('should render with children', () => {
+    customRender(<Card>Card Content</Card>);
     expect(screen.getByText('Card Content')).toBeInTheDocument();
+  });
+
+  it('should apply custom className', () => {
+    customRender(<Card className="custom-class">Content</Card>);
+    const card = screen.getByText('Content').closest('div');
+    expect(card).toHaveClass('custom-class');
   });
 });
 

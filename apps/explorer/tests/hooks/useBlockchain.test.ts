@@ -113,7 +113,7 @@ describe('useBalance', () => {
 
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
-    });
+    }, { timeout: 3000 });
 
     expect(result.current.balance).toBe(mockBalance);
     expect(mockService.getBalance).toHaveBeenCalledWith('0x123');

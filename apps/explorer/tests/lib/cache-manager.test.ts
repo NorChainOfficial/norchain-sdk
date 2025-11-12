@@ -16,52 +16,43 @@ describe('apiCache', () => {
   });
 
   it('should set and get cache values', () => {
-    if (!apiCache) {
-      expect(true).toBe(true); // Skip if apiCache not available
-      return;
-    }
-
     const key = 'test-key';
     const value = { data: 'test' };
     const ttl = 1000;
 
-    if (typeof (apiCache as any).set === 'function') {
-      (apiCache as any).set(key, value, ttl);
-      const cached = (apiCache as any).get(key);
-      expect(cached).toEqual(value);
-    } else {
-      expect(true).toBe(true); // Skip if methods don't exist
-    }
+    apiCache.set(key, value, ttl);
+    const cached = apiCache.get(key);
+    expect(cached).toEqual(value);
   });
 
   it('should generate cache keys', () => {
-    if (!apiCache) {
-      expect(true).toBe(true);
-      return;
-    }
-
-    if (typeof (apiCache as any).generateKey === 'function') {
-      const url = 'http://api.test/endpoint';
-      const key = (apiCache as any).generateKey(url);
-      expect(key).toBeDefined();
-      expect(typeof key).toBe('string');
-    } else {
-      expect(true).toBe(true);
-    }
+    const url = 'http://api.test/endpoint';
+    const key = apiCache.generateKey(url);
+    expect(key).toBeDefined();
+    expect(typeof key).toBe('string');
   });
 
   it('should handle cache misses', () => {
-    if (!apiCache) {
-      expect(true).toBe(true);
-      return;
-    }
+    const cached = apiCache.get('non-existent-key');
+    expect(cached).toBeNull();
+  });
 
-    if (typeof (apiCache as any).get === 'function') {
-      const cached = (apiCache as any).get('non-existent-key');
-      expect(cached).toBeNull();
-    } else {
-      expect(true).toBe(true);
-    }
+  it('should return null for expired cache', async () => {
+    vi.useFakeTimers();
+    const key = 'test-key';
+    const value = { data: 'test' };
+    const ttl = 1000;
+
+    apiCache.set(key, value, ttl);
+    expect(apiCache.get(key)).toEqual(value);
+    
+    // Fast-forward time past TTL
+    vi.advanceTimersByTime(2000);
+    
+    const cached = apiCache.get(key);
+    expect(cached).toBeNull();
+
+    vi.useRealTimers();
   });
 });
 
