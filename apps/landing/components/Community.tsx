@@ -31,15 +31,15 @@ export default function Community() {
     {
       name: "Discord",
       Icon: MessageSquare,
-      url: "https://discord.gg/norchain",
+      url: "https://discord.gg/GjXguAsN",
       members: "5,000+",
       description: "Join our community discussions",
       color: "from-indigo-500 to-purple-600",
     },
     {
-      name: "Twitter",
+      name: "Twitter/X",
       Icon: Twitter,
-      url: "https://twitter.com/norchain",
+      url: "https://x.com/NorChaiin",
       members: "12,000+",
       description: "Latest updates and announcements",
       color: "from-blue-400 to-cyan-500",
@@ -55,7 +55,7 @@ export default function Community() {
     {
       name: "GitHub",
       Icon: Github,
-      url: "https://github.com/norchain",
+      url: "https://github.com/NorChainOfficial",
       members: "500+ stars",
       description: "Open source contributions",
       color: "from-gray-600 to-slate-700",
@@ -71,7 +71,7 @@ export default function Community() {
     {
       name: "YouTube",
       Icon: Youtube,
-      url: "https://youtube.com/@norchain",
+      url: "https://www.youtube.com/@NorChain",
       members: "2,000+",
       description: "Tutorials and demos",
       color: "from-red-500 to-pink-600",

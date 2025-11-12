@@ -16,6 +16,10 @@ import { ClosePeriodDto } from './dto/close-period.dto';
 import { LineDirection } from './entities/journal-line.entity';
 import { CalculateVatDto, VatRate, VatType } from './dto/calculate-vat.dto';
 import { GetFinancialReportDto, ReportType, ReportPeriod } from './dto/get-financial-report.dto';
+import { CreateReconciliationDto } from './dto/create-reconciliation.dto';
+import { MatchTransactionDto } from './dto/match-transaction.dto';
+import { ReconciliationStatus, ReconciliationType } from './entities/reconciliation.entity';
+import { MatchType } from './entities/reconciliation-match.entity';
 
 describe('LedgerService', () => {
   let service: LedgerService;
@@ -1334,6 +1338,378 @@ describe('LedgerService', () => {
 
       expect(result.comparative).toBeDefined();
       expect(result.comparative.variance).toBeDefined();
+    });
+  });
+
+  describe('createReconciliation', () => {
+    it('should create a reconciliation', async () => {
+      const dto: CreateReconciliationDto = {
+        orgId: 'org-123',
+        type: ReconciliationType.BANK,
+        period: '2025-01',
+        startDate: '2025-01-01T00:00:00Z',
+        endDate: '2025-01-31T23:59:59Z',
+        accountCode: '1000',
+        openingBalance: '1000.00',
+        closingBalance: '1500.00',
+      };
+
+      const mockAccount = {
+        id: 'acc-1',
+        code: '1000',
+        orgId: 'org-123',
+      };
+
+      const mockReconciliation = {
+        id: 'recon-1',
+        ...dto,
+        status: ReconciliationStatus.PENDING,
+        ledgerTotal: '0',
+        externalTotal: '0',
+        difference: '0',
+      };
+
+      mockAccountRepository.findOne.mockResolvedValue(mockAccount);
+      mockReconciliationRepository.create.mockReturnValue(mockReconciliation);
+      mockReconciliationRepository.save.mockResolvedValue(mockReconciliation);
+
+      const result = await service.createReconciliation(dto, 'user-123');
+
+      expect(result).toEqual(mockReconciliation);
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        'reconciliation.created',
+        expect.objectContaining({
+          reconciliationId: 'recon-1',
+        }),
+      );
+    });
+
+    it('should throw NotFoundException if account not found', async () => {
+      const dto: CreateReconciliationDto = {
+        orgId: 'org-123',
+        type: ReconciliationType.BANK,
+        period: '2025-01',
+        startDate: '2025-01-01T00:00:00Z',
+        endDate: '2025-01-31T23:59:59Z',
+        accountCode: '9999',
+      };
+
+      mockAccountRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.createReconciliation(dto, 'user-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should create reconciliation without account code', async () => {
+      const dto: CreateReconciliationDto = {
+        orgId: 'org-123',
+        type: ReconciliationType.WALLET,
+        period: '2025-01',
+        startDate: '2025-01-01T00:00:00Z',
+        endDate: '2025-01-31T23:59:59Z',
+      };
+
+      const mockReconciliation = {
+        id: 'recon-2',
+        ...dto,
+        status: ReconciliationStatus.PENDING,
+      };
+
+      mockReconciliationRepository.create.mockReturnValue(mockReconciliation);
+      mockReconciliationRepository.save.mockResolvedValue(mockReconciliation);
+
+      const result = await service.createReconciliation(dto, 'user-123');
+
+      expect(result).toEqual(mockReconciliation);
+      expect(mockAccountRepository.findOne).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getReconciliation', () => {
+    it('should return reconciliation by ID', async () => {
+      const reconciliationId = 'recon-1';
+      const orgId = 'org-123';
+      const mockReconciliation = {
+        id: reconciliationId,
+        orgId,
+        type: ReconciliationType.BANK,
+        matches: [],
+      };
+
+      mockReconciliationRepository.findOne.mockResolvedValue(mockReconciliation);
+
+      const result = await service.getReconciliation(reconciliationId, orgId);
+
+      expect(result).toEqual(mockReconciliation);
+    });
+
+    it('should throw NotFoundException if reconciliation not found', async () => {
+      mockReconciliationRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getReconciliation('non-existent', 'org-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('listReconciliations', () => {
+    it('should list all reconciliations', async () => {
+      const orgId = 'org-123';
+      const mockReconciliations = [
+        {
+          id: 'recon-1',
+          orgId,
+          type: ReconciliationType.BANK,
+        },
+        {
+          id: 'recon-2',
+          orgId,
+          type: ReconciliationType.WALLET,
+        },
+      ];
+
+      mockReconciliationRepository.findAndCount.mockResolvedValue([
+        mockReconciliations,
+        2,
+      ]);
+
+      const result = await service.listReconciliations(orgId);
+
+      expect(result.reconciliations).toEqual(mockReconciliations);
+      expect(result.total).toBe(2);
+    });
+
+    it('should filter by type', async () => {
+      const orgId = 'org-123';
+      const type = ReconciliationType.BANK;
+
+      mockReconciliationRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      await service.listReconciliations(orgId, type);
+
+      expect(mockReconciliationRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { orgId, type },
+        }),
+      );
+    });
+
+    it('should filter by status', async () => {
+      const orgId = 'org-123';
+      const status = ReconciliationStatus.COMPLETED;
+
+      mockReconciliationRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      await service.listReconciliations(orgId, undefined, status);
+
+      expect(mockReconciliationRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { orgId, status },
+        }),
+      );
+    });
+
+    it('should support pagination', async () => {
+      const orgId = 'org-123';
+      mockReconciliationRepository.findAndCount.mockResolvedValue([[], 0]);
+
+      await service.listReconciliations(orgId, undefined, undefined, 10, 20);
+
+      expect(mockReconciliationRepository.findAndCount).toHaveBeenCalledWith(
+        expect.objectContaining({
+          take: 10,
+          skip: 20,
+        }),
+      );
+    });
+  });
+
+  describe('matchTransaction', () => {
+    it('should match a transaction', async () => {
+      const dto: MatchTransactionDto = {
+        reconciliationId: 'recon-1',
+        ledgerEntryId: 'entry-1',
+        amount: '100.00',
+        transactionDate: '2025-01-15T00:00:00Z',
+        matchType: MatchType.EXACT,
+      };
+
+      const mockReconciliation = {
+        id: 'recon-1',
+        orgId: 'org-123',
+      };
+
+      const mockEntry = {
+        id: 'entry-1',
+        orgId: 'org-123',
+      };
+
+      const mockMatch = {
+        id: 'match-1',
+        ...dto,
+        transactionDate: new Date(dto.transactionDate),
+      };
+
+      mockReconciliationRepository.findOne
+        .mockResolvedValueOnce(mockReconciliation)
+        .mockResolvedValueOnce(mockReconciliation);
+      mockEntryRepository.findOne.mockResolvedValue(mockEntry);
+      mockReconciliationMatchRepository.create.mockReturnValue(mockMatch);
+      mockReconciliationMatchRepository.save.mockResolvedValue(mockMatch);
+      mockReconciliationMatchRepository.find.mockResolvedValue([mockMatch]);
+      mockReconciliationRepository.save.mockResolvedValue(mockReconciliation);
+
+      const result = await service.matchTransaction(dto, 'user-123');
+
+      expect(result).toEqual(mockMatch);
+      expect(mockReconciliationMatchRepository.save).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if reconciliation not found', async () => {
+      const dto: MatchTransactionDto = {
+        reconciliationId: 'non-existent',
+        amount: '100.00',
+        transactionDate: '2025-01-15T00:00:00Z',
+      };
+
+      mockReconciliationRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.matchTransaction(dto, 'user-123')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw NotFoundException if ledger entry not found', async () => {
+      const dto: MatchTransactionDto = {
+        reconciliationId: 'recon-1',
+        ledgerEntryId: 'non-existent',
+        amount: '100.00',
+        transactionDate: '2025-01-15T00:00:00Z',
+      };
+
+      const mockReconciliation = {
+        id: 'recon-1',
+        orgId: 'org-123',
+      };
+
+      mockReconciliationRepository.findOne.mockResolvedValue(mockReconciliation);
+      mockEntryRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.matchTransaction(dto, 'user-123')).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('autoMatchTransactions', () => {
+    it('should auto-match transactions', async () => {
+      const reconciliationId = 'recon-1';
+      const orgId = 'org-123';
+
+      const mockReconciliation = {
+        id: reconciliationId,
+        orgId,
+        startDate: new Date('2025-01-01'),
+        endDate: new Date('2025-01-31'),
+      };
+
+      const mockEntries = [
+        {
+          id: 'entry-1',
+          orgId,
+          occurredAt: new Date('2025-01-15'),
+          status: JournalEntryStatus.POSTED,
+          lines: [
+            {
+              amountNative: '100.00',
+              direction: LineDirection.DEBIT,
+            },
+          ],
+        },
+        {
+          id: 'entry-2',
+          orgId,
+          occurredAt: new Date('2025-01-20'),
+          status: JournalEntryStatus.POSTED,
+          lines: [
+            {
+              amountNative: '50.00',
+              direction: LineDirection.CREDIT,
+            },
+          ],
+        },
+      ];
+
+      mockReconciliationRepository.findOne.mockResolvedValue(mockReconciliation);
+      mockEntryRepository.find.mockResolvedValue(mockEntries);
+      mockReconciliationMatchRepository.find.mockResolvedValue([]);
+      mockReconciliationMatchRepository.create.mockReturnValue({});
+      mockReconciliationMatchRepository.save.mockResolvedValue({});
+      mockReconciliationRepository.save.mockResolvedValue(mockReconciliation);
+
+      const result = await service.autoMatchTransactions(reconciliationId, orgId);
+
+      expect(result.matched).toBeGreaterThan(0);
+      expect(result.unmatched).toBeDefined();
+    });
+
+    it('should throw NotFoundException if reconciliation not found', async () => {
+      mockReconciliationRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.autoMatchTransactions('non-existent', 'org-123'),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('getReconciliationDetails', () => {
+    it('should return reconciliation details with matches', async () => {
+      const reconciliationId = 'recon-1';
+      const orgId = 'org-123';
+
+      const mockReconciliation = {
+        id: reconciliationId,
+        orgId,
+        type: ReconciliationType.BANK,
+      };
+
+      const mockMatches = [
+        {
+          id: 'match-1',
+          reconciliationId,
+          ledgerEntryId: 'entry-1',
+          amount: '100.00',
+        },
+      ];
+
+      const mockEntries = [
+        {
+          id: 'entry-1',
+          orgId,
+          occurredAt: new Date('2025-01-15'),
+        },
+        {
+          id: 'entry-2',
+          orgId,
+          occurredAt: new Date('2025-01-20'),
+        },
+      ];
+
+      mockReconciliationRepository.findOne
+        .mockResolvedValueOnce(mockReconciliation)
+        .mockResolvedValueOnce(mockReconciliation);
+      mockReconciliationMatchRepository.find.mockResolvedValue(mockMatches);
+      mockEntryRepository.find.mockResolvedValue(mockEntries);
+
+      const result = await service.getReconciliationDetails(
+        reconciliationId,
+        orgId,
+      );
+
+      expect(result.reconciliation).toEqual(mockReconciliation);
+      expect(result.matches).toEqual(mockMatches);
+      expect(result.unmatchedLedger).toBeDefined();
     });
   });
 });

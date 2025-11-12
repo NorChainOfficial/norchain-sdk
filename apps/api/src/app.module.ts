@@ -49,6 +49,7 @@ import { GraphQLApiModule } from './modules/graphql/graphql.module';
 import { UsageModule } from './modules/usage/usage.module';
 import { UsageTrackingInterceptor } from './modules/usage/interceptors/usage-tracking.interceptor';
 import { TreasuryModule } from './modules/treasury/treasury.module';
+import { ExplorerModule } from './modules/explorer/explorer.module';
 import { CommonModule } from './common/common.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 
@@ -152,6 +153,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     UsageModule,
     MessagingModule,
     TreasuryModule,
+    ExplorerModule,
   ],
   providers: [
     {

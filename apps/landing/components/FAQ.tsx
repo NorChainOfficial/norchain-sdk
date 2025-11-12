@@ -211,7 +211,7 @@ export default function FAQ() {
               <div className="relative">
                 <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-rose-600 rounded-2xl blur opacity-75"></div>
                 <a
-                  href="https://discord.gg/norchain"
+                  href="https://discord.gg/GjXguAsN"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="relative group inline-flex items-center gap-3 px-12 py-5 bg-gradient-to-r from-pink-600 to-rose-600 text-white font-bold text-lg rounded-2xl hover:shadow-2xl hover:shadow-pink-500/30 transition-all duration-500 hover:scale-105"

@@ -11,7 +11,8 @@ COPY nest-cli.json ./
 
 # Install dependencies
 # Use npm install if package-lock.json doesn't exist, otherwise use npm ci
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+# Use --legacy-peer-deps to handle peer dependency conflicts
+RUN if [ -f package-lock.json ]; then npm ci --legacy-peer-deps || npm install --legacy-peer-deps; else npm install --legacy-peer-deps; fi
 
 # Copy source code
 COPY src ./src
@@ -28,7 +29,9 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install production dependencies only
-RUN if [ -f package-lock.json ]; then npm ci --omit=dev; else npm install --production; fi && npm cache clean --force
+# Use --legacy-peer-deps to handle peer dependency conflicts
+# Include optional dependencies for GraphQL/Apollo
+RUN if [ -f package-lock.json ]; then npm ci --omit=dev --legacy-peer-deps --include=optional || npm install --production --legacy-peer-deps --include=optional; else npm install --production --legacy-peer-deps --include=optional; fi && npm cache clean --force
 
 # Copy built application
 COPY --from=builder /app/dist ./dist

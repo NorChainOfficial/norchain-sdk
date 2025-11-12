@@ -19,7 +19,7 @@ export default function Footer() {
         },
         {
           name: "GitHub",
-          href: "https://github.com/norchain/norchain-sdk",
+          href: "https://github.com/NorChainOfficial/norchain-sdk",
           external: true,
         },
         { name: "Roadmap", href: "#roadmap", scroll: true },
@@ -41,10 +41,10 @@ export default function Footer() {
         },
         {
           name: "SDK",
-          href: "https://github.com/norchain/norchain-sdk",
+          href: "https://github.com/NorChainOfficial/norchain-sdk",
           external: true,
         },
-        { name: "GitHub", href: "https://github.com/norchain", external: true },
+        { name: "GitHub", href: "https://github.com/NorChainOfficial", external: true },
         {
           name: "NPM Package",
           href: "https://www.npmjs.com/package/@nor/core",
@@ -81,10 +81,12 @@ export default function Footer() {
     {
       title: "Community",
       links: [
-        { name: "Discord", href: "https://discord.gg/norchain", external: true },
-        { name: "Twitter", href: "https://twitter.com/norchain", external: true },
+        { name: "Discord", href: "https://discord.gg/GjXguAsN", external: true },
+        { name: "Twitter/X", href: "https://x.com/NorChaiin", external: true },
+        { name: "YouTube", href: "https://www.youtube.com/@NorChain", external: true },
+        { name: "LinkedIn", href: "https://www.linkedin.com/company/110038209", external: true },
         { name: "Telegram", href: "https://t.me/norchain", external: true },
-        { name: "GitHub", href: "https://github.com/norchain", external: true },
+        { name: "GitHub", href: "https://github.com/NorChainOfficial", external: true },
         { name: "Medium", href: "https://medium.com/@nor", external: true },
       ],
     },
@@ -118,9 +120,11 @@ export default function Footer() {
             </p>
             <div className="flex space-x-3">
               {[
-                { icon: "🐦", url: "https://twitter.com/norchain", name: "Twitter" },
-                { icon: "💬", url: "https://discord.gg/norchain", name: "Discord" },
-                { icon: "💻", url: "https://github.com/norchain", name: "GitHub" },
+                { icon: "🐦", url: "https://x.com/NorChaiin", name: "Twitter/X" },
+                { icon: "💬", url: "https://discord.gg/GjXguAsN", name: "Discord" },
+                { icon: "▶️", url: "https://www.youtube.com/@NorChain", name: "YouTube" },
+                { icon: "💼", url: "https://www.linkedin.com/company/110038209", name: "LinkedIn" },
+                { icon: "💻", url: "https://github.com/NorChainOfficial", name: "GitHub" },
                 { icon: "✈️", url: "https://t.me/norchain", name: "Telegram" },
               ].map((social, i) => (
                 <a

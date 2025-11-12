@@ -152,7 +152,7 @@ export default function Roadmap() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a
-              href="https://github.com/norchain/norchain-sdk/discussions"
+              href="https://github.com/NorChainOfficial/norchain-sdk/discussions"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-lg hover:scale-105"
