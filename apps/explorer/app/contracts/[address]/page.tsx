@@ -70,7 +70,7 @@ export default function ContractDetailPage(): JSX.Element {
           await service.provider.getNetwork();
         } catch (networkError) {
           console.error('RPC connection error:', networkError);
-          throw new Error('Cannot connect to Noor Chain RPC. Please check if the RPC endpoint is accessible.');
+          throw new Error('Cannot connect to Nor Chain RPC. Please check if the RPC endpoint is accessible.');
         }
 
         // Fetch contract data

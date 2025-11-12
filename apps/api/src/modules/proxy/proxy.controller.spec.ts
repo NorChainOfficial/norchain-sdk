@@ -80,8 +80,8 @@ describe('ProxyController', () => {
     it('should return block', async () => {
       const tag = '0x12345';
       const full = false;
-      const mockResponse = ResponseDto.success({ number: '0x12345' });
-      service.eth_getBlockByNumber.mockResolvedValue(mockResponse);
+      const mockResponse = ResponseDto.success({ number: '0x12345' } as any);
+      service.eth_getBlockByNumber.mockResolvedValue(mockResponse as any);
 
       const result = await controller.eth_getBlockByNumber(tag, full);
 
@@ -91,8 +91,8 @@ describe('ProxyController', () => {
 
     it('should use default full when not provided', async () => {
       const tag = '0x12345';
-      const mockResponse = ResponseDto.success({ number: '0x12345' });
-      service.eth_getBlockByNumber.mockResolvedValue(mockResponse);
+      const mockResponse = ResponseDto.success({ number: '0x12345' } as any);
+      service.eth_getBlockByNumber.mockResolvedValue(mockResponse as any);
 
       const result = await controller.eth_getBlockByNumber(tag);
 
@@ -104,8 +104,8 @@ describe('ProxyController', () => {
   describe('eth_getTransactionByHash', () => {
     it('should return transaction', async () => {
       const txhash = '0xabc123';
-      const mockResponse = ResponseDto.success({ hash: txhash });
-      service.eth_getTransactionByHash.mockResolvedValue(mockResponse);
+      const mockResponse = ResponseDto.success({ hash: txhash } as any);
+      service.eth_getTransactionByHash.mockResolvedValue(mockResponse as any);
 
       const result = await controller.eth_getTransactionByHash(txhash);
 
@@ -117,8 +117,8 @@ describe('ProxyController', () => {
   describe('eth_getTransactionReceipt', () => {
     it('should return transaction receipt', async () => {
       const txhash = '0xabc123';
-      const mockResponse = ResponseDto.success({ transactionHash: txhash });
-      service.eth_getTransactionReceipt.mockResolvedValue(mockResponse);
+      const mockResponse = ResponseDto.success({ transactionHash: txhash } as any);
+      service.eth_getTransactionReceipt.mockResolvedValue(mockResponse as any);
 
       const result = await controller.eth_getTransactionReceipt(txhash);
 

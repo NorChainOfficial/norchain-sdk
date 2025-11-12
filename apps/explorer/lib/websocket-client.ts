@@ -103,7 +103,7 @@ export enum ConnectionState {
 
 type EventHandler = (data: any) => void;
 
-export class NoorWebSocketClient {
+export class NorWebSocketClient {
   private ws: WebSocket | null = null;
   private state: ConnectionState = ConnectionState.DISCONNECTED;
   private readonly url: string;
@@ -516,13 +516,13 @@ export class NoorWebSocketClient {
 // Singleton Instance Export
 // ============================================================================
 
-let wsClientInstance: NoorWebSocketClient | null = null;
+let wsClientInstance: NorWebSocketClient | null = null;
 
-export function getWebSocketClient(config?: WebSocketConfig): NoorWebSocketClient {
+export function getWebSocketClient(config?: WebSocketConfig): NorWebSocketClient {
   if (!wsClientInstance) {
-    wsClientInstance = new NoorWebSocketClient(config);
+    wsClientInstance = new NorWebSocketClient(config);
   }
   return wsClientInstance;
 }
 
-export default NoorWebSocketClient;
+export default NorWebSocketClient;

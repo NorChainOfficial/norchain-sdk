@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.screens
+package com.nor.wallet.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,8 +15,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.noor.wallet.ui.components.TokenIcon
-import com.noor.wallet.viewmodels.WalletViewModel
+import com.nor.wallet.ui.components.TokenIcon
+import com.nor.wallet.viewmodels.WalletViewModel
 
 /**
  * WalletHomeScreen - Main wallet screen
@@ -88,7 +88,7 @@ fun WalletHomeScreen(
 
 @Composable
 fun BalanceCard(
-    wallet: com.noor.core.NoorCore.WalletInfo?,
+    wallet: com.nor.core.NorCore.WalletInfo?,
     isLoading: Boolean
 ) {
     Card(

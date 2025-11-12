@@ -7,10 +7,10 @@
 
 import Anthropic from '@anthropic-ai/sdk';
 
-// Placeholder for @noor packages (will be available after pnpm install)
-// import { NoorClient } from '@noor/core';
-// import { WalletManager } from '@noor/wallet';
-// import { AIAnalyzer } from '@noor/ai-analyzer';
+// Placeholder for @nor packages (will be available after pnpm install)
+// import { NorClient } from '@nor/core';
+// import { WalletManager } from '@nor/wallet';
+// import { AIAnalyzer } from '@nor/ai-analyzer';
 
 export interface AIAnalysisResult {
   readonly summary: string;
@@ -206,7 +206,7 @@ Provide a helpful, accurate response with:
     recommendation: string;
   }> {
     try {
-      // This would integrate with @noor/ai-analyzer for real predictions
+      // This would integrate with @nor/ai-analyzer for real predictions
       // For now, returning mock data structure
       return {
         current: '1.5 Gwei',

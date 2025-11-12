@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Noor Wallet",
+  "name": "Nor Wallet",
   "version": "1.0.0",
   "description": "Cross-platform cryptocurrency wallet with Supabase sync",
   "permissions": [

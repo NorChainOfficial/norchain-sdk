@@ -16,6 +16,8 @@ describe('LedgerController', () => {
     getAccountStatement: jest.fn(),
     closePeriod: jest.fn(),
     getPeriodClosure: jest.fn(),
+    calculateVat: jest.fn(),
+    getFinancialReport: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -93,6 +95,102 @@ describe('LedgerController', () => {
 
       expect(result).toEqual(mockEntry);
       expect(mockLedgerService.createJournalEntry).toHaveBeenCalledWith(dto, 'user_123');
+    });
+  });
+
+  describe('calculateVat', () => {
+    it('should calculate VAT', async () => {
+      const dto = {
+        orgId: 'org-123',
+        amountExcludingVat: '1000.00',
+        vatRate: 25,
+        vatType: 'output' as any,
+        countryCode: 'NO',
+      };
+
+      const mockResult = {
+        amountExcludingVat: '1000.00',
+        vatAmount: '250.00',
+        amountIncludingVat: '1250.00',
+        vatRate: 25,
+        vatType: 'output',
+        vatAccountCode: '2701',
+      };
+
+      mockLedgerService.calculateVat.mockResolvedValue(mockResult);
+
+      const result = await controller.calculateVat(dto);
+
+      expect(result).toEqual(mockResult);
+      expect(mockLedgerService.calculateVat).toHaveBeenCalledWith(dto);
+    });
+  });
+
+  describe('getFinancialReport', () => {
+    it('should generate Profit & Loss report', async () => {
+      const dto = {
+        orgId: 'org-123',
+        reportType: 'profit_loss' as any,
+        periodIdentifier: '2025-01',
+      };
+
+      const mockReport = {
+        reportType: 'profit_loss',
+        period: '2025-01',
+        income: { items: [], total: '1000.00' },
+        expenses: { items: [], total: '500.00' },
+        netProfit: '500.00',
+      };
+
+      mockLedgerService.getFinancialReport.mockResolvedValue(mockReport);
+
+      const result = await controller.getFinancialReport(dto);
+
+      expect(result).toEqual(mockReport);
+      expect(mockLedgerService.getFinancialReport).toHaveBeenCalledWith(dto);
+    });
+
+    it('should generate Balance Sheet report', async () => {
+      const dto = {
+        orgId: 'org-123',
+        reportType: 'balance_sheet' as any,
+        periodIdentifier: '2025-01',
+      };
+
+      const mockReport = {
+        reportType: 'balance_sheet',
+        assets: { items: [], total: '5000.00' },
+        liabilities: { items: [], total: '2000.00' },
+        equity: { items: [], total: '3000.00' },
+      };
+
+      mockLedgerService.getFinancialReport.mockResolvedValue(mockReport);
+
+      const result = await controller.getFinancialReport(dto);
+
+      expect(result).toEqual(mockReport);
+    });
+
+    it('should generate Cashflow report', async () => {
+      const dto = {
+        orgId: 'org-123',
+        reportType: 'cashflow' as any,
+        periodIdentifier: '2025-01',
+      };
+
+      const mockReport = {
+        reportType: 'cashflow',
+        operatingActivities: { cashFlow: '1000.00' },
+        investingActivities: { cashFlow: '-500.00' },
+        financingActivities: { cashFlow: '200.00' },
+        netCashFlow: '700.00',
+      };
+
+      mockLedgerService.getFinancialReport.mockResolvedValue(mockReport);
+
+      const result = await controller.getFinancialReport(dto);
+
+      expect(result).toEqual(mockReport);
     });
   });
 });

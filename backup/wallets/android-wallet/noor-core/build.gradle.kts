@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.noor.core"
+    namespace = "com.nor.core"
     compileSdk = 34
 
     defaultConfig {

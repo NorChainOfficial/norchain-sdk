@@ -174,7 +174,7 @@ export default function CrowdfundingPage(): JSX.Element {
 
     setIsBacking(true);
     try {
-      // TODO: Integrate with @noor/core for actual backing
+      // TODO: Integrate with @nor/core for actual backing
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert(`Successfully backed ${selectedCampaign.title} with ${backAmount} NOR!`);
       setBackAmount('');

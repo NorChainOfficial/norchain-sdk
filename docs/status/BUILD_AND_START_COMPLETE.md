@@ -42,7 +42,7 @@ All 5 services built successfully:
 ## 🔧 Fixes Applied
 
 ### Workspace Dependencies
-- ✅ Removed `@noor/*` packages (don't exist in monorepo)
+- ✅ Removed `@nor/*` packages (don't exist in monorepo)
 - ✅ Updated Dockerfiles to use `npm install` for workspace support
 
 ### Missing Dependencies

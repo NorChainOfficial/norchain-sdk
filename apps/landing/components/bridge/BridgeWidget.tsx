@@ -272,7 +272,7 @@ export default function BridgeWidget() {
 
       // Execute bridge
       setStatus('bridging');
-      setStatusMessage(`Bridging ${amount} ${tokenInfo.symbol} to Noor Chain...`);
+      setStatusMessage(`Bridging ${amount} ${tokenInfo.symbol} to Nor Chain...`);
 
       let bridgeTx: `0x${string}`;
 
@@ -310,7 +310,7 @@ export default function BridgeWidget() {
       const fee = (parseFloat(amount) * 0.002).toFixed(6);
       const received = (parseFloat(amount) - parseFloat(fee)).toFixed(6);
       setStatusMessage(
-        `Success! ${received} W${tokenInfo.symbol} will arrive on Noor Chain in ~30 seconds. Fee: ${fee} ${tokenInfo.symbol} (0.2%)`
+        `Success! ${received} W${tokenInfo.symbol} will arrive on Nor Chain in ~30 seconds. Fee: ${fee} ${tokenInfo.symbol} (0.2%)`
       );
 
       // Reset form
@@ -325,8 +325,8 @@ export default function BridgeWidget() {
   return (
     <div className="max-w-xl mx-auto">
       <div className="bg-white rounded-2xl shadow-2xl p-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Bridge to Noor Chain</h2>
-        <p className="text-gray-600 mb-6">Transfer assets from BSC to Noor in 30 seconds</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Bridge to Nor Chain</h2>
+        <p className="text-gray-600 mb-6">Transfer assets from BSC to Nor in 30 seconds</p>
 
         {/* Wallet Connection */}
         {!walletAddress ? (
@@ -403,7 +403,7 @@ export default function BridgeWidget() {
         {/* Recipient Address */}
         <div className="mb-6">
           <label htmlFor="recipient" className="block text-sm font-medium text-gray-700 mb-2">
-            Noor Address
+            Nor Address
           </label>
           <input
             id="recipient"
@@ -415,7 +415,7 @@ export default function BridgeWidget() {
             disabled={!walletAddress || status === 'approving' || status === 'bridging'}
           />
           <p className="text-xs text-gray-500 mt-1">
-            The address that will receive W{tokenInfo.symbol} on Noor Chain
+            The address that will receive W{tokenInfo.symbol} on Nor Chain
           </p>
         </div>
 
@@ -451,7 +451,7 @@ export default function BridgeWidget() {
             status === 'bridging'
           }
           className="w-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 text-white font-bold rounded-xl transition-all shadow-lg disabled:cursor-not-allowed"
-          aria-label="Bridge tokens to Noor Chain"
+          aria-label="Bridge tokens to Nor Chain"
         >
           {status === 'approving' && 'Approving...'}
           {status === 'bridging' && 'Bridging...'}
@@ -519,7 +519,7 @@ export default function BridgeWidget() {
           <h3 className="font-semibold text-gray-900 mb-2">Network Information</h3>
           <div className="text-xs text-gray-600 space-y-1">
             <p><strong>From:</strong> BSC Mainnet (Chain ID: 56)</p>
-            <p><strong>To:</strong> Noor Chain (Chain ID: 65001)</p>
+            <p><strong>To:</strong> Nor Chain (Chain ID: 65001)</p>
             <p><strong>Bridge Fee:</strong> 0.2%</p>
             <p><strong>Time:</strong> ~30 seconds</p>
           </div>

@@ -1,15 +1,15 @@
-// Integration tests for Noor Wallet Core
+// Integration tests for Nor Wallet Core
 
-use noor_core::{
-    get_noor_chain_id, get_noor_chain_rpc, Account, EvmManager, NetworkManager, WalletManager,
+use nor_core::{
+    get_nor_chain_id, get_nor_chain_rpc, Account, EvmManager, NetworkManager, WalletManager,
 };
 
 #[test]
-fn test_noor_chain_config() {
-    let rpc_url = get_noor_chain_rpc();
-    let chain_id = get_noor_chain_id();
+fn test_nor_chain_config() {
+    let rpc_url = get_nor_chain_rpc();
+    let chain_id = get_nor_chain_id();
 
-    assert_eq!(rpc_url, "https://rpc.noorchain.org");
+    assert_eq!(rpc_url, "https://rpc.norchain.org");
     assert_eq!(chain_id, 7860);
 }
 
@@ -18,9 +18,9 @@ fn test_network_manager() {
     let manager = NetworkManager::new().unwrap();
     let info = manager.get_network_info();
 
-    assert_eq!(info.rpc_url, "https://rpc.noorchain.org");
+    assert_eq!(info.rpc_url, "https://rpc.norchain.org");
     assert_eq!(info.chain_id, 7860);
-    assert_eq!(info.name, "Noor Chain");
+    assert_eq!(info.name, "Nor Chain");
     assert_eq!(info.symbol, "NOR");
     assert_eq!(info.decimals, 18);
 }

@@ -319,7 +319,7 @@ export default function BridgeWidget(): JSX.Element {
     <div className="max-w-xl mx-auto">
       <div className="bg-white rounded-2xl shadow-2xl p-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Bridge to NorChain</h2>
-        <p className="text-gray-600 mb-6">Transfer assets from BSC to Noor in 30 seconds</p>
+        <p className="text-gray-600 mb-6">Transfer assets from BSC to Nor in 30 seconds</p>
 
         {/* Wallet Connection */}
         {!walletAddress ? (
@@ -396,7 +396,7 @@ export default function BridgeWidget(): JSX.Element {
         {/* Recipient Address */}
         <div className="mb-6">
           <label htmlFor="recipient" className="block text-sm font-medium text-gray-700 mb-2">
-            Noor Address
+            Nor Address
           </label>
           <input
             id="recipient"

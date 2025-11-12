@@ -70,7 +70,7 @@ export default function StakingPage(): JSX.Element {
   const validators: Validator[] = [
     {
       address: '0x1234...5678',
-      name: 'Noor Foundation',
+      name: 'Nor Foundation',
       commission: 5,
       totalStaked: '45,000,000',
       uptime: 99.98,
@@ -168,7 +168,7 @@ export default function StakingPage(): JSX.Element {
 
     setIsStaking(true);
     try {
-      // TODO: Integrate with @noor/core for actual staking
+      // TODO: Integrate with @nor/core for actual staking
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert(`Successfully staked ${stakeAmount} NOR with ${selectedValidator}`);
       setStakeAmount('');

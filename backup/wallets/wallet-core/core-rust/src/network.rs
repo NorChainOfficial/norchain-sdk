@@ -9,7 +9,7 @@ pub struct NetworkManager {
 
 impl NetworkManager {
     pub fn new() -> Result<Self> {
-        let network = NetworkConfig::default(); // Defaults to Noor Chain
+        let network = NetworkConfig::default(); // Defaults to Nor Chain
         let client = JsonRpcClient::new(network.rpc_url.clone());
 
         Ok(Self {
@@ -70,11 +70,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_default_network_is_noor_chain() {
+    fn test_default_network_is_nor_chain() {
         let manager = NetworkManager::new().unwrap();
         let info = manager.get_network_info();
 
-        assert_eq!(info.rpc_url, "https://rpc.noorchain.org");
-        assert_eq!(info.name, "Noor Chain");
+        assert_eq!(info.rpc_url, "https://rpc.norchain.org");
+        assert_eq!(info.name, "Nor Chain");
     }
 }

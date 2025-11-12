@@ -1,4 +1,4 @@
-# Chrome Extension - Noor Wallet
+# Chrome Extension - Nor Wallet
 
 ## Setup
 

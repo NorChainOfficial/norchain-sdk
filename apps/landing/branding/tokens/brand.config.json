@@ -1,0 +1,80 @@
+{
+  "brand": "NorChain",
+  "tagline": "The Complete Blockchain OS",
+  "modes": {
+    "light": {
+      "primary": "#0057B8",
+      "secondary": "#0B132B",
+      "accent": "#2EC4B6",
+      "highlight": "#33F2FF",
+      "background": "#FFFFFF",
+      "surface": "#F9FAFB",
+      "divider": "#E5E7EB",
+      "success": "#16A34A",
+      "error": "#DC2626",
+      "textPrimary": "#0B132B",
+      "textSecondary": "#6B7280"
+    },
+    "dark": {
+      "primary": "#2EC4B6",
+      "secondary": "#021D39",
+      "accent": "#0057B8",
+      "highlight": "#33F2FF",
+      "background": "#0B132B",
+      "surface": "#1C2438",
+      "divider": "#28314A",
+      "success": "#16A34A",
+      "error": "#DC2626",
+      "textPrimary": "#FFFFFF",
+      "textSecondary": "#BFC6D4"
+    }
+  },
+  "fonts": {
+    "display": "Orbitron",
+    "body": "Inter",
+    "mono": "JetBrains Mono"
+  },
+  "effects": {
+    "glow": "0 0 20px rgba(46,196,182,0.4)",
+    "shadow": "0 6px 25px rgba(11,19,43,0.25)",
+    "cardShadow": "0 4px 20px rgba(11,19,43,0.15)",
+    "glowIntense": "0 0 40px rgba(46,196,182,0.6)"
+  },
+  "gradients": {
+    "aurora": "linear-gradient(135deg, #0057B8 0%, #2EC4B6 50%, #33F2FF 100%)",
+    "auroraDark": "linear-gradient(135deg, #0B132B 0%, #0057B8 50%, #2EC4B6 100%)",
+    "primaryGlow": "linear-gradient(135deg, #0057B8 0%, #2EC4B6 100%)",
+    "accentGlow": "linear-gradient(135deg, #2EC4B6 0%, #33F2FF 100%)"
+  },
+  "logo": {
+    "icon": "/branding/logo/norchain-icon.svg",
+    "full": "/branding/logo/norchain-logo.svg",
+    "tagline": "/branding/logo/norchain-tagline.svg",
+    "token": "/branding/logo/norchain-token.svg",
+    "png": {
+      "icon": "/favicon.png",
+      "full": "/norchain.png"
+    }
+  },
+  "animation": {
+    "intro": "/branding/video/norchain-intro.mp4",
+    "loop": "/branding/video/norchain-loop.webm"
+  },
+  "spacing": {
+    "section": "6rem",
+    "container": "1280px",
+    "containerWide": "1440px"
+  },
+  "borderRadius": {
+    "sm": "0.5rem",
+    "md": "0.75rem",
+    "lg": "1rem",
+    "xl": "1.5rem",
+    "2xl": "2rem"
+  },
+  "transitions": {
+    "fast": "150ms",
+    "normal": "300ms",
+    "slow": "500ms"
+  }
+}

@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Delete,
   Body,
   Param,
@@ -19,6 +20,7 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiHeader,
+  ApiParam,
 } from '@nestjs/swagger';
 import { MessagingService } from './messaging.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
@@ -26,8 +28,11 @@ import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { AddReactionDto } from './dto/add-reaction.dto';
 import { UploadMediaDto } from './dto/upload-media.dto';
+import { ManageGroupMemberDto } from './dto/manage-group-member.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { Idempotent } from '@/common/decorators/idempotency.decorator';
+import { GroupMemberRole } from './entities/group-member.entity';
 
 @ApiTags('Messaging')
 @Controller('messaging')
@@ -246,5 +251,141 @@ export class MessagingController {
       dto.contentType,
       dto.kind,
     );
+  }
+
+  // ========== Group & Channel Management Endpoints ==========
+
+  @Post('groups/:id/members')
+  @Idempotent()
+  @ApiOperation({ summary: 'Add member to group/channel' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiParam({ name: 'id', description: 'Conversation ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'Member added successfully',
+  })
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
+  async addGroupMember(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) conversationId: string,
+    @Body() dto: ManageGroupMemberDto,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    return this.messagingService.addGroupMember(conversationId, dto, userDid);
+  }
+
+  @Delete('groups/:id/members/:memberDid')
+  @ApiOperation({ summary: 'Remove member from group/channel' })
+  @ApiParam({ name: 'id', description: 'Conversation ID' })
+  @ApiParam({ name: 'memberDid', description: 'Member DID to remove' })
+  @ApiResponse({
+    status: 200,
+    description: 'Member removed successfully',
+  })
+  async removeGroupMember(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) conversationId: string,
+    @Param('memberDid') memberDid: string,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    await this.messagingService.removeGroupMember(conversationId, memberDid, userDid);
+    return { success: true };
+  }
+
+  @Patch('groups/:id/members/:memberDid/role')
+  @ApiOperation({ summary: 'Update member role (admin only)' })
+  @ApiParam({ name: 'id', description: 'Conversation ID' })
+  @ApiParam({ name: 'memberDid', description: 'Member DID' })
+  @ApiQuery({
+    name: 'role',
+    required: true,
+    enum: GroupMemberRole,
+    description: 'New role',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Role updated successfully',
+  })
+  async updateMemberRole(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) conversationId: string,
+    @Param('memberDid') memberDid: string,
+    @Query('role') role: GroupMemberRole,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    return this.messagingService.updateMemberRole(conversationId, memberDid, role, userDid);
+  }
+
+  @Get('groups/:id/members')
+  @ApiOperation({ summary: 'List group/channel members' })
+  @ApiParam({ name: 'id', description: 'Conversation ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Members retrieved successfully',
+  })
+  async listGroupMembers(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) conversationId: string,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    return this.messagingService.listGroupMembers(conversationId, userDid);
+  }
+
+  @Patch('groups/:id')
+  @Idempotent()
+  @ApiOperation({ summary: 'Update group/channel details (admin only)' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiParam({ name: 'id', description: 'Conversation ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Group updated successfully',
+  })
+  async updateGroup(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) conversationId: string,
+    @Body() dto: UpdateGroupDto,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    return this.messagingService.updateGroup(conversationId, dto, userDid);
+  }
+
+  @Post('groups/:id/leave')
+  @ApiOperation({ summary: 'Leave group/channel' })
+  @ApiParam({ name: 'id', description: 'Conversation ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Left group successfully',
+  })
+  async leaveGroup(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) conversationId: string,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    await this.messagingService.leaveGroup(conversationId, userDid);
+    return { success: true };
+  }
+
+  @Delete('groups/:id')
+  @ApiOperation({ summary: 'Delete group/channel (admin only)' })
+  @ApiParam({ name: 'id', description: 'Conversation ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Group deleted successfully',
+  })
+  async deleteGroup(
+    @Request() req: any,
+    @Param('id', ParseUUIDPipe) conversationId: string,
+  ) {
+    const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
+    await this.messagingService.deleteGroup(conversationId, userDid);
+    return { success: true };
   }
 }

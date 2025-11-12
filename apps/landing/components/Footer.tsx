@@ -47,7 +47,7 @@ export default function Footer() {
         { name: "GitHub", href: "https://github.com/norchain", external: true },
         {
           name: "NPM Package",
-          href: "https://www.npmjs.com/package/@noor/core",
+          href: "https://www.npmjs.com/package/@nor/core",
           external: true,
         },
       ],
@@ -75,7 +75,7 @@ export default function Footer() {
           href: "https://explorer.norchain.org/charity",
           external: true,
         },
-        { name: "Blog", href: "https://medium.com/@noor", external: true },
+        { name: "Blog", href: "https://medium.com/@nor", external: true },
       ],
     },
     {
@@ -85,7 +85,7 @@ export default function Footer() {
         { name: "Twitter", href: "https://twitter.com/norchain", external: true },
         { name: "Telegram", href: "https://t.me/norchain", external: true },
         { name: "GitHub", href: "https://github.com/norchain", external: true },
-        { name: "Medium", href: "https://medium.com/@noor", external: true },
+        { name: "Medium", href: "https://medium.com/@nor", external: true },
       ],
     },
   ];

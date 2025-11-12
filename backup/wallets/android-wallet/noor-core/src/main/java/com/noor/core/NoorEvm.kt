@@ -1,21 +1,21 @@
-package com.noor.core
+package com.nor.core
 
 import java.util.Date
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-// Noor Chain Network Configuration
-object NoorChainConfig {
-    const val RPC_URL = "https://rpc.noorchain.org"
-    const val CHAIN_ID = 7860UL // Update with actual Noor Chain ID
-    const val CHAIN_NAME = "Noor Chain"
+// Nor Chain Network Configuration
+object NorChainConfig {
+    const val RPC_URL = "https://rpc.norchain.org"
+    const val CHAIN_ID = 7860UL // Update with actual Nor Chain ID
+    const val CHAIN_NAME = "Nor Chain"
     const val SYMBOL = "NOR"
     const val DECIMALS = 18
-    const val EXPLORER_URL = "https://explorer.noorchain.org"
+    const val EXPLORER_URL = "https://explorer.norchain.org"
 }
 
 /** Kotlin wrapper around the Rust EVM transaction manager */
-class NoorEvm {
+class NorEvm {
     private val evmManager: EvmManager = EvmManager()
 
     // MARK: - Transaction Building

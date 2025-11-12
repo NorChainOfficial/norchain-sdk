@@ -1,4 +1,4 @@
-package com.noor.wallet.services
+package com.nor.wallet.services
 
 import android.util.Log
 import io.github.jan.supabase.SupabaseClient

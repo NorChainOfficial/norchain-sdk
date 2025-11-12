@@ -20,7 +20,7 @@ export const Footer = (): JSX.Element => {
               </div>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-4">
-              Noor Explorer is the leading blockchain explorer and analytics platform for NorChain.
+              Nor Explorer is the leading blockchain explorer and analytics platform for NorChain.
               Track blocks, transactions, validators, and smart contracts in real-time.
             </p>
             <div className="flex items-center space-x-4">
@@ -178,7 +178,7 @@ export const Footer = (): JSX.Element => {
         <div className="pt-8 border-t border-slate-800">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
             <div className="text-sm text-gray-400">
-              © {currentYear} Noor Explorer. All rights reserved.
+              © {currentYear} Nor Explorer. All rights reserved.
             </div>
             <div className="flex items-center space-x-6">
               <Link href="/privacy" className="text-sm text-gray-400 hover:text-white transition-colors">

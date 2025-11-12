@@ -30,7 +30,7 @@
 ## 🔧 Fixes Applied
 
 ### Build Issues
-- ✅ Removed @noor workspace dependencies
+- ✅ Removed @nor workspace dependencies
 - ✅ Added missing dependencies (viem, lucide-react)
 - ✅ Fixed TypeScript configurations
 - ✅ Added Python/build tools for native dependencies

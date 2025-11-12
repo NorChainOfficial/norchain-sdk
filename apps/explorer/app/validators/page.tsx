@@ -43,7 +43,7 @@ export default async function ValidatorsPage(): Promise<JSX.Element> {
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">Validators</h1>
-            <p className="text-gray-400 mt-1">Active validators securing Noor Chain</p>
+            <p className="text-gray-400 mt-1">Active validators securing Nor Chain</p>
           </div>
         </div>
 
@@ -196,7 +196,7 @@ export default async function ValidatorsPage(): Promise<JSX.Element> {
           <div>
             <h3 className="text-lg font-semibold text-white mb-2">About Validators</h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Validators are responsible for proposing and validating new blocks on the Noor Chain.
+              Validators are responsible for proposing and validating new blocks on the Nor Chain.
               They stake NOR tokens and receive rewards for their participation in consensus.
               Voting power is proportional to the amount of tokens staked. Active validators participate
               in block production, while inactive validators are not currently participating in consensus.

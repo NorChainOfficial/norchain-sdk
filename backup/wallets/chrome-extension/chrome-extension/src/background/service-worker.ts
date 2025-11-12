@@ -9,7 +9,7 @@ const supabaseService = SupabaseService.getInstance();
 
 // Listen for extension installation
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Noor Wallet Extension installed');
+  console.log('Nor Wallet Extension installed');
   
   // Check Supabase connection
   supabaseService.checkSession().catch(err => {

@@ -1,7 +1,7 @@
-package com.noor.wallet.services
+package com.nor.wallet.services
 
 import android.util.Log
-import com.noor.core.NoorCore
+import com.nor.core.NorCore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -50,7 +50,7 @@ class SupabaseSyncManager private constructor() {
         supabaseService.checkSession()
     }
 
-    suspend fun syncWallet(wallet: NoorCore.WalletInfo) {
+    suspend fun syncWallet(wallet: NorCore.WalletInfo) {
         if (!supabaseService.isAuthenticated.value) {
             if (SupabaseConfig.enableDebugLogging) {
                 Log.w(TAG, "Not authenticated - skipping sync")
@@ -105,7 +105,7 @@ class SupabaseSyncManager private constructor() {
         }
     }
 
-    fun startBackgroundSync(wallet: NoorCore.WalletInfo) {
+    fun startBackgroundSync(wallet: NorCore.WalletInfo) {
         // TODO: Implement periodic sync
     }
 

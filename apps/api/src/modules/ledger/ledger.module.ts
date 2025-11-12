@@ -6,6 +6,8 @@ import { LedgerAccount } from './entities/ledger-account.entity';
 import { JournalEntry } from './entities/journal-entry.entity';
 import { JournalLine } from './entities/journal-line.entity';
 import { PeriodClosure } from './entities/period-closure.entity';
+import { Reconciliation } from './entities/reconciliation.entity';
+import { ReconciliationMatch } from './entities/reconciliation-match.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -15,6 +17,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       JournalEntry,
       JournalLine,
       PeriodClosure,
+      Reconciliation,
+      ReconciliationMatch,
     ]),
     EventEmitterModule,
   ],

@@ -20,7 +20,7 @@ The Android wallet has a solid foundation with:
 
 ### 1. Project Structure
 - ✅ Clean separation of concerns
-- ✅ Proper package organization (`com.noor.wallet`)
+- ✅ Proper package organization (`com.nor.wallet`)
 - ✅ Modular architecture
 - ✅ Organized by feature (UI, services, viewmodels)
 
@@ -158,7 +158,7 @@ The Android wallet has a solid foundation with:
 
 ### ✅ Well Organized
 ```
-app/src/main/java/com/noor/wallet/
+app/src/main/java/com/nor/wallet/
 ├── MainActivity.kt          ✅ Entry point
 ├── services/               ✅ Supabase integration
 │   ├── SupabaseConfig.kt   ✅ Environment config

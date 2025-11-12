@@ -15,7 +15,7 @@ struct ReceiveView: View {
         self.wallet = wallet
         _selectedAsset = State(initialValue: selectedAsset ?? viewModel.assets.first ?? Asset(
             symbol: "NOR",
-            name: "Noor Coin",
+            name: "Nor Coin",
             balance: "0",
             usdValue: "$0",
             change: "+0%",

@@ -10,6 +10,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // NorChain Brand System - Core Colors
+        'norchain-primary': '#0057B8',
+        'norchain-secondary': '#0B132B',
+        'norchain-accent': '#2EC4B6',
+        'norchain-highlight': '#33F2FF',
+        'norchain-dark': '#021D39',
+
         // NorChain brand colors - aligned with explorer
         primary: {
           50: '#eff6ff',
@@ -50,7 +57,25 @@ const config: Config = {
           900: '#581c87',
         },
       },
+      fontFamily: {
+        display: ['Orbitron', 'sans-serif'],
+        body: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'monospace'],
+      },
+      boxShadow: {
+        'glow': '0 0 20px rgba(46, 196, 182, 0.4)',
+        'glow-intense': '0 0 40px rgba(46, 196, 182, 0.6)',
+        'card': '0 6px 25px rgba(11, 19, 43, 0.25)',
+        'card-light': '0 4px 20px rgba(11, 19, 43, 0.15)',
+      },
       backgroundImage: {
+        // NorChain Brand Gradients
+        'aurora': 'linear-gradient(135deg, #0057B8 0%, #2EC4B6 50%, #33F2FF 100%)',
+        'aurora-dark': 'linear-gradient(135deg, #0B132B 0%, #0057B8 50%, #2EC4B6 100%)',
+        'primary-glow': 'linear-gradient(135deg, #0057B8 0%, #2EC4B6 100%)',
+        'accent-glow': 'linear-gradient(135deg, #2EC4B6 0%, #33F2FF 100%)',
+
+        // Legacy gradients (kept for compatibility)
         'gradient-primary': 'linear-gradient(135deg, #2563eb 0%, #16a34a 100%)',
         'gradient-primary-reverse': 'linear-gradient(135deg, #16a34a 0%, #2563eb 100%)',
         'gradient-shariah': 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',

@@ -6,6 +6,10 @@ import { Footer } from "@/components/layout/footer";
 import { Wallet, TrendingUp, TrendingDown } from "lucide-react";
 import { formatAmount, formatAddress } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { PortfolioChart } from "@/components/portfolio/portfolio-chart";
+import { AssetAllocation } from "@/components/portfolio/asset-allocation";
+import { TransactionHistory } from "@/components/portfolio/transaction-history";
+import { PerformanceMetrics } from "@/components/portfolio/performance-metrics";
 
 export default function PortfolioPage() {
   const { address, isConnected } = useAccount();
@@ -92,30 +96,56 @@ export default function PortfolioPage() {
             </div>
           </div>
 
-          {/* Assets List */}
+          {/* Portfolio Chart */}
+          <div className="bg-background border border-border rounded-lg p-6">
+            <PortfolioChart />
+          </div>
+
+          {/* Performance Metrics */}
+          {portfolio && (
+            <PerformanceMetrics
+              totalValue={portfolio.totalValue}
+              change24h={portfolio.change24h}
+            />
+          )}
+
+          {/* Two Column Layout */}
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Asset Allocation */}
+            <div className="bg-background border border-border rounded-lg p-6">
+              {portfolio && <AssetAllocation assets={portfolio.assets} />}
+            </div>
+
+            {/* Transaction History */}
+            <div className="bg-background border border-border rounded-lg p-6">
+              <TransactionHistory />
+            </div>
+          </div>
+
+          {/* Detailed Assets List */}
           <div className="bg-background border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Your Assets</h2>
             <div className="space-y-4">
               {portfolio?.assets.map((asset) => (
                 <div
                   key={asset.symbol}
-                  className="flex items-center justify-between p-4 bg-background/50 rounded-lg border border-border"
+                  className="flex items-center justify-between p-4 bg-background/50 rounded-lg border border-border hover:bg-background transition-colors cursor-pointer"
                 >
                   <div>
-                    <div className="font-semibold">{asset.symbol}</div>
+                    <div className="font-semibold text-lg">{asset.symbol}</div>
                     <div className="text-sm text-foreground/70">
                       {formatAmount(asset.amount)}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">
+                    <div className="font-semibold text-lg">
                       {asset.value.toLocaleString("no-NO", {
                         style: "currency",
                         currency: "NOK",
                       })}
                     </div>
                     <div
-                      className={`text-sm ${
+                      className={`text-sm font-medium ${
                         asset.change24h >= 0 ? "text-success" : "text-error"
                       }`}
                     >

@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.theme
+package com.nor.wallet.ui.theme
 
 import android.app.Activity
 import androidx.compose.material3.MaterialTheme
@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Noor Wallet Brand Colors - Premium Purple Glassmorphism
+// Nor Wallet Brand Colors - Premium Purple Glassmorphism
 val Purple80 = Color(0xFF8B5CF6)
 val Purple70 = Color(0xFF7C3AED)
 val Purple60 = Color(0xFF5B47ED)
@@ -63,7 +63,7 @@ private val DarkColorScheme =
         )
 
 @Composable
-fun NoorWalletTheme(
+fun NorWalletTheme(
         darkTheme: Boolean = true, // Always dark theme for glassmorphism
         content: @Composable () -> Unit
 ) {

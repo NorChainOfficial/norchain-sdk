@@ -1,6 +1,6 @@
 /**
  * GraphQL Schema Definition
- * Comprehensive type-safe schema for NoorExplorer API
+ * Comprehensive type-safe schema for NorExplorer API
  */
 
 import { gql } from 'graphql-tag';

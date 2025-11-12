@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from 'react';
 
-interface NoorProvider {
+interface NorProvider {
   request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
   on: (event: string, handler: (...args: unknown[]) => void) => void;
   removeListener: (event: string, handler: (...args: unknown[]) => void) => void;
-  isNoor?: boolean;
+  isNor?: boolean;
 }
 
 declare global {
   interface Window {
-    xaheen?: NoorProvider;
+    xaheen?: NorProvider;
   }
 }
 
@@ -27,7 +27,7 @@ export default function WalletConnect({ onConnect, onDisconnect }: WalletConnect
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   useEffect(() => {
-    // Check if Noor Wallet is installed
+    // Check if Nor Wallet is installed
     const checkWallet = () => {
       if (typeof window !== 'undefined' && window.xaheen) {
         setIsInstalled(true);
@@ -125,7 +125,7 @@ export default function WalletConnect({ onConnect, onDisconnect }: WalletConnect
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 mb-3">
                 <span className="text-3xl">🔐</span>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Install Noor Wallet</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Install Nor Wallet</h3>
               <p className="text-gray-400 text-sm">
                 Get our native Chrome extension to connect to dApps and manage your NOR.
               </p>

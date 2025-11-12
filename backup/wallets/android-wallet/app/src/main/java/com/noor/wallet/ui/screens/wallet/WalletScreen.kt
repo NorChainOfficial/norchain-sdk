@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.screens.wallet
+package com.nor.wallet.ui.screens.wallet
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -18,7 +18,7 @@ fun WalletScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Noor Wallet") },
+                title = { Text("Nor Wallet") },
                 actions = {
                     IconButton(onClick = { }) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")

@@ -8,10 +8,12 @@ import { JournalLine } from './entities/journal-line.entity';
 import { PeriodClosure } from './entities/period-closure.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
-import { AccountStatus } from './entities/ledger-account.entity';
+import { AccountStatus, AccountType } from './entities/ledger-account.entity';
 import { CreateJournalEntryDto } from './dto/create-journal-entry.dto';
 import { ClosePeriodDto } from './dto/close-period.dto';
 import { LineDirection } from './entities/journal-line.entity';
+import { CalculateVatDto, VatRate, VatType } from './dto/calculate-vat.dto';
+import { GetFinancialReportDto, ReportType, ReportPeriod } from './dto/get-financial-report.dto';
 
 describe('LedgerService', () => {
   let service: LedgerService;
@@ -1062,6 +1064,248 @@ describe('LedgerService', () => {
         relations: ['parent', 'children'],
         order: { code: 'ASC' },
       });
+    });
+  });
+
+  describe('calculateVat', () => {
+    it('should calculate VAT for Norwegian MVA output', async () => {
+      const dto: CalculateVatDto = {
+        orgId: 'org-123',
+        amountExcludingVat: '1000.00',
+        vatRate: VatRate.NORWAY_STANDARD,
+        vatType: VatType.OUTPUT,
+        countryCode: 'NO',
+      };
+
+      const result = await service.calculateVat(dto);
+
+      expect(result.amountExcludingVat).toBe('1000.00');
+      expect(result.vatAmount).toBe('250.00');
+      expect(result.amountIncludingVat).toBe('1250.00');
+      expect(result.vatRate).toBe(25);
+      expect(result.vatType).toBe(VatType.OUTPUT);
+      expect(result.vatAccountCode).toBe('2701'); // Output MVA
+    });
+
+    it('should calculate VAT for Norwegian MVA input', async () => {
+      const dto: CalculateVatDto = {
+        orgId: 'org-123',
+        amountExcludingVat: '1000.00',
+        vatRate: VatRate.NORWAY_STANDARD,
+        vatType: VatType.INPUT,
+        countryCode: 'NO',
+      };
+
+      const result = await service.calculateVat(dto);
+
+      expect(result.vatAmount).toBe('250.00');
+      expect(result.vatAccountCode).toBe('2700'); // Input MVA
+    });
+
+    it('should calculate VAT for EU VAT', async () => {
+      const dto: CalculateVatDto = {
+        orgId: 'org-123',
+        amountExcludingVat: '1000.00',
+        vatRate: VatRate.EU_STANDARD,
+        vatType: VatType.OUTPUT,
+        countryCode: 'DE',
+      };
+
+      const result = await service.calculateVat(dto);
+
+      expect(result.vatAmount).toBe('200.00');
+      expect(result.amountIncludingVat).toBe('1200.00');
+      expect(result.vatAccountCode).toBe('2711'); // Output VAT
+    });
+
+    it('should use provided VAT account code', async () => {
+      const dto: CalculateVatDto = {
+        orgId: 'org-123',
+        amountExcludingVat: '1000.00',
+        vatRate: VatRate.NORWAY_STANDARD,
+        vatType: VatType.OUTPUT,
+        vatAccountCode: '9999',
+      };
+
+      const result = await service.calculateVat(dto);
+
+      expect(result.vatAccountCode).toBe('9999');
+    });
+
+    it('should calculate zero VAT correctly', async () => {
+      const dto: CalculateVatDto = {
+        orgId: 'org-123',
+        amountExcludingVat: '1000.00',
+        vatRate: VatRate.NORWAY_ZERO,
+        vatType: VatType.OUTPUT,
+      };
+
+      const result = await service.calculateVat(dto);
+
+      expect(result.vatAmount).toBe('0.00');
+      expect(result.amountIncludingVat).toBe('1000.00');
+    });
+  });
+
+  describe('getFinancialReport', () => {
+    it('should generate Profit & Loss report', async () => {
+      const dto: GetFinancialReportDto = {
+        orgId: 'org-123',
+        reportType: ReportType.PROFIT_LOSS,
+        periodIdentifier: '2025-01',
+      };
+
+      const mockIncomeAccounts = [
+        { id: 'income-1', code: '4000', name: 'Sales', type: AccountType.INCOME },
+      ];
+      const mockExpenseAccounts = [
+        { id: 'expense-1', code: '5000', name: 'Cost of Goods', type: AccountType.EXPENSE },
+      ];
+      const mockEntries = [
+        {
+          id: 'entry-1',
+          orgId: 'org-123',
+          occurredAt: new Date('2025-01-15'),
+          status: JournalEntryStatus.POSTED,
+          lines: [
+            {
+              id: 'line-1',
+              accountId: 'income-1',
+              account: mockIncomeAccounts[0],
+              amount: '1000',
+              amountNative: '1000',
+              direction: LineDirection.CREDIT,
+              currency: 'NOR',
+            },
+          ],
+        },
+      ];
+
+      mockAccountRepository.find
+        .mockResolvedValueOnce(mockIncomeAccounts)
+        .mockResolvedValueOnce(mockExpenseAccounts);
+      mockEntryRepository.find.mockResolvedValue(mockEntries);
+
+      const result = await service.getFinancialReport(dto);
+
+      expect(result.reportType).toBe('profit_loss');
+      expect(result.period).toBe('2025-01');
+      expect(result.income).toBeDefined();
+      expect(result.expenses).toBeDefined();
+      expect(result.netProfit).toBeDefined();
+    });
+
+    it('should generate Balance Sheet report', async () => {
+      const dto: GetFinancialReportDto = {
+        orgId: 'org-123',
+        reportType: ReportType.BALANCE_SHEET,
+        periodIdentifier: '2025-01',
+      };
+
+      const mockAccounts = [
+        { id: 'asset-1', code: '1000', name: 'Cash', type: AccountType.ASSET },
+        { id: 'liability-1', code: '2000', name: 'Accounts Payable', type: AccountType.LIABILITY },
+        { id: 'equity-1', code: '3000', name: 'Equity', type: AccountType.EQUITY },
+      ];
+
+      mockAccountRepository.find.mockResolvedValue(mockAccounts);
+      mockEntryRepository.find.mockResolvedValue([]);
+
+      const result = await service.getFinancialReport(dto);
+
+      expect(result.reportType).toBe('balance_sheet');
+      expect(result.assets).toBeDefined();
+      expect(result.liabilities).toBeDefined();
+      expect(result.equity).toBeDefined();
+      expect(result.balance).toBeDefined();
+    });
+
+    it('should generate Cashflow report', async () => {
+      const dto: GetFinancialReportDto = {
+        orgId: 'org-123',
+        reportType: ReportType.CASHFLOW,
+        periodIdentifier: '2025-01',
+      };
+
+      const mockCashAccounts = [
+        { id: 'cash-1', code: '1000', name: 'Cash', type: AccountType.ASSET },
+      ];
+      const mockIncomeAccounts = [
+        { id: 'income-1', code: '4000', name: 'Sales', type: AccountType.INCOME },
+      ];
+      const mockExpenseAccounts = [
+        { id: 'expense-1', code: '5000', name: 'Expenses', type: AccountType.EXPENSE },
+      ];
+      const mockLiabilityAccounts = [
+        { id: 'liability-1', code: '2000', name: 'Debt', type: AccountType.LIABILITY },
+      ];
+      const mockEquityAccounts = [
+        { id: 'equity-1', code: '3000', name: 'Equity', type: AccountType.EQUITY },
+      ];
+
+      mockAccountRepository.find
+        .mockResolvedValueOnce(mockCashAccounts)
+        .mockResolvedValueOnce(mockIncomeAccounts)
+        .mockResolvedValueOnce(mockExpenseAccounts)
+        .mockResolvedValueOnce(mockLiabilityAccounts)
+        .mockResolvedValueOnce(mockEquityAccounts);
+      mockEntryRepository.find.mockResolvedValue([]);
+
+      const result = await service.getFinancialReport(dto);
+
+      expect(result.reportType).toBe('cashflow');
+      expect(result.operatingActivities).toBeDefined();
+      expect(result.investingActivities).toBeDefined();
+      expect(result.financingActivities).toBeDefined();
+      expect(result.netCashFlow).toBeDefined();
+      expect(result.openingBalance).toBeDefined();
+      expect(result.closingBalance).toBeDefined();
+    });
+
+    it('should handle custom date range', async () => {
+      const dto: GetFinancialReportDto = {
+        orgId: 'org-123',
+        reportType: ReportType.PROFIT_LOSS,
+        period: ReportPeriod.CUSTOM,
+        startDate: '2025-01-01T00:00:00Z',
+        endDate: '2025-01-31T23:59:59Z',
+      };
+
+      mockAccountRepository.find.mockResolvedValue([]);
+      mockEntryRepository.find.mockResolvedValue([]);
+
+      const result = await service.getFinancialReport(dto);
+
+      expect(result.reportType).toBe('profit_loss');
+      expect(result.startDate).toBe('2025-01-01T00:00:00.000Z');
+      expect(result.endDate).toBe('2025-01-31T23:59:59.000Z');
+    });
+
+    it('should throw BadRequestException for invalid period identifier', async () => {
+      const dto: GetFinancialReportDto = {
+        orgId: 'org-123',
+        reportType: ReportType.PROFIT_LOSS,
+        periodIdentifier: 'invalid',
+      };
+
+      await expect(service.getFinancialReport(dto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('should include comparative period when requested', async () => {
+      const dto: GetFinancialReportDto = {
+        orgId: 'org-123',
+        reportType: ReportType.PROFIT_LOSS,
+        periodIdentifier: '2025-01',
+        includeComparative: true,
+      };
+
+      mockAccountRepository.find.mockResolvedValue([]);
+      mockEntryRepository.find.mockResolvedValue([]);
+
+      const result = await service.getFinancialReport(dto);
+
+      expect(result.comparative).toBeDefined();
+      expect(result.comparative.variance).toBeDefined();
     });
   });
 });

@@ -1,14 +1,14 @@
 #!/bin/bash
-# Create Xcode iOS App Project for NoorWallet
+# Create Xcode iOS App Project for NorWallet
 
 set -e
 
 cd "$(dirname "$0")"
 
-echo "🚀 Creating Xcode project for NoorWallet..."
+echo "🚀 Creating Xcode project for NorWallet..."
 
 # Remove old xcodeproj if exists
-rm -rf NoorWallet.xcodeproj
+rm -rf NorWallet.xcodeproj
 
 # Create the project using xcodegen (we'll install if needed)
 if ! command -v xcodegen &> /dev/null; then
@@ -18,42 +18,42 @@ fi
 
 # Create project.yml for xcodegen
 cat > project.yml << 'EOF'
-name: NoorWallet
+name: NorWallet
 options:
-  bundleIdPrefix: com.noor
+  bundleIdPrefix: com.nor
   deploymentTarget:
     iOS: "15.0"
   
 settings:
   base:
-    PRODUCT_BUNDLE_IDENTIFIER: com.noor.wallet
+    PRODUCT_BUNDLE_IDENTIFIER: com.nor.wallet
     MARKETING_VERSION: "1.0"
     CURRENT_PROJECT_VERSION: "1"
     SWIFT_VERSION: "5.0"
     IPHONEOS_DEPLOYMENT_TARGET: "15.0"
     TARGETED_DEVICE_FAMILY: "1,2"
-    INFOPLIST_FILE: NoorWallet/Resources/Info.plist
-    SWIFT_OBJC_BRIDGING_HEADER: NoorWallet/Supporting Files/NoorWallet-Bridging-Header.h
+    INFOPLIST_FILE: NorWallet/Resources/Info.plist
+    SWIFT_OBJC_BRIDGING_HEADER: NorWallet/Supporting Files/NorWallet-Bridging-Header.h
     LIBRARY_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/../core-rust/target/universal/release"
-    HEADER_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/NoorWallet/Supporting Files"
-    OTHER_LDFLAGS: "$(inherited) -lnoor_core"
+    HEADER_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/NorWallet/Supporting Files"
+    OTHER_LDFLAGS: "$(inherited) -lnor_core"
 
 targets:
-  NoorWallet:
+  NorWallet:
     type: application
     platform: iOS
     sources:
-      - NoorWallet/App
+      - NorWallet/App
     settings:
       base:
-        PRODUCT_NAME: NoorWallet
-        PRODUCT_BUNDLE_IDENTIFIER: com.noor.wallet
+        PRODUCT_NAME: NorWallet
+        PRODUCT_BUNDLE_IDENTIFIER: com.nor.wallet
     dependencies:
-      - package: NoorCore
+      - package: NorCore
     preBuildScripts:
       - script: |
           # Ensure Rust library is built
-          if [ ! -f "../core-rust/target/universal/release/libnoor_core.a" ]; then
+          if [ ! -f "../core-rust/target/universal/release/libnor_core.a" ]; then
             echo "Building Rust library..."
             cd ../core-rust
             cargo lipo --release || true
@@ -61,14 +61,14 @@ targets:
         name: "Build Rust Library"
 
 packages:
-  NoorCore:
-    path: Packages/NoorCore
+  NorCore:
+    path: Packages/NorCore
 
 schemes:
-  NoorWallet:
+  NorWallet:
     build:
       targets:
-        NoorWallet: all
+        NorWallet: all
     run:
       config: Debug
     archive:
@@ -81,6 +81,6 @@ xcodegen generate
 echo "✅ Xcode project created successfully!"
 echo ""
 echo "📱 Next steps:"
-echo "1. Open: open NoorWallet.xcodeproj"
+echo "1. Open: open NorWallet.xcodeproj"
 echo "2. Select a simulator or device"
 echo "3. Press ⌘R to build and run"

@@ -1,10 +1,10 @@
-package com.noor.wallet.viewmodels
+package com.nor.wallet.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.noor.core.NoorCore
-import com.noor.wallet.services.SupabaseService
-import com.noor.wallet.services.SupabaseConfig
+import com.nor.core.NorCore
+import com.nor.wallet.services.SupabaseService
+import com.nor.wallet.services.SupabaseConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,8 +18,8 @@ import android.util.Log
 class WalletViewModel : ViewModel() {
     private val supabaseService = SupabaseService.getInstance()
 
-    private val _currentWallet = MutableStateFlow<NoorCore.WalletInfo?>(null)
-    val currentWallet: StateFlow<NoorCore.WalletInfo?> = _currentWallet.asStateFlow()
+    private val _currentWallet = MutableStateFlow<NorCore.WalletInfo?>(null)
+    val currentWallet: StateFlow<NorCore.WalletInfo?> = _currentWallet.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -35,7 +35,7 @@ class WalletViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val wallet = NoorCore.createWallet()
+                val wallet = NorCore.createWallet()
                 _currentWallet.value = wallet
 
                 // Auto-sync to Supabase
@@ -58,7 +58,7 @@ class WalletViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val wallet = NoorCore.importWallet(mnemonic)
+                val wallet = NorCore.importWallet(mnemonic)
                 _currentWallet.value = wallet
 
                 // Auto-sync to Supabase
@@ -81,7 +81,7 @@ class WalletViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val wallet = NoorCore.importWallet(privateKey)
+                val wallet = NorCore.importWallet(privateKey)
                 _currentWallet.value = wallet
 
                 // Auto-sync to Supabase
@@ -100,7 +100,7 @@ class WalletViewModel : ViewModel() {
 
     // MARK: - Supabase Sync
 
-    private suspend fun syncWalletToSupabase(wallet: NoorCore.WalletInfo) {
+    private suspend fun syncWalletToSupabase(wallet: NorCore.WalletInfo) {
         val firstAccount = wallet.accounts.firstOrNull() ?: return
 
         // Check if authenticated

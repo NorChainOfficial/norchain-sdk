@@ -1,6 +1,6 @@
-# Noor Wallet - Web Application
+# Nor Wallet - Web Application
 
-Next.js web application for Noor Wallet, connected to Supabase backend.
+Next.js web application for Nor Wallet, connected to Supabase backend.
 
 ## Setup
 

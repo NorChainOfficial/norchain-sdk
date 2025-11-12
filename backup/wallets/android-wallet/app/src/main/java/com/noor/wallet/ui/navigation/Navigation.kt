@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.navigation
+package com.nor.wallet.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -6,10 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.noor.wallet.ui.screens.WalletHomeScreen
-import com.noor.wallet.ui.screens.SecurityScreen
-import com.noor.wallet.ui.screens.SettingsScreen
-import com.noor.wallet.ui.screens.onboarding.OnboardingScreen
+import com.nor.wallet.ui.screens.WalletHomeScreen
+import com.nor.wallet.ui.screens.SecurityScreen
+import com.nor.wallet.ui.screens.SettingsScreen
+import com.nor.wallet.ui.screens.onboarding.OnboardingScreen
 
 /**
  * Navigation routes - matches iOS navigation structure

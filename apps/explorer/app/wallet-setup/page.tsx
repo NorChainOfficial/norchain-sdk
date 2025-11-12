@@ -10,7 +10,7 @@ export default function WalletSetupPage(): JSX.Element {
           Wallet Setup
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Automatically configure your wallet for Noor Chain and BitcoinBR
+          Automatically configure your wallet for Nor Chain and BitcoinBR
           tokens
         </p>
       </div>
@@ -28,7 +28,7 @@ export default function WalletSetupPage(): JSX.Element {
               Automatic Setup
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Use the wallet connector to automatically add the Noor Chain
+              Use the wallet connector to automatically add the Nor Chain
               network and BitcoinBR token to your wallet.
             </p>
             <ul className="space-y-2 text-gray-600 dark:text-gray-400">
@@ -159,7 +159,7 @@ export default function WalletSetupPage(): JSX.Element {
                   <span className="text-gray-600 dark:text-gray-400">
                     Network Name:
                   </span>
-                  <span className="font-mono">Noor Chain</span>
+                  <span className="font-mono">Nor Chain</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">

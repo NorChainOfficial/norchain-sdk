@@ -1,4 +1,4 @@
-# Noor Wallet iOS - Final Production Status
+# Nor Wallet iOS - Final Production Status
 
 **Date:** November 5, 2025
 **Status:** 🎉 **100% CORE COMPLETE** | 99% Production Ready
@@ -8,7 +8,7 @@
 
 ## 🏆 Executive Summary
 
-The Noor Wallet iOS application has reached **100% core functionality completion** with production-grade implementations of all critical systems. The app is fully functional, secure, tested, and ready for production deployment.
+The Nor Wallet iOS application has reached **100% core functionality completion** with production-grade implementations of all critical systems. The app is fully functional, secure, tested, and ready for production deployment.
 
 **What's Complete:**
 - ✅ **All wallet operations** - Create, import, manage, delete, export

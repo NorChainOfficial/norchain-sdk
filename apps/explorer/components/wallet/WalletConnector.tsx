@@ -91,7 +91,7 @@ export function WalletConnector() {
     showToast('Wallet disconnected', 'info');
   };
 
-  const addNoorNetwork = async () => {
+  const addNorNetwork = async () => {
     if (!window.ethereum) {
       showToast('Please install a wallet first', 'error');
       return;
@@ -105,7 +105,7 @@ export function WalletConnector() {
           chainName: 'NorChain',
           rpcUrls: ['https://rpc.norchain.org'],
           nativeCurrency: {
-            name: 'Noor',
+            name: 'Nor',
             symbol: 'NOR',
             decimals: 18,
           },
@@ -276,14 +276,14 @@ export function WalletConnector() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
-              onClick={addNoorNetwork}
+              onClick={addNorNetwork}
               className="h-16 px-6 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
               <div className="flex items-center justify-center gap-3">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                Add Noor Network
+                Add Nor Network
               </div>
             </button>
             <button

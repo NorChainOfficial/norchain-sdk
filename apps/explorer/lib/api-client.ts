@@ -44,7 +44,7 @@ export function formatNumber(num: number | undefined | null): string {
 }
 
 /**
- * Convert Wei to NOR (Noor native currency)
+ * Convert Wei to NOR (Nor native currency)
  */
 export function weiToXhn(wei: string | number | undefined | null): string {
   if (!wei || wei === '0') return '0.0000';

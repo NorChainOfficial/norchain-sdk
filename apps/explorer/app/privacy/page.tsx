@@ -2,8 +2,8 @@ import React from 'react';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - Noor Chain Explorer',
-  description: 'Privacy policy for Noor Chain blockchain explorer and services.',
+  title: 'Privacy Policy - Nor Chain Explorer',
+  description: 'Privacy policy for Nor Chain blockchain explorer and services.',
 };
 
 export default function PrivacyPolicyPage(): JSX.Element {
@@ -16,7 +16,7 @@ export default function PrivacyPolicyPage(): JSX.Element {
         <section className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Introduction</h2>
           <p className="text-gray-700 mb-4">
-            Noor Chain ("we", "our", or "us") respects your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our blockchain platform and services.
+            Nor Chain ("we", "our", or "us") respects your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our blockchain platform and services.
           </p>
         </section>
 
@@ -53,7 +53,7 @@ export default function PrivacyPolicyPage(): JSX.Element {
         <section className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">4. Blockchain Data</h2>
           <p className="text-gray-700 mb-3">
-            Please note that blockchain transactions are public and permanent. Once you conduct a transaction on Noor Chain:
+            Please note that blockchain transactions are public and permanent. Once you conduct a transaction on Nor Chain:
           </p>
           <ul className="list-disc ml-6 mb-4 text-gray-700 space-y-2">
             <li>Your wallet address becomes publicly visible</li>

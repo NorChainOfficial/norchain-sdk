@@ -10,7 +10,7 @@ export default function Roadmap() {
         "✅ Mainnet launch",
         "✅ Block explorer",
         "✅ Bridge to Ethereum",
-        "✅ NoorSwap DEX",
+        "✅ NorSwap DEX",
       ],
     },
     {

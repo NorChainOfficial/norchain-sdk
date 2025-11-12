@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.components
+package com.nor.wallet.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape

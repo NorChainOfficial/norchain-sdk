@@ -19,6 +19,11 @@ import { CreateScreeningDto } from './dto/create-screening.dto';
 import { CreateCaseDto } from './dto/create-case.dto';
 import { TravelRuleDto } from './dto/travel-rule.dto';
 import { TravelRulePrecheckDto } from './dto/travel-rule-precheck.dto';
+import { UpdateCaseDto } from './dto/update-case.dto';
+import { AddCaseNoteDto } from './dto/add-case-note.dto';
+import { CreateTravelRulePartnerDto } from './dto/create-travel-rule-partner.dto';
+import { TravelRulePartner, PartnerStatus, PartnerType } from './entities/travel-rule-partner.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class ComplianceService {
@@ -27,6 +32,9 @@ export class ComplianceService {
     private readonly screeningRepository: Repository<ComplianceScreening>,
     @InjectRepository(ComplianceCase)
     private readonly caseRepository: Repository<ComplianceCase>,
+    @InjectRepository(TravelRulePartner)
+    private readonly travelRulePartnerRepository: Repository<TravelRulePartner>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   /**
@@ -210,9 +218,250 @@ export class ComplianceService {
    * Check if address belongs to a VASP
    */
   private async checkIfVASP(address: string): Promise<boolean> {
-    // In production, query VASP registry
-    // For now, simulate check
-    return false; // Default: not a VASP
+    // Query Travel Rule partner directory
+    const partner = await this.travelRulePartnerRepository.findOne({
+      where: { status: PartnerStatus.ACTIVE },
+      // In production, would match by address or metadata
+    });
+    return !!partner;
+  }
+
+  /**
+   * List compliance cases with filtering
+   */
+  async listCases(
+    userId: string,
+    status?: CaseStatus,
+    severity?: CaseSeverity,
+    assignedTo?: string,
+    limit: number = 50,
+    offset: number = 0,
+  ): Promise<{ cases: ComplianceCase[]; total: number }> {
+    const where: any = {};
+    if (status) {
+      where.status = status;
+    }
+    if (severity) {
+      where.severity = severity;
+    }
+    if (assignedTo) {
+      where.assignedTo = assignedTo;
+    }
+
+    const [cases, total] = await this.caseRepository.findAndCount({
+      where,
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+
+    return { cases, total };
+  }
+
+  /**
+   * Update compliance case
+   */
+  async updateCase(
+    userId: string,
+    caseId: string,
+    dto: UpdateCaseDto,
+  ): Promise<ComplianceCase> {
+    const case_ = await this.caseRepository.findOne({
+      where: { id: caseId },
+    });
+
+    if (!case_) {
+      throw new NotFoundException(`Case ${caseId} not found`);
+    }
+
+    if (dto.status !== undefined) {
+      case_.status = dto.status;
+      if (dto.status === CaseStatus.RESOLVED || dto.status === CaseStatus.CLOSED) {
+        case_.resolvedAt = new Date();
+      }
+    }
+
+    if (dto.severity !== undefined) {
+      case_.severity = dto.severity;
+    }
+
+    if (dto.assignedTo !== undefined) {
+      case_.assignedTo = dto.assignedTo;
+    }
+
+    if (dto.notes !== undefined) {
+      const notes = case_.notes || [];
+      notes.push({
+        author: userId,
+        content: dto.notes,
+        timestamp: new Date(),
+      });
+      case_.notes = notes;
+    }
+
+    const saved = await this.caseRepository.save(case_);
+
+    this.eventEmitter.emit('compliance.case.updated', {
+      caseId: saved.id,
+      updates: dto,
+      updatedBy: userId,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Add note to compliance case
+   */
+  async addCaseNote(
+    userId: string,
+    caseId: string,
+    dto: AddCaseNoteDto,
+  ): Promise<ComplianceCase> {
+    const case_ = await this.caseRepository.findOne({
+      where: { id: caseId },
+    });
+
+    if (!case_) {
+      throw new NotFoundException(`Case ${caseId} not found`);
+    }
+
+    const notes = case_.notes || [];
+    notes.push({
+      author: userId,
+      content: dto.note,
+      timestamp: new Date(),
+    });
+    case_.notes = notes;
+
+    const saved = await this.caseRepository.save(case_);
+
+    this.eventEmitter.emit('compliance.case.note.added', {
+      caseId: saved.id,
+      note: dto.note,
+      author: userId,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Create Travel Rule partner
+   */
+  async createTravelRulePartner(
+    dto: CreateTravelRulePartnerDto,
+  ): Promise<TravelRulePartner> {
+    // Check if partner with same name already exists
+    const existing = await this.travelRulePartnerRepository.findOne({
+      where: { name: dto.name },
+    });
+
+    if (existing) {
+      throw new BadRequestException(`Partner with name ${dto.name} already exists`);
+    }
+
+    const partner = this.travelRulePartnerRepository.create({
+      ...dto,
+      status: dto.status || PartnerStatus.PENDING_VERIFICATION,
+      transactionsCount: 0,
+    });
+
+    const saved = await this.travelRulePartnerRepository.save(partner);
+
+    this.eventEmitter.emit('compliance.travel_rule.partner.created', {
+      partnerId: saved.id,
+      name: saved.name,
+      type: saved.type,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Get Travel Rule partner by ID
+   */
+  async getTravelRulePartner(partnerId: string): Promise<TravelRulePartner> {
+    const partner = await this.travelRulePartnerRepository.findOne({
+      where: { id: partnerId },
+    });
+
+    if (!partner) {
+      throw new NotFoundException(`Travel Rule partner ${partnerId} not found`);
+    }
+
+    return partner;
+  }
+
+  /**
+   * List Travel Rule partners
+   */
+  async listTravelRulePartners(
+    status?: PartnerStatus,
+    type?: PartnerType,
+    jurisdiction?: string,
+    limit: number = 50,
+    offset: number = 0,
+  ): Promise<{ partners: TravelRulePartner[]; total: number }> {
+    const where: any = {};
+    if (status) {
+      where.status = status;
+    }
+    if (type) {
+      where.type = type;
+    }
+    if (jurisdiction) {
+      where.jurisdiction = jurisdiction;
+    }
+
+    const [partners, total] = await this.travelRulePartnerRepository.findAndCount({
+      where,
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+
+    return { partners, total };
+  }
+
+  /**
+   * Update Travel Rule partner
+   */
+  async updateTravelRulePartner(
+    partnerId: string,
+    updates: Partial<CreateTravelRulePartnerDto>,
+  ): Promise<TravelRulePartner> {
+    const partner = await this.getTravelRulePartner(partnerId);
+
+    Object.assign(partner, updates);
+
+    const saved = await this.travelRulePartnerRepository.save(partner);
+
+    this.eventEmitter.emit('compliance.travel_rule.partner.updated', {
+      partnerId: saved.id,
+      updates,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Update partner status
+   */
+  async updatePartnerStatus(
+    partnerId: string,
+    status: PartnerStatus,
+  ): Promise<TravelRulePartner> {
+    const partner = await this.getTravelRulePartner(partnerId);
+    partner.status = status;
+
+    const saved = await this.travelRulePartnerRepository.save(partner);
+
+    this.eventEmitter.emit('compliance.travel_rule.partner.status.updated', {
+      partnerId: saved.id,
+      status,
+    });
+
+    return saved;
   }
 
   /**

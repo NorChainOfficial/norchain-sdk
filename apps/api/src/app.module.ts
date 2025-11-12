@@ -46,7 +46,11 @@ import { PolicyModule } from './modules/policy/policy.module';
 import { StreamingModule } from './modules/streaming/streaming.module';
 import { MetadataModule } from './modules/metadata/metadata.module';
 import { GraphQLApiModule } from './modules/graphql/graphql.module';
+import { UsageModule } from './modules/usage/usage.module';
+import { UsageTrackingInterceptor } from './modules/usage/interceptors/usage-tracking.interceptor';
+import { TreasuryModule } from './modules/treasury/treasury.module';
 import { CommonModule } from './common/common.module';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
@@ -145,13 +149,18 @@ import { CommonModule } from './common/common.module';
     StreamingModule,
     MetadataModule,
     GraphQLApiModule,
-    LedgerModule,
+    UsageModule,
     MessagingModule,
+    TreasuryModule,
   ],
   providers: [
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: UsageTrackingInterceptor,
     },
   ],
 })

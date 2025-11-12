@@ -48,7 +48,7 @@ export default async function BlocksPage({ searchParams }: PageProps): Promise<J
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">Blocks</h1>
-            <p className="text-gray-400 mt-1">Real-time block data on Noor Chain</p>
+            <p className="text-gray-400 mt-1">Real-time block data on Nor Chain</p>
           </div>
         </div>
 

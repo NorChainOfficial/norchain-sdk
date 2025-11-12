@@ -18,7 +18,7 @@ final class NorWalletUITests: XCTestCase {
 
     func testOnboardingFlow() throws {
         // Given - app launches to onboarding
-        let onboardingTitle = app.staticTexts["Welcome to Noor Wallet"]
+        let onboardingTitle = app.staticTexts["Welcome to Nor Wallet"]
 
         // Then - should show onboarding screen
         XCTAssertTrue(onboardingTitle.waitForExistence(timeout: 5),

@@ -212,7 +212,7 @@ export default async function HomePage(): Promise<JSX.Element> {
                 </h2>
 
                 <p className="text-gray-300 text-lg mb-6">
-                  Start trading on NoorSwap with zero gas fees and lightning-fast swaps. Connect your wallet and swap tokens in seconds.
+                  Start trading on NorSwap with zero gas fees and lightning-fast swaps. Connect your wallet and swap tokens in seconds.
                 </p>
 
                 {/* Quick Stats */}
@@ -282,7 +282,7 @@ export default async function HomePage(): Promise<JSX.Element> {
                         2
                       </div>
                       <div>
-                        <div className="text-white font-medium">Add Noor Network</div>
+                        <div className="text-white font-medium">Add Nor Network</div>
                         <div className="text-gray-400 text-sm">One-click network setup</div>
                       </div>
                     </div>

@@ -2,7 +2,7 @@
 
 ## Summary
 
-Successfully integrated the Noor Wallet web application into the NorChain monorepo as a unified ecosystem service.
+Successfully integrated the Nor Wallet web application into the NorChain monorepo as a unified ecosystem service.
 
 ## Changes Made
 
@@ -14,7 +14,7 @@ Successfully integrated the Noor Wallet web application into the NorChain monore
 
 ### 2. Package Configuration
 - ✅ Updated `package.json`:
-  - Name: `noor-wallet-web` → `@norchain/wallet`
+  - Name: `nor-wallet-web` → `@norchain/wallet`
   - Description updated to reflect monorepo integration
 - ✅ Added workspace scripts:
   - `wallet:dev` - Development server

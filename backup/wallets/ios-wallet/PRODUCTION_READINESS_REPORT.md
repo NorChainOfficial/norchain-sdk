@@ -193,7 +193,7 @@
 - ✅ Automatic migration from UserDefaults to Keychain
 - ✅ Codable type support with generic methods
 - ✅ Comprehensive error types with recovery suggestions
-- ✅ Service-scoped isolation (com.noorwallet.keychain)
+- ✅ Service-scoped isolation (com.norwallet.keychain)
 - ✅ Large data support (tested up to 10KB+)
 - ✅ Unicode and special character support
 - ✅ Clear all functionality for logout

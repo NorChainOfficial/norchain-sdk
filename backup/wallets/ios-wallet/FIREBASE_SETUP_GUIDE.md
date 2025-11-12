@@ -40,7 +40,7 @@ The analytics and crash reporting system is **fully functional** right now:
 
 2. **Create New Project**
    - Click "Add project"
-   - Project name: "Noor Wallet" (or your preferred name)
+   - Project name: "Nor Wallet" (or your preferred name)
    - Enable Google Analytics: **Yes** (recommended)
    - Choose or create Analytics account
    - Click "Create project"
@@ -48,7 +48,7 @@ The analytics and crash reporting system is **fully functional** right now:
 3. **Add iOS App**
    - Click "Add app" → iOS
    - iOS bundle ID: `com.yourcompany.norwallet` (get from Xcode project settings)
-   - App nickname: "Noor Wallet iOS" (optional)
+   - App nickname: "Nor Wallet iOS" (optional)
    - App Store ID: (leave blank for now)
    - Click "Register app"
 

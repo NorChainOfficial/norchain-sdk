@@ -184,7 +184,7 @@ export default function GovernancePage(): JSX.Element {
 
     setIsVoting(true);
     try {
-      // TODO: Integrate with @noor/core for actual voting
+      // TODO: Integrate with @nor/core for actual voting
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert(`Successfully voted ${vote.toUpperCase()} on ${selectedProposal.title}`);
     } catch (error) {

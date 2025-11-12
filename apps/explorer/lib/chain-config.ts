@@ -4,12 +4,12 @@
 
 import { defineChain } from 'viem';
 
-export const noorChain = defineChain({
+export const norChain = defineChain({
   id: 885824,
   name: 'NorChain',
   nativeCurrency: {
     decimals: 18,
-    name: 'Noor Token',
+    name: 'Nor Token',
     symbol: 'NOR',
   },
   rpcUrls: {

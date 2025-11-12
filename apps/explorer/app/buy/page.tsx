@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 
 export default function BuyNORPage(): JSX.Element {
-  const addNoorNetwork = async () => {
+  const addNorNetwork = async () => {
     if (typeof window !== 'undefined' && window.ethereum) {
       try {
         await window.ethereum.request({
@@ -14,7 +14,7 @@ export default function BuyNORPage(): JSX.Element {
               chainId: '0xD8680',
               chainName: 'NorChain',
               nativeCurrency: {
-                name: 'Noor Token',
+                name: 'Nor Token',
                 symbol: 'NOR',
                 decimals: 18,
               },
@@ -42,7 +42,7 @@ export default function BuyNORPage(): JSX.Element {
             How to Buy <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">NOR</span>
           </h1>
           <p className="text-xl text-gray-300">
-            Complete guide to purchasing Noor Token (NOR) on NoorSwap
+            Complete guide to purchasing Nor Token (NOR) on NorSwap
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export default function BuyNORPage(): JSX.Element {
               <div className="flex-1">
                 <h3 className="text-2xl font-bold text-white mb-4">Install MetaMask Wallet</h3>
                 <p className="text-gray-300 mb-4">
-                  MetaMask is a cryptocurrency wallet that allows you to interact with the Noor Chain.
+                  MetaMask is a cryptocurrency wallet that allows you to interact with the Nor Chain.
                   If you don't have it installed yet, download it from the official website.
                 </p>
                 <a
@@ -103,16 +103,16 @@ export default function BuyNORPage(): JSX.Element {
                 2
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-4">Add Noor Chain to MetaMask</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">Add Nor Chain to MetaMask</h3>
                 <p className="text-gray-300 mb-4">
-                  Connect your MetaMask wallet to the Noor Chain network. Click the button below to automatically
+                  Connect your MetaMask wallet to the Nor Chain network. Click the button below to automatically
                   add the network configuration to MetaMask.
                 </p>
                 <div className="bg-slate-700/50 rounded-lg p-4 mb-4">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <div className="text-gray-400 mb-1">Network Name</div>
-                      <div className="text-white font-mono">Noor Chain</div>
+                      <div className="text-white font-mono">Nor Chain</div>
                     </div>
                     <div>
                       <div className="text-gray-400 mb-1">Chain ID</div>
@@ -129,13 +129,13 @@ export default function BuyNORPage(): JSX.Element {
                   </div>
                 </div>
                 <button
-                  onClick={addNoorNetwork}
+                  onClick={addNorNetwork}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Add Noor Network
+                  Add Nor Network
                 </button>
               </div>
             </div>
@@ -148,9 +148,9 @@ export default function BuyNORPage(): JSX.Element {
                 3
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-4">Get USDT on Noor Chain</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">Get USDT on Nor Chain</h3>
                 <p className="text-gray-300 mb-4">
-                  You need USDT on Noor Chain to buy NOR. You have two options:
+                  You need USDT on Nor Chain to buy NOR. You have two options:
                 </p>
 
                 <div className="space-y-4">
@@ -158,7 +158,7 @@ export default function BuyNORPage(): JSX.Element {
                   <div className="bg-slate-700/50 rounded-lg p-6 border-l-4 border-blue-500">
                     <h4 className="text-lg font-bold text-white mb-3">Option A: Bridge from BSC (Recommended)</h4>
                     <p className="text-gray-300 mb-4">
-                      Bridge USDT from Binance Smart Chain to Noor Chain using our cross-chain bridge.
+                      Bridge USDT from Binance Smart Chain to Nor Chain using our cross-chain bridge.
                     </p>
                     <div className="bg-blue-600/20 border border-blue-500/30 rounded-lg p-4 mb-4">
                       <div className="flex items-start gap-3">
@@ -166,7 +166,7 @@ export default function BuyNORPage(): JSX.Element {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <p className="text-sm text-blue-200">
-                          Bridge UI coming soon! For now, you can buy NOR with native NOR tokens if you already have them on Noor Chain.
+                          Bridge UI coming soon! For now, you can buy NOR with native NOR tokens if you already have them on Nor Chain.
                         </p>
                       </div>
                     </div>
@@ -191,14 +191,14 @@ export default function BuyNORPage(): JSX.Element {
                 4
               </div>
               <div className="flex-1">
-                <h3 className="text-2xl font-bold text-white mb-4">Swap USDT for NOR on NoorSwap</h3>
+                <h3 className="text-2xl font-bold text-white mb-4">Swap USDT for NOR on NorSwap</h3>
                 <p className="text-gray-300 mb-4">
-                  Once you have USDT on Noor Chain, you can swap it for NOR on our decentralized exchange.
+                  Once you have USDT on Nor Chain, you can swap it for NOR on our decentralized exchange.
                 </p>
                 <div className="bg-slate-700/50 rounded-lg p-4 mb-6">
                   <h5 className="text-white font-medium mb-3">Swap Process:</h5>
                   <ol className="space-y-2 text-gray-300 text-sm list-decimal list-inside">
-                    <li>Visit NoorSwap DEX</li>
+                    <li>Visit NorSwap DEX</li>
                     <li>Connect your MetaMask wallet</li>
                     <li>Select USDT as the "From" token</li>
                     <li>Select NOR as the "To" token</li>
@@ -215,7 +215,7 @@ export default function BuyNORPage(): JSX.Element {
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                   </svg>
-                  Start Swapping on NoorSwap
+                  Start Swapping on NorSwap
                 </Link>
               </div>
             </div>
@@ -230,7 +230,7 @@ export default function BuyNORPage(): JSX.Element {
             <div>
               <h3 className="text-xl font-bold text-white mb-2">What is NOR?</h3>
               <p className="text-gray-300">
-                NOR is the native token of Noor Chain, a high-performance blockchain designed for DeFi applications.
+                NOR is the native token of Nor Chain, a high-performance blockchain designed for DeFi applications.
                 It's used for gas fees, staking, and governance.
               </p>
             </div>
@@ -238,15 +238,15 @@ export default function BuyNORPage(): JSX.Element {
             <div>
               <h3 className="text-xl font-bold text-white mb-2">What are the fees?</h3>
               <p className="text-gray-300">
-                NoorSwap charges a 0.3% trading fee on all swaps, which goes to liquidity providers.
-                Gas fees on Noor Chain are extremely low, typically less than $0.01 per transaction.
+                NorSwap charges a 0.3% trading fee on all swaps, which goes to liquidity providers.
+                Gas fees on Nor Chain are extremely low, typically less than $0.01 per transaction.
               </p>
             </div>
 
             <div>
               <h3 className="text-xl font-bold text-white mb-2">How long does a swap take?</h3>
               <p className="text-gray-300">
-                Swaps on Noor Chain are near-instant, with block times of just 3 seconds.
+                Swaps on Nor Chain are near-instant, with block times of just 3 seconds.
                 Most transactions are confirmed within 5-10 seconds.
               </p>
             </div>
@@ -254,7 +254,7 @@ export default function BuyNORPage(): JSX.Element {
             <div>
               <h3 className="text-xl font-bold text-white mb-2">Is it safe?</h3>
               <p className="text-gray-300">
-                NoorSwap uses audited smart contracts based on Uniswap V2. Your funds are always in your control -
+                NorSwap uses audited smart contracts based on Uniswap V2. Your funds are always in your control -
                 we never have access to your private keys. Always ensure you're on the official website: explorer.norchain.org
               </p>
             </div>
@@ -279,7 +279,7 @@ export default function BuyNORPage(): JSX.Element {
               href="/dex"
               className="px-8 py-4 bg-white text-blue-600 font-bold rounded-lg hover:bg-gray-100 transition-colors shadow-lg text-lg"
             >
-              Go to NoorSwap
+              Go to NorSwap
             </Link>
             <a
               href="https://docs.norchain.org"

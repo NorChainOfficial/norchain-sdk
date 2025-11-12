@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.components
+package com.nor.wallet.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

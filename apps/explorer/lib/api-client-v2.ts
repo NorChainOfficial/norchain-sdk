@@ -141,7 +141,7 @@ export interface ApiClientConfig {
 // Enhanced API Client Class
 // ============================================================================
 
-export class NoorApiClient {
+export class NorApiClient {
   private readonly baseUrl: string;
   private readonly timeout: number;
   private readonly circuitBreaker: CircuitBreaker;
@@ -460,13 +460,13 @@ export class NoorApiClient {
 // Singleton Instance Export
 // ============================================================================
 
-let apiClientInstance: NoorApiClient | null = null;
+let apiClientInstance: NorApiClient | null = null;
 
-export function getApiClient(config?: ApiClientConfig): NoorApiClient {
+export function getApiClient(config?: ApiClientConfig): NorApiClient {
   if (!apiClientInstance) {
-    apiClientInstance = new NoorApiClient(config);
+    apiClientInstance = new NorApiClient(config);
   }
   return apiClientInstance;
 }
 
-export default NoorApiClient;
+export default NorApiClient;

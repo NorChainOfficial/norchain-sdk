@@ -20,7 +20,7 @@ Created a comprehensive, production-ready secure storage service that replaces U
 - ✅ Generic Codable support for type-safe storage
 - ✅ Automatic migration from UserDefaults
 - ✅ Comprehensive error handling with recovery suggestions
-- ✅ Service-scoped isolation (com.noorwallet.keychain)
+- ✅ Service-scoped isolation (com.norwallet.keychain)
 - ✅ Support for large data (10KB+)
 - ✅ Unicode and special character support
 
@@ -125,7 +125,7 @@ The Keychain implementation is complete, but the new files need to be added to t
 
 1. **Open Xcode Project**
    ```bash
-   cd "/Volumes/Development/sahalat/private server/noor-wallet/ios-wallet"
+   cd "/Volumes/Development/sahalat/private server/nor-wallet/ios-wallet"
    open NorWallet.xcodeproj
    ```
 
@@ -170,7 +170,7 @@ After adding files to Xcode, verify the security implementation:
 
 ### Keychain Configuration
 - [ ] Verify `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` is used
-- [ ] Check service name is correctly scoped (`com.noorwallet.keychain`)
+- [ ] Check service name is correctly scoped (`com.norwallet.keychain`)
 - [ ] Ensure no data is logged in production (check `SupabaseConfig.enableDebugLogging`)
 
 ### Migration
@@ -274,7 +274,7 @@ Once files are added to Xcode:
 ### Security
 1. **Hardware-backed encryption** - Uses iOS Secure Enclave when available
 2. **Access control** - Data only accessible when device unlocked
-3. **Service isolation** - Scoped to `com.noorwallet.keychain`
+3. **Service isolation** - Scoped to `com.norwallet.keychain`
 4. **No logging in production** - Sensitive data never logged
 
 ### Development

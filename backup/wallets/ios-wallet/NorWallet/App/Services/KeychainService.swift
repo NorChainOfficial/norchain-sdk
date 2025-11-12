@@ -15,7 +15,7 @@ import Security
 class KeychainService {
     static let shared = KeychainService()
 
-    private let serviceName = "com.noorwallet.keychain"
+    private let serviceName = "com.norwallet.keychain"
 
     private init() {}
 

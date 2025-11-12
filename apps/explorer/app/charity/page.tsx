@@ -192,7 +192,7 @@ export default function CharityPage(): JSX.Element {
 
     setIsDonating(true);
     try {
-      // TODO: Integrate with @noor/core for actual donation
+      // TODO: Integrate with @nor/core for actual donation
       await new Promise(resolve => setTimeout(resolve, 2000));
       alert(`Successfully donated ${donationAmount} NOR to ${selectedCharity.name}!`);
       setDonationAmount('');

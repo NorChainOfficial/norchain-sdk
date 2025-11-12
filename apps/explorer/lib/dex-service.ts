@@ -4,7 +4,7 @@
  */
 
 import { createPublicClient, createWalletClient, custom, http, parseUnits, formatUnits, type Address, type Hash } from 'viem';
-import { noorChain } from './chain-config';
+import { norChain } from './chain-config';
 
 // DEX Contract Addresses - Updated with production deployment
 export const DEX_CONTRACTS = {
@@ -26,7 +26,7 @@ export const DEX_CONTRACTS = {
 export const TOKENS = {
   NOR: {
     symbol: 'NOR',
-    name: 'Noor Token',
+    name: 'Nor Token',
     decimals: 18,
     address: 'native' as const,
     isNative: true,
@@ -54,7 +54,7 @@ export const TOKENS = {
   },
   XHN: {
     symbol: 'XHN',
-    name: 'Noor Network',
+    name: 'Nor Network',
     decimals: 18,
     address: DEX_CONTRACTS.XHN,
     isNative: false,
@@ -209,7 +209,7 @@ export class DEXService {
 
   constructor() {
     this.publicClient = createPublicClient({
-      chain: noorChain,
+      chain: norChain,
       transport: http('https://rpc.norchain.org'),
     });
 
@@ -220,7 +220,7 @@ export class DEXService {
   private getWalletClient() {
     if (!this.walletClient && typeof window !== 'undefined' && window.ethereum) {
       this.walletClient = createWalletClient({
-        chain: noorChain,
+        chain: norChain,
         transport: custom(window.ethereum),
       });
     }

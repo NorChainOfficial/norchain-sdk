@@ -1,10 +1,10 @@
 #!/bin/bash
-# Android NDK Setup Script for Noor Wallet
+# Android NDK Setup Script for Nor Wallet
 
 set -e
 
 echo "========================================="
-echo "Noor Wallet - Android NDK Setup"
+echo "Nor Wallet - Android NDK Setup"
 echo "========================================="
 echo ""
 
@@ -80,7 +80,7 @@ if ! grep -q "ANDROID_NDK_HOME" "$SHELL_RC" 2>/dev/null; then
     echo "Adding NDK configuration to $SHELL_RC..."
     cat >> "$SHELL_RC" << EOF
 
-# Android NDK Configuration (Noor Wallet)
+# Android NDK Configuration (Nor Wallet)
 export ANDROID_HOME=\$HOME/Library/Android/sdk
 export ANDROID_NDK_HOME=\$ANDROID_HOME/ndk/$NDK_VERSION
 export PATH=\$PATH:\$ANDROID_HOME/platform-tools
@@ -108,7 +108,7 @@ echo "Building for all Android architectures..."
 cd core-rust
 
 cargo ndk -t arm64-v8a -t armeabi-v7a -t x86_64 -t x86 \
-    -o ../android-wallet/noor-core/src/main/jniLibs \
+    -o ../android-wallet/nor-core/src/main/jniLibs \
     build --release
 
 if [ $? -eq 0 ]; then
@@ -116,7 +116,7 @@ if [ $? -eq 0 ]; then
     echo "✅ Android libraries built successfully!"
     echo ""
     echo "Libraries created:"
-    find ../android-wallet/noor-core/src/main/jniLibs -name "*.so" -type f
+    find ../android-wallet/nor-core/src/main/jniLibs -name "*.so" -type f
     echo ""
     echo "========================================="
     echo "Next Steps"

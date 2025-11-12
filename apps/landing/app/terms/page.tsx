@@ -3,8 +3,8 @@ import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - Noor Chain',
-  description: 'Terms of service for Noor Chain blockchain platform and services.',
+  title: 'Terms of Service - Nor Chain',
+  description: 'Terms of service for Nor Chain blockchain platform and services.',
 };
 
 export default function TermsOfServicePage() {
@@ -19,13 +19,13 @@ export default function TermsOfServicePage() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">1. Acceptance of Terms</h2>
             <p className="text-gray-700 mb-4">
-              By accessing or using Noor Chain and its services, you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to these Terms, do not use our services.
+              By accessing or using Nor Chain and its services, you agree to be bound by these Terms of Service (&quot;Terms&quot;). If you do not agree to these Terms, do not use our services.
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">2. Description of Service</h2>
-            <p className="text-gray-700 mb-3">Noor Chain provides:</p>
+            <p className="text-gray-700 mb-3">Nor Chain provides:</p>
             <ul className="list-disc ml-6 mb-4 text-gray-700 space-y-2">
               <li>A blockchain network for decentralized transactions</li>
               <li>Decentralized exchange (DEX) services</li>
@@ -114,7 +114,7 @@ export default function TermsOfServicePage() {
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">9. Intellectual Property</h2>
             <p className="text-gray-700 mb-4">
-              All content, trademarks, and intellectual property on Noor Chain are owned by us or our licensors. You may not use our branding without permission.
+              All content, trademarks, and intellectual property on Nor Chain are owned by us or our licensors. You may not use our branding without permission.
             </p>
           </section>
 
@@ -131,7 +131,7 @@ export default function TermsOfServicePage() {
 
           <section className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">11. Indemnification</h2>
-            <p className="text-gray-700 mb-3">You agree to indemnify and hold harmless Noor Chain from any claims, damages, or expenses arising from:</p>
+            <p className="text-gray-700 mb-3">You agree to indemnify and hold harmless Nor Chain from any claims, damages, or expenses arising from:</p>
             <ul className="list-disc ml-6 mb-4 text-gray-700 space-y-2">
               <li>Your use of our services</li>
               <li>Your violation of these Terms</li>

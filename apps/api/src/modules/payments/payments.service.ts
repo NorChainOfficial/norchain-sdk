@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  ConflictException,
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -38,6 +39,7 @@ import {
 } from './entities/subscription.entity';
 import { Dispute, DisputeStatus } from './entities/dispute.entity';
 import { WebhookEndpoint } from './entities/webhook-endpoint.entity';
+import { Coupon, CouponType, CouponStatus } from './entities/coupon.entity';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { CreatePOSSessionDto } from './dto/create-pos-session.dto';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -49,6 +51,8 @@ import { CreateCheckoutSessionWithLineItemsDto } from './dto/create-checkout-ses
 import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
 import { CreateRefundDto } from './dto/create-refund.dto';
 import { OnboardMerchantDto } from './dto/onboard-merchant.dto';
+import { CreateCouponDto } from './dto/create-coupon.dto';
+import { ApplyCouponDto } from './dto/apply-coupon.dto';
 import { CheckoutSessionStatus } from './entities/checkout-session.entity';
 import { PaymentStatus } from './entities/payment.entity';
 import { RefundStatus } from './entities/refund.entity';
@@ -93,6 +97,8 @@ export class PaymentsService {
     private readonly disputeRepository: Repository<Dispute>,
     @InjectRepository(WebhookEndpoint)
     private readonly webhookEndpointRepository: Repository<WebhookEndpoint>,
+    @InjectRepository(Coupon)
+    private readonly couponRepository: Repository<Coupon>,
     private readonly rpcService: RpcService,
     private readonly policyService: PolicyService,
     private readonly ledgerService: LedgerService,
@@ -1103,5 +1109,233 @@ export class PaymentsService {
     // In production, implement webhook delivery with HMAC signing
     this.logger.log(`Webhook event: ${event}`, data);
     this.eventEmitter.emit(`webhook.${event}`, data);
+  }
+
+  /**
+   * Create a coupon
+   */
+  async createCoupon(
+    dto: CreateCouponDto,
+    userId: string,
+  ): Promise<Coupon> {
+    // Check if coupon code already exists for this org
+    const existing = await this.couponRepository.findOne({
+      where: { code: dto.code.toUpperCase(), orgId: dto.orgId },
+    });
+
+    if (existing) {
+      throw new ConflictException(
+        `Coupon with code ${dto.code} already exists for this organization`,
+      );
+    }
+
+    const coupon = this.couponRepository.create({
+      ...dto,
+      code: dto.code.toUpperCase(),
+      status: CouponStatus.ACTIVE,
+      timesRedeemed: 0,
+    });
+
+    const saved = await this.couponRepository.save(coupon);
+
+    this.logger.log(`Created coupon: ${saved.code} for org ${dto.orgId}`);
+    this.eventEmitter.emit('coupon.created', {
+      couponId: saved.id,
+      code: saved.code,
+      orgId: dto.orgId,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Get coupons for an organization
+   */
+  async getCoupons(
+    orgId: string,
+    status?: CouponStatus,
+  ): Promise<Coupon[]> {
+    const where: any = { orgId };
+    if (status) {
+      where.status = status;
+    }
+
+    return this.couponRepository.find({
+      where,
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  /**
+   * Get coupon by code
+   */
+  async getCouponByCode(code: string, orgId: string): Promise<Coupon> {
+    const coupon = await this.couponRepository.findOne({
+      where: { code: code.toUpperCase(), orgId },
+    });
+
+    if (!coupon) {
+      throw new NotFoundException(`Coupon ${code} not found`);
+    }
+
+    return coupon;
+  }
+
+  /**
+   * Apply coupon and calculate discount
+   */
+  async applyCoupon(
+    dto: ApplyCouponDto,
+    orgId: string,
+  ): Promise<{
+    coupon: Coupon;
+    discountAmount: string;
+    finalAmount: string;
+    valid: boolean;
+    reason?: string;
+  }> {
+    const coupon = await this.couponRepository.findOne({
+      where: { code: dto.code.toUpperCase(), orgId },
+    });
+
+    if (!coupon) {
+      throw new NotFoundException(`Coupon ${dto.code} not found`);
+    }
+
+    // Validate coupon status
+    if (coupon.status !== CouponStatus.ACTIVE) {
+      return {
+        coupon,
+        discountAmount: '0',
+        finalAmount: dto.amount || '0',
+        valid: false,
+        reason: 'Coupon is not active',
+      };
+    }
+
+    // Check expiration
+    const now = new Date();
+    if (coupon.validUntil && new Date(coupon.validUntil) < now) {
+      coupon.status = CouponStatus.EXPIRED;
+      await this.couponRepository.save(coupon);
+      return {
+        coupon,
+        discountAmount: '0',
+        finalAmount: dto.amount || '0',
+        valid: false,
+        reason: 'Coupon has expired',
+      };
+    }
+
+    if (coupon.validFrom && new Date(coupon.validFrom) > now) {
+      return {
+        coupon,
+        discountAmount: '0',
+        finalAmount: dto.amount || '0',
+        valid: false,
+        reason: 'Coupon is not yet valid',
+      };
+    }
+
+    // Check max redemptions
+    if (
+      coupon.maxRedemptions &&
+      coupon.timesRedeemed >= coupon.maxRedemptions
+    ) {
+      return {
+        coupon,
+        discountAmount: '0',
+        finalAmount: dto.amount || '0',
+        valid: false,
+        reason: 'Coupon has reached maximum redemptions',
+      };
+    }
+
+    // Calculate discount
+    // Amount is in NOR (string), convert to wei for calculations
+    const amountWei = ethers.parseEther(dto.amount || '0');
+    let discountAmountWei = BigInt(0);
+
+    if (coupon.type === CouponType.PERCENTAGE) {
+      const percentage = parseFloat(coupon.discountValue);
+      if (percentage < 0 || percentage > 100) {
+        throw new BadRequestException('Invalid discount percentage');
+      }
+      discountAmountWei = (amountWei * BigInt(Math.floor(percentage * 100))) / BigInt(10000);
+    } else {
+      // Fixed amount - discountValue is in NOR
+      discountAmountWei = ethers.parseEther(coupon.discountValue);
+      if (discountAmountWei > amountWei) {
+        discountAmountWei = amountWei; // Don't allow negative final amount
+      }
+    }
+
+    // Check minimum amount
+    if (coupon.minimumAmount) {
+      const minimumWei = ethers.parseEther(coupon.minimumAmount);
+      if (amountWei < minimumWei) {
+        return {
+          coupon,
+          discountAmount: '0',
+          finalAmount: dto.amount || '0',
+          valid: false,
+          reason: `Minimum purchase amount of ${coupon.minimumAmount} NOR required`,
+        };
+      }
+    }
+
+    const finalAmountWei = amountWei - discountAmountWei;
+
+    return {
+      coupon,
+      discountAmount: ethers.formatEther(discountAmountWei),
+      finalAmount: ethers.formatEther(finalAmountWei),
+      valid: true,
+    };
+  }
+
+  /**
+   * Redeem coupon (increment usage count)
+   */
+  async redeemCoupon(couponId: string): Promise<Coupon> {
+    const coupon = await this.couponRepository.findOne({
+      where: { id: couponId },
+    });
+
+    if (!coupon) {
+      throw new NotFoundException(`Coupon ${couponId} not found`);
+    }
+
+    coupon.timesRedeemed += 1;
+
+    // Check if max redemptions reached
+    if (
+      coupon.maxRedemptions &&
+      coupon.timesRedeemed >= coupon.maxRedemptions
+    ) {
+      coupon.status = CouponStatus.INACTIVE;
+    }
+
+    return this.couponRepository.save(coupon);
+  }
+
+  /**
+   * Update coupon status
+   */
+  async updateCouponStatus(
+    couponId: string,
+    status: CouponStatus,
+    orgId: string,
+  ): Promise<Coupon> {
+    const coupon = await this.couponRepository.findOne({
+      where: { id: couponId, orgId },
+    });
+
+    if (!coupon) {
+      throw new NotFoundException(`Coupon ${couponId} not found`);
+    }
+
+    coupon.status = status;
+    return this.couponRepository.save(coupon);
   }
 }

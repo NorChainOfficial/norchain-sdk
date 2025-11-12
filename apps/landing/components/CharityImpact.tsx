@@ -70,7 +70,7 @@ export default function CharityImpact() {
             Charity Impact
           </h2>
           <p className="text-xl text-gray-600 mb-8">
-            Every transaction on Noor makes a difference. 5% of all network
+            Every transaction on Nor makes a difference. 5% of all network
             fees automatically fund verified charitable initiatives.
           </p>
           <div className="inline-block bg-white rounded-2xl shadow-2xl p-8">

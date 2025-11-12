@@ -1,36 +1,36 @@
 "use client";
 
-export default function WhyNoor() {
+export default function WhyNor() {
   const comparisons = [
     {
       feature: "Block Time",
-      noor: "3 seconds",
+      nor: "3 seconds",
       ethereum: "12 seconds",
       polygon: "2 seconds",
     },
     {
       feature: "Gas Fees",
-      noor: "<$0.001",
+      nor: "<$0.001",
       ethereum: "$5-50",
       polygon: "$0.01-0.05",
     },
     {
       feature: "Finality",
-      noor: "3 seconds",
+      nor: "3 seconds",
       ethereum: "12+ minutes",
       polygon: "~2 minutes",
     },
-    { feature: "TPS", noor: "1000+", ethereum: "15-30", polygon: "65+" },
-    { feature: "EVM Compatible", noor: "✅", ethereum: "✅", polygon: "✅" },
+    { feature: "TPS", nor: "1000+", ethereum: "15-30", polygon: "65+" },
+    { feature: "EVM Compatible", nor: "✅", ethereum: "✅", polygon: "✅" },
     {
       feature: "Built-in Charity",
-      noor: "✅ 5% fees",
+      nor: "✅ 5% fees",
       ethereum: "❌",
       polygon: "❌",
     },
     {
       feature: "Carbon Neutral",
-      noor: "✅ Offset",
+      nor: "✅ Offset",
       ethereum: "✅ PoS",
       polygon: "✅ PoS",
     },
@@ -40,7 +40,7 @@ export default function WhyNoor() {
     <section className="py-20 bg-white">
       <div className="container mx-auto px-6">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-gray-900">
-          Why Noor?
+          Why Nor?
         </h2>
         <p className="text-center text-gray-600 mb-12 text-lg">
           How we compare to other leading blockchains
@@ -52,7 +52,7 @@ export default function WhyNoor() {
               <tr className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
                 <th className="px-6 py-4 text-left font-bold">Feature</th>
                 <th className="px-6 py-4 text-center font-bold bg-blue-800">
-                  Noor
+                  Nor
                 </th>
                 <th className="px-6 py-4 text-center font-bold">Ethereum</th>
                 <th className="px-6 py-4 text-center font-bold">Polygon</th>
@@ -68,7 +68,7 @@ export default function WhyNoor() {
                     {row.feature}
                   </td>
                   <td className="px-6 py-4 text-center font-bold text-blue-700 bg-blue-50 border-t border-gray-200">
-                    {row.noor}
+                    {row.nor}
                   </td>
                   <td className="px-6 py-4 text-center text-gray-600 border-t border-gray-200">
                     {row.ethereum}

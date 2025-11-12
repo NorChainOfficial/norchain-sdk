@@ -28,7 +28,7 @@ export const TokenPriceChart = (): JSX.Element => {
   const tokens: Token[] = [
     {
       symbol: 'NOR',
-      name: 'Noor Token',
+      name: 'Nor Token',
       address: '0x...',
       currentPrice: 0.0418,
       priceChange24h: 2.6,

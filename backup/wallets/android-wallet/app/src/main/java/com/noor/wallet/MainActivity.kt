@@ -1,4 +1,4 @@
-package com.noor.wallet
+package com.nor.wallet
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,20 +9,20 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.noor.core.NoorCore
-import com.noor.wallet.ui.navigation.AppNavigation
+import com.nor.core.NorCore
+import com.nor.wallet.ui.navigation.AppNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize Noor Core
-        NoorCore.initLogger(NoorCore.LogLevel.INFO)
+        // Initialize Nor Core
+        NorCore.initLogger(NorCore.LogLevel.INFO)
         
         // Initialize Supabase (happens automatically via SupabaseService.getInstance())
 
         setContent {
-            NoorWalletTheme {
+            NorWalletTheme {
                 Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
@@ -35,13 +35,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NoorWalletTheme(content: @Composable () -> Unit) {
+fun NorWalletTheme(content: @Composable () -> Unit) {
     MaterialTheme(colorScheme = lightColorScheme(), content = content)
 }
 
 @Composable
 fun WalletScreen() {
-    var wallet by remember { mutableStateOf<NoorCore.WalletInfo?>(null) }
+    var wallet by remember { mutableStateOf<NorCore.WalletInfo?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
     val chainInfo = remember { WalletService.getChainInfo() }
 
@@ -50,7 +50,7 @@ fun WalletScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Noor Wallet", style = MaterialTheme.typography.headlineLarge)
+        Text(text = "Nor Wallet", style = MaterialTheme.typography.headlineLarge)
 
         Text(text = "Chain: ${chainInfo.name}", style = MaterialTheme.typography.titleMedium)
 
@@ -105,7 +105,7 @@ fun WalletSetup(onCreateWallet: () -> Unit, error: String?) {
 }
 
 @Composable
-fun WalletCard(wallet: NoorCore.WalletInfo) {
+fun WalletCard(wallet: NorCore.WalletInfo) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
                 modifier = Modifier.padding(16.dp),

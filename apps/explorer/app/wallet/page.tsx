@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Noor Wallet - Download',
-  description: 'Download the official Noor Wallet Chrome extension. Manage NOR, tokens, and connect to dApps without MetaMask.',
+  title: 'Nor Wallet - Download',
+  description: 'Download the official Nor Wallet Chrome extension. Manage NOR, tokens, and connect to dApps without MetaMask.',
 };
 
 export default function WalletPage() {
@@ -19,11 +19,11 @@ export default function WalletPage() {
             </div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-              Noor Wallet
+              Nor Wallet
             </h1>
 
             <p className="text-xl text-gray-300 max-w-2xl mx-auto mb-8">
-              Your gateway to Noor Chain. Manage NOR, tokens, and connect to dApps with our native Chrome extension.
+              Your gateway to Nor Chain. Manage NOR, tokens, and connect to dApps with our native Chrome extension.
             </p>
 
             <div className="flex flex-wrap justify-center gap-4">
@@ -77,7 +77,7 @@ export default function WalletPage() {
       <section className="py-20 bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-4xl font-bold text-white text-center mb-12">
-            Why Choose Noor Wallet?
+            Why Choose Nor Wallet?
           </h2>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -91,9 +91,9 @@ export default function WalletPage() {
 
             <div className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700 rounded-2xl p-8">
               <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-bold text-white mb-3">Native to Noor</h3>
+              <h3 className="text-xl font-bold text-white mb-3">Native to Nor</h3>
               <p className="text-gray-400">
-                Optimized specifically for Noor Chain. No need for MetaMask or other wallets.
+                Optimized specifically for Nor Chain. No need for MetaMask or other wallets.
               </p>
             </div>
 
@@ -101,7 +101,7 @@ export default function WalletPage() {
               <div className="text-4xl mb-4">🌐</div>
               <h3 className="text-xl font-bold text-white mb-3">Full dApp Support</h3>
               <p className="text-gray-400">
-                Connect to any Noor dApp with our EIP-1193 compliant provider API.
+                Connect to any Nor dApp with our EIP-1193 compliant provider API.
               </p>
             </div>
 
@@ -117,7 +117,7 @@ export default function WalletPage() {
               <div className="text-4xl mb-4">🎨</div>
               <h3 className="text-xl font-bold text-white mb-3">Beautiful UI</h3>
               <p className="text-gray-400">
-                Modern, intuitive interface designed specifically for the Noor ecosystem.
+                Modern, intuitive interface designed specifically for the Nor ecosystem.
               </p>
             </div>
 
@@ -147,7 +147,7 @@ export default function WalletPage() {
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-white mb-2">Download the Extension</h3>
                 <p className="text-gray-400">
-                  Click the download button above to get the latest version of Noor Wallet.
+                  Click the download button above to get the latest version of Nor Wallet.
                 </p>
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function WalletPage() {
               <div className="flex-1">
                 <h3 className="text-xl font-bold text-white mb-2">Start Using!</h3>
                 <p className="text-gray-400">
-                  Connect to dApps, send NOR, and explore the Noor ecosystem.
+                  Connect to dApps, send NOR, and explore the Nor ecosystem.
                 </p>
               </div>
             </div>
@@ -237,7 +237,7 @@ export default function WalletPage() {
             Ready to Get Started?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Download Noor Wallet today and take control of your digital assets.
+            Download Nor Wallet today and take control of your digital assets.
           </p>
           <a
             href="/downloads/xaheen-wallet-latest.zip"
@@ -246,7 +246,7 @@ export default function WalletPage() {
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Download Noor Wallet
+            Download Nor Wallet
           </a>
         </div>
       </section>

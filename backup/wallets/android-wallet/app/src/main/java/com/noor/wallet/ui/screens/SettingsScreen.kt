@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.screens
+package com.nor.wallet.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,8 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.noor.wallet.ui.components.SecurityCard
-import com.noor.wallet.ui.components.SettingsSection
+import com.nor.wallet.ui.components.SecurityCard
+import com.nor.wallet.ui.components.SettingsSection
 
 /**
  * SettingsScreen - App settings screen

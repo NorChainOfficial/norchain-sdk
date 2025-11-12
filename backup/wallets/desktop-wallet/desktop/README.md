@@ -1,4 +1,4 @@
-# Desktop Wallet - Noor Wallet
+# Desktop Wallet - Nor Wallet
 
 ## Setup
 

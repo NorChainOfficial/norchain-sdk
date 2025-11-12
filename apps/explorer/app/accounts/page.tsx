@@ -48,7 +48,7 @@ export default async function AccountsPage({ searchParams }: PageProps): Promise
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">Accounts</h1>
-            <p className="text-gray-400 mt-1">All accounts on Noor Chain</p>
+            <p className="text-gray-400 mt-1">All accounts on Nor Chain</p>
           </div>
         </div>
 

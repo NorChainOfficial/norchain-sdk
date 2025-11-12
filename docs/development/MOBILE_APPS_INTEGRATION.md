@@ -8,7 +8,7 @@ Successfully integrated Android and iOS native wallet applications into the NorC
 
 ### 1. Android Wallet (`apps/wallet-android`)
 - **Technology**: Kotlin + Jetpack Compose
-- **Package**: `com.noor.wallet`
+- **Package**: `com.nor.wallet`
 - **Min SDK**: 28 (Android 9.0)
 - **Target SDK**: 34 (Android 14)
 - **Features**:
@@ -16,11 +16,11 @@ Successfully integrated Android and iOS native wallet applications into the NorC
   - Send/receive transactions
   - Multi-account support
   - Supabase sync
-  - Native Rust core integration (`noor-core`)
+  - Native Rust core integration (`nor-core`)
 
 ### 2. iOS Wallet (`apps/wallet-ios`)
 - **Technology**: SwiftUI + Swift
-- **Bundle ID**: `com.noor.wallet`
+- **Bundle ID**: `com.nor.wallet`
 - **Minimum iOS**: iOS 15.0+
 - **Features**:
   - Wallet creation and import
@@ -56,14 +56,14 @@ norchain-monorepo/
 wallet-android/
 ├── app/                  # Main application module
 │   ├── src/main/
-│   │   ├── java/com/noor/wallet/
+│   │   ├── java/com/nor/wallet/
 │   │   │   ├── MainActivity.kt
 │   │   │   ├── WalletService.kt
 │   │   │   ├── services/        # Supabase services
 │   │   │   ├── ui/              # Compose UI
 │   │   │   └── viewmodels/      # ViewModels
 │   │   └── res/                 # Resources
-├── noor-core/            # Rust core module
+├── nor-core/            # Rust core module
 │   └── src/main/jniLibs/ # Native libraries
 ├── build.gradle.kts
 └── settings.gradle.kts
@@ -74,7 +74,7 @@ wallet-android/
 - **WalletViewModel.kt**: Business logic
 - **WalletService.kt**: Wallet operations
 - **SupabaseService.kt**: Backend sync
-- **noor-core**: Native Rust wallet core
+- **nor-core**: Native Rust wallet core
 
 ### Build Commands
 ```bash
@@ -146,7 +146,7 @@ To integrate with Unified API:
 
 1. **Add API Client**:
    ```kotlin
-   // Android: apps/wallet-android/app/src/main/java/com/noor/wallet/services/ApiClient.kt
+   // Android: apps/wallet-android/app/src/main/java/com/nor/wallet/services/ApiClient.kt
    class ApiClient {
        private val baseUrl = BuildConfig.API_URL // "http://api.norchain.org"
    }
@@ -191,10 +191,10 @@ CHAIN_ID = 65001
 
 Both apps use native Rust core libraries:
 
-### Android (`noor-core`)
-- **Location**: `apps/wallet-android/noor-core/`
-- **Native Libraries**: `libnoor_core.so` (arm64-v8a, armeabi-v7a, x86, x86_64)
-- **Kotlin Bindings**: `NoorCore.kt`, `NoorEvm.kt`, `NoorWallet.kt`
+### Android (`nor-core`)
+- **Location**: `apps/wallet-android/nor-core/`
+- **Native Libraries**: `libnor_core.so` (arm64-v8a, armeabi-v7a, x86, x86_64)
+- **Kotlin Bindings**: `NorCore.kt`, `NorEvm.kt`, `NorWallet.kt`
 
 ### iOS (`NorCore`)
 - **Location**: `apps/wallet-ios/Packages/NorCore/`
@@ -211,7 +211,7 @@ cd apps/wallet-android
 
 # Development
 ./gradlew installDebug
-adb logcat | grep NoorWallet
+adb logcat | grep NorWallet
 
 # Testing
 ./gradlew test

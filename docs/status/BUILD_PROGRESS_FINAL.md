@@ -16,7 +16,7 @@
 
 ### 2. Explorer (`apps/explorer`)
 - ✅ Build successful
-- ✅ Removed @noor workspace dependencies (don't exist)
+- ✅ Removed @nor workspace dependencies (don't exist)
 - ✅ Added missing dependencies:
   - `viem` (for DEX service)
   - `lucide-react` (for icons)
@@ -44,7 +44,7 @@
 ## 🔧 Fixes Applied
 
 ### Workspace Dependencies
-- ✅ Removed `@noor/*` packages from explorer (don't exist)
+- ✅ Removed `@nor/*` packages from explorer (don't exist)
 - ✅ Updated Dockerfiles to use `npm install` instead of `npm ci`
 - ✅ Fixed TypeScript configs to be standalone
 

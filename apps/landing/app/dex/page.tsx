@@ -3,9 +3,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
-  title: 'NoorSwap DEX | Decentralized Exchange on NorChain',
-  description: 'Trade with confidence on NoorSwap. $800K locked liquidity for 36 months, 16.5x overcollateralized Dirhamat stablecoin, and zero rug-pull risk.',
-  keywords: ['NoorSwap', 'DEX', 'NorChain', 'DeFi', 'Dirhamat', 'Liquidity', 'Trading'],
+  title: 'NorSwap DEX | Decentralized Exchange on NorChain',
+  description: 'Trade with confidence on NorSwap. $800K locked liquidity for 36 months, 16.5x overcollateralized Dirhamat stablecoin, and zero rug-pull risk.',
+  keywords: ['NorSwap', 'DEX', 'NorChain', 'DeFi', 'Dirhamat', 'Liquidity', 'Trading'],
 };
 
 export default function DEXPage(): JSX.Element {
@@ -23,7 +23,7 @@ export default function DEXPage(): JSX.Element {
             </div>
 
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-              NoorSwap DEX
+              NorSwap DEX
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
               Trade with confidence on the most secure decentralized exchange.
@@ -418,14 +418,14 @@ export default function DEXPage(): JSX.Element {
       <section className="py-20 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Start Trading on NoorSwap
+            Start Trading on NorSwap
           </h2>
           <p className="text-xl text-gray-600 mb-8">
             Experience DeFi done right. Maximum security, full transparency, and institutional-grade backing.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a
-              href="https://swap.noorchain.org"
+              href="https://swap.norchain.org"
               className="h-14 px-8 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg flex items-center gap-2"
             >
               Launch App

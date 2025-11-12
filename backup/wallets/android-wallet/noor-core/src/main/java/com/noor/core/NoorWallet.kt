@@ -1,4 +1,4 @@
-package com.noor.core
+package com.nor.core
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,7 +9,7 @@ import java.util.Date
  * Kotlin wrapper around the Rust core wallet manager
  * Provides a nicer API with Kotlin conveniences
  */
-class NoorWallet {
+class NorWallet {
     private val walletManager: WalletManager = WalletManager()
 
     // MARK: - Wallet Creation

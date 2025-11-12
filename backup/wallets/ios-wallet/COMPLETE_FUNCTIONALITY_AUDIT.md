@@ -1,4 +1,4 @@
-# Complete Functionality Audit - Noor Wallet iOS
+# Complete Functionality Audit - Nor Wallet iOS
 
 **Generated:** November 5, 2025
 **Status:** 100% Core Functionality Complete
@@ -583,7 +583,7 @@
 
 ## 🎉 SUMMARY
 
-**The Noor Wallet iOS app is FEATURE-COMPLETE with:**
+**The Nor Wallet iOS app is FEATURE-COMPLETE with:**
 
 ✅ **100% Core Wallet Functionality** - Create, import, export, delete, switch wallets
 ✅ **100% Transaction Support** - Send, receive, swap, with full history

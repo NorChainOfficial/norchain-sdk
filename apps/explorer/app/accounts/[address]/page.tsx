@@ -337,7 +337,7 @@ function TokensTab({ account, isLoading }: { readonly account?: Account; readonl
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">XAHEEN</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Noor (Native Token)</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Nor (Native Token)</p>
             </div>
           </div>
           <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
@@ -362,7 +362,7 @@ function TokensTab({ account, isLoading }: { readonly account?: Account; readonl
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">Token Information</p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              XAHEEN is the native token of the Noor Chain with 26 decimal places.
+              XAHEEN is the native token of the Nor Chain with 26 decimal places.
               Additional ERC-20 style tokens will be displayed here when the token standard is implemented.
             </p>
           </div>
@@ -430,7 +430,7 @@ function ContractTab({ address }: { readonly address: string }): JSX.Element {
           <div>
             <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">About Contract Accounts</p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Contract accounts on Noor Chain can be Cosmos SDK module accounts or WebAssembly smart contracts.
+              Contract accounts on Nor Chain can be Cosmos SDK module accounts or WebAssembly smart contracts.
               They have special permissions and capabilities beyond regular user accounts.
             </p>
           </div>

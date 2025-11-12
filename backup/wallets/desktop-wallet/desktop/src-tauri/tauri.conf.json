@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Noor Wallet",
+  "productName": "Nor Wallet",
   "version": "1.0.0",
-  "identifier": "com.noor.wallet",
+  "identifier": "com.nor.wallet",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
@@ -15,7 +15,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "Noor Wallet",
+        "title": "Nor Wallet",
         "width": 1200,
         "height": 800
       }

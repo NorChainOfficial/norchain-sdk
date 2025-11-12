@@ -24,7 +24,7 @@ export default function Home(): JSX.Element {
           <div className="text-left">
             <h1 className="text-4xl md:text-5xl font-bold mb-3">
               <span className="text-gray-900 dark:bg-gradient-bnb dark:bg-clip-text dark:text-transparent">
-                Noor Chain
+                Nor Chain
               </span>
             </h1>
             <p className="text-lg text-gray-800 dark:text-gray-300 mb-6 font-medium">

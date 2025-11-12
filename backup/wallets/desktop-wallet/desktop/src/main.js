@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (session) {
       app.innerHTML = `
         <div style="padding: 40px; text-align: center;">
-          <h1>Noor Wallet</h1>
+          <h1>Nor Wallet</h1>
           <p>Welcome! User ID: ${session.user.id}</p>
           <button id="signOutBtn" style="margin-top: 20px; padding: 10px 20px; background: #8B5CF6; border: none; border-radius: 8px; color: white; cursor: pointer;">
             Sign Out
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     } else {
       app.innerHTML = `
         <div style="padding: 40px; max-width: 400px; margin: 0 auto;">
-          <h1 style="text-align: center; margin-bottom: 40px;">Noor Wallet</h1>
+          <h1 style="text-align: center; margin-bottom: 40px;">Nor Wallet</h1>
           <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.1); color: white;">
           <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; background: rgba(255,255,255,0.1); color: white;">
           <button id="signInBtn" style="width: 100%; padding: 12px; background: #8B5CF6; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: 600;">

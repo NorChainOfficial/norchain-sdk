@@ -1,6 +1,6 @@
 /**
  * API Proxy Configuration
- * Routes frontend API requests to NoorSDK backend
+ * Routes frontend API requests to NorSDK backend
  */
 
 // Connect to Unified API

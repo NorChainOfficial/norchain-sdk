@@ -1,7 +1,7 @@
 import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 
 export const metadata = {
-  title: 'Analytics Dashboard - Noor Explorer',
+  title: 'Analytics Dashboard - Nor Explorer',
   description: 'Real-time blockchain analytics, token metrics, gas tracker, and portfolio insights for NorChain',
 };
 

@@ -31,7 +31,7 @@ export default function Community() {
     {
       name: "Discord",
       Icon: MessageSquare,
-      url: "https://discord.gg/noorchain",
+      url: "https://discord.gg/norchain",
       members: "5,000+",
       description: "Join our community discussions",
       color: "from-indigo-500 to-purple-600",
@@ -39,7 +39,7 @@ export default function Community() {
     {
       name: "Twitter",
       Icon: Twitter,
-      url: "https://twitter.com/noorchain",
+      url: "https://twitter.com/norchain",
       members: "12,000+",
       description: "Latest updates and announcements",
       color: "from-blue-400 to-cyan-500",
@@ -47,7 +47,7 @@ export default function Community() {
     {
       name: "Telegram",
       Icon: Send,
-      url: "https://t.me/noorchain",
+      url: "https://t.me/norchain",
       members: "8,000+",
       description: "Real-time chat with the team",
       color: "from-cyan-500 to-blue-600",
@@ -55,7 +55,7 @@ export default function Community() {
     {
       name: "GitHub",
       Icon: Github,
-      url: "https://github.com/noorchain",
+      url: "https://github.com/norchain",
       members: "500+ stars",
       description: "Open source contributions",
       color: "from-gray-600 to-slate-700",
@@ -63,7 +63,7 @@ export default function Community() {
     {
       name: "Medium",
       Icon: FileText,
-      url: "https://medium.com/@noor",
+      url: "https://medium.com/@nor",
       members: "3,000+",
       description: "Technical articles and updates",
       color: "from-green-500 to-emerald-600",
@@ -71,7 +71,7 @@ export default function Community() {
     {
       name: "YouTube",
       Icon: Youtube,
-      url: "https://youtube.com/@noorchain",
+      url: "https://youtube.com/@norchain",
       members: "2,000+",
       description: "Tutorials and demos",
       color: "from-red-500 to-pink-600",

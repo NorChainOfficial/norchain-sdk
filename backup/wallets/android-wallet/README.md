@@ -53,7 +53,7 @@ android {
 
 ### Supabase Configuration
 
-Update `app/src/main/java/com/noor/wallet/services/SupabaseConfig.kt`:
+Update `app/src/main/java/com/nor/wallet/services/SupabaseConfig.kt`:
 
 ```kotlin
 object SupabaseConfig {
@@ -88,14 +88,14 @@ object SupabaseConfig {
 wallet-android/
 ├── app/                  # Main application
 │   ├── src/main/
-│   │   ├── java/com/noor/wallet/
+│   │   ├── java/com/nor/wallet/
 │   │   │   ├── MainActivity.kt
 │   │   │   ├── WalletService.kt
 │   │   │   ├── services/        # Backend services
 │   │   │   ├── ui/              # Compose UI
 │   │   │   └── viewmodels/      # ViewModels
 │   │   └── res/                 # Resources
-├── noor-core/            # Rust core module
+├── nor-core/            # Rust core module
 └── build.gradle.kts
 ```
 
@@ -113,8 +113,8 @@ See `MOBILE_APPS_INTEGRATION.md` for details.
 ## Native Core
 
 The app uses native Rust libraries via JNI:
-- `libnoor_core.so` for multiple architectures
-- Kotlin bindings in `noor-core` module
+- `libnor_core.so` for multiple architectures
+- Kotlin bindings in `nor-core` module
 
 ## License
 

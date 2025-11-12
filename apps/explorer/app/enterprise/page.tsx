@@ -1,7 +1,7 @@
 import { EnterpriseMonitoringDashboard } from '@/components/enterprise/EnterpriseMonitoringDashboard';
 
 export const metadata = {
-  title: 'Enterprise Monitoring | Noor Explorer',
+  title: 'Enterprise Monitoring | Nor Explorer',
   description: 'Real-time infrastructure monitoring dashboard',
 };
 

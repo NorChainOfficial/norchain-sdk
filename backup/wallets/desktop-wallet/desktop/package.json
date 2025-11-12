@@ -1,7 +1,7 @@
 {
-  "name": "noor-wallet-desktop",
+  "name": "nor-wallet-desktop",
   "version": "1.0.0",
-  "description": "Noor Wallet Desktop Application",
+  "description": "Nor Wallet Desktop Application",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",

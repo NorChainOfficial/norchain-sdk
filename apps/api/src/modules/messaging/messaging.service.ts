@@ -12,9 +12,12 @@ import { Conversation, ConversationKind } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { DeviceKey } from './entities/device-key.entity';
 import { MessageReaction } from './entities/reaction.entity';
+import { GroupMember, GroupMemberRole } from './entities/group-member.entity';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
+import { ManageGroupMemberDto } from './dto/manage-group-member.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { createHash, randomBytes } from 'crypto';
 
@@ -33,6 +36,8 @@ export class MessagingService {
     private readonly deviceKeyRepository: Repository<DeviceKey>,
     @InjectRepository(MessageReaction)
     private readonly reactionRepository: Repository<MessageReaction>,
+    @InjectRepository(GroupMember)
+    private readonly groupMemberRepository: Repository<GroupMember>,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -479,5 +484,271 @@ export class MessagingService {
       uploadUrl,
       mediaRef,
     };
+  }
+
+  /**
+   * Check if user has permission to manage group/channel
+   */
+  private async checkGroupPermission(
+    conversationId: string,
+    userDid: string,
+    requireAdmin: boolean = false,
+  ): Promise<{ conversation: Conversation; member?: GroupMember }> {
+    const conversation = await this.getConversation(conversationId, userDid);
+
+    if (conversation.kind === ConversationKind.P2P) {
+      throw new BadRequestException('P2P conversations do not support member management');
+    }
+
+    // Check if user is admin/moderator
+    const member = await this.groupMemberRepository.findOne({
+      where: { conversationId, memberDid: userDid },
+    });
+
+    if (requireAdmin) {
+      if (!member || member.role !== GroupMemberRole.ADMIN) {
+        throw new ForbiddenException('Only admins can perform this action');
+      }
+    } else {
+      if (!member || (member.role !== GroupMemberRole.ADMIN && member.role !== GroupMemberRole.MODERATOR)) {
+        throw new ForbiddenException('Only admins and moderators can perform this action');
+      }
+    }
+
+    return { conversation, member };
+  }
+
+  /**
+   * Add member to group/channel
+   */
+  async addGroupMember(
+    conversationId: string,
+    dto: ManageGroupMemberDto,
+    userDid: string,
+  ): Promise<GroupMember> {
+    const { conversation } = await this.checkGroupPermission(conversationId, userDid);
+
+    // Check if member already exists
+    const existing = await this.groupMemberRepository.findOne({
+      where: { conversationId, memberDid: dto.memberDid },
+    });
+
+    if (existing) {
+      throw new BadRequestException('Member already in group/channel');
+    }
+
+    // Verify member DID is in conversation members list
+    if (!conversation.members.includes(dto.memberDid)) {
+      // Add to conversation members list
+      conversation.members.push(dto.memberDid);
+      await this.conversationRepository.save(conversation);
+    }
+
+    const groupMember = this.groupMemberRepository.create({
+      conversationId,
+      memberDid: dto.memberDid,
+      role: dto.role || GroupMemberRole.MEMBER,
+    });
+
+    const saved = await this.groupMemberRepository.save(groupMember);
+
+    this.eventEmitter.emit('messaging.group.member.added', {
+      conversationId,
+      memberDid: dto.memberDid,
+      role: saved.role,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Remove member from group/channel
+   */
+  async removeGroupMember(
+    conversationId: string,
+    memberDid: string,
+    userDid: string,
+  ): Promise<void> {
+    const { conversation } = await this.checkGroupPermission(conversationId, userDid);
+
+    // Prevent removing yourself if you're the only admin
+    if (memberDid === userDid) {
+      const admins = await this.groupMemberRepository.find({
+        where: { conversationId, role: GroupMemberRole.ADMIN },
+      });
+
+      if (admins.length === 1 && admins[0].memberDid === userDid) {
+        throw new BadRequestException('Cannot remove the only admin');
+      }
+    }
+
+    const member = await this.groupMemberRepository.findOne({
+      where: { conversationId, memberDid },
+    });
+
+    if (!member) {
+      throw new NotFoundException('Member not found in group/channel');
+    }
+
+    await this.groupMemberRepository.remove(member);
+
+    // Remove from conversation members list
+    conversation.members = conversation.members.filter((did) => did !== memberDid);
+    await this.conversationRepository.save(conversation);
+
+    this.eventEmitter.emit('messaging.group.member.removed', {
+      conversationId,
+      memberDid,
+    });
+  }
+
+  /**
+   * Update member role
+   */
+  async updateMemberRole(
+    conversationId: string,
+    memberDid: string,
+    role: GroupMemberRole,
+    userDid: string,
+  ): Promise<GroupMember> {
+    await this.checkGroupPermission(conversationId, userDid, true); // Require admin
+
+    const member = await this.groupMemberRepository.findOne({
+      where: { conversationId, memberDid },
+    });
+
+    if (!member) {
+      throw new NotFoundException('Member not found in group/channel');
+    }
+
+    member.role = role;
+    const saved = await this.groupMemberRepository.save(member);
+
+    this.eventEmitter.emit('messaging.group.member.role.updated', {
+      conversationId,
+      memberDid,
+      role,
+    });
+
+    return saved;
+  }
+
+  /**
+   * List group/channel members
+   */
+  async listGroupMembers(conversationId: string, userDid: string): Promise<GroupMember[]> {
+    // Verify user is a member
+    await this.getConversation(conversationId, userDid);
+
+    return this.groupMemberRepository.find({
+      where: { conversationId },
+      order: { createdAt: 'ASC' },
+    });
+  }
+
+  /**
+   * Update group/channel details
+   */
+  async updateGroup(
+    conversationId: string,
+    dto: UpdateGroupDto,
+    userDid: string,
+  ): Promise<Conversation> {
+    await this.checkGroupPermission(conversationId, userDid, true); // Require admin
+
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: conversationId },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException(`Conversation ${conversationId} not found`);
+    }
+
+    if (dto.name !== undefined) {
+      conversation.name = dto.name;
+    }
+    if (dto.description !== undefined) {
+      conversation.description = dto.description;
+    }
+    if (dto.metadata !== undefined) {
+      conversation.metadata = { ...conversation.metadata, ...dto.metadata };
+    }
+
+    const saved = await this.conversationRepository.save(conversation);
+
+    this.eventEmitter.emit('messaging.group.updated', {
+      conversationId,
+      updates: dto,
+    });
+
+    return saved;
+  }
+
+  /**
+   * Leave group/channel
+   */
+  async leaveGroup(conversationId: string, userDid: string): Promise<void> {
+    const conversation = await this.getConversation(conversationId, userDid);
+
+    if (conversation.kind === ConversationKind.P2P) {
+      throw new BadRequestException('Cannot leave P2P conversation');
+    }
+
+    const member = await this.groupMemberRepository.findOne({
+      where: { conversationId, memberDid: userDid },
+    });
+
+    if (member) {
+      // Check if user is the only admin
+      if (member.role === GroupMemberRole.ADMIN) {
+        const admins = await this.groupMemberRepository.find({
+          where: { conversationId, role: GroupMemberRole.ADMIN },
+        });
+
+        if (admins.length === 1) {
+          throw new BadRequestException('Cannot leave as the only admin. Transfer admin role first.');
+        }
+      }
+
+      await this.groupMemberRepository.remove(member);
+    }
+
+    // Remove from conversation members list
+    conversation.members = conversation.members.filter((did) => did !== userDid);
+    await this.conversationRepository.save(conversation);
+
+    this.eventEmitter.emit('messaging.group.member.left', {
+      conversationId,
+      memberDid: userDid,
+    });
+  }
+
+  /**
+   * Delete group/channel (admin only)
+   */
+  async deleteGroup(conversationId: string, userDid: string): Promise<void> {
+    await this.checkGroupPermission(conversationId, userDid, true); // Require admin
+
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: conversationId },
+    });
+
+    if (!conversation) {
+      throw new NotFoundException(`Conversation ${conversationId} not found`);
+    }
+
+    if (conversation.kind === ConversationKind.P2P) {
+      throw new BadRequestException('Cannot delete P2P conversation');
+    }
+
+    // Delete all group members
+    await this.groupMemberRepository.delete({ conversationId });
+
+    // Delete conversation (cascade will handle messages, reactions, etc.)
+    await this.conversationRepository.remove(conversation);
+
+    this.eventEmitter.emit('messaging.group.deleted', {
+      conversationId,
+    });
   }
 }

@@ -1,6 +1,6 @@
-package com.noor.wallet.services
+package com.nor.wallet.services
 
-import com.noor.wallet.BuildConfig
+import com.nor.wallet.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable

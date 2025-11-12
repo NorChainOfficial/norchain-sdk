@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 export default function Header() {
@@ -27,22 +28,31 @@ export default function Header() {
 
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      scrolled 
-        ? 'bg-slate-900/90 backdrop-blur-xl border-b border-slate-700/50' 
+      scrolled
+        ? 'bg-[#0f2847]/90 backdrop-blur-xl border-b border-cyan-500/20'
         : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Ultra-minimal logo */}
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-300" />
-              <div className="relative h-10 w-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">N</span>
-              </div>
+          {/* NorChain Logo */}
+          <Link href="/" className="flex items-center space-x-4 group">
+            <div className="relative h-20 w-20 transition-transform duration-300 group-hover:scale-110">
+              <Image
+                src="/favicon.png"
+                alt="NorChain Icon"
+                width={80}
+                height={80}
+                priority
+                className="h-20 w-20 rounded-full shadow-glow group-hover:shadow-glow-intense"
+              />
             </div>
-            <div className="flex items-center">
-              <span className="text-white text-xl font-light tracking-wide">NorChain</span>
+            <div className="flex flex-col">
+              <span className="text-white text-3xl font-display font-bold tracking-wide">
+                NorChain
+              </span>
+              <span className="text-white text-sm font-body font-semibold tracking-wide">
+                The Complete Blockchain OS
+              </span>
             </div>
           </Link>
 
@@ -157,7 +167,7 @@ export default function Header() {
 
         {/* Modern mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-6 pb-6 space-y-4 border-t border-slate-700/50 pt-6 bg-slate-900/95 backdrop-blur-xl rounded-2xl mx-4 px-6">
+          <div className="md:hidden mt-6 pb-6 space-y-4 border-t border-cyan-500/20 pt-6 bg-[#0f2847]/95 backdrop-blur-xl rounded-2xl mx-4 px-6">
             {navLinks.map((link) =>
               link.external ? (
                 <a

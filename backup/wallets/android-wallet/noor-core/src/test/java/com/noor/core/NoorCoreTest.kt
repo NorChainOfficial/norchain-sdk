@@ -1,29 +1,29 @@
-package com.noor.core
+package com.nor.core
 
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
-class NoorCoreTest {
+class NorCoreTest {
 
     @Before
     fun setUp() {
-        NoorCore.initLogger(NoorCore.LogLevel.INFO)
+        NorCore.initLogger(NorCore.LogLevel.INFO)
     }
 
     @Test
     fun testChainConfiguration() {
-        val chainId = NoorCore.chainId
-        assertEquals("Chain ID should be 7860 for Noor Chain", 7860L, chainId)
+        val chainId = NorCore.chainId
+        assertEquals("Chain ID should be 7860 for Nor Chain", 7860L, chainId)
 
-        val rpcUrl = NoorCore.chainRpcUrl
-        assertEquals("RPC URL should match Noor Chain", "https://rpc.noorchain.org", rpcUrl)
+        val rpcUrl = NorCore.chainRpcUrl
+        assertEquals("RPC URL should match Nor Chain", "https://rpc.norchain.org", rpcUrl)
         assertFalse("RPC URL should not be empty", rpcUrl.isEmpty())
     }
 
     @Test
     fun testWalletCreation() {
-        val wallet = NoorCore.createWallet()
+        val wallet = NorCore.createWallet()
 
         assertNotNull("Wallet creation should succeed", wallet)
         assertFalse("Wallet ID should not be empty", wallet?.id.isNullOrEmpty())
@@ -44,7 +44,7 @@ class NoorCoreTest {
         val testMnemonic =
                 "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 
-        val wallet = NoorCore.importWallet(testMnemonic)
+        val wallet = NorCore.importWallet(testMnemonic)
 
         assertNotNull("Wallet import from mnemonic should succeed", wallet)
         assertFalse("Imported wallet should have ID", wallet?.id.isNullOrEmpty())
@@ -66,8 +66,8 @@ class NoorCoreTest {
 
     @Test
     fun testMultipleWalletCreations() {
-        val wallet1 = NoorCore.createWallet()
-        val wallet2 = NoorCore.createWallet()
+        val wallet1 = NorCore.createWallet()
+        val wallet2 = NorCore.createWallet()
 
         assertNotNull("First wallet should be created", wallet1)
         assertNotNull("Second wallet should be created", wallet2)
@@ -82,7 +82,7 @@ class NoorCoreTest {
     fun testInvalidMnemonicHandling() {
         val invalidMnemonic = "invalid mnemonic phrase that won't work"
 
-        val wallet = NoorCore.importWallet(invalidMnemonic)
+        val wallet = NorCore.importWallet(invalidMnemonic)
 
         // Should return null or empty wallet for invalid mnemonic
         if (wallet != null) {
@@ -96,18 +96,18 @@ class NoorCoreTest {
     @Test
     fun testLoggerInitialization() {
         // Test different log levels - should not throw exceptions
-        NoorCore.initLogger(NoorCore.LogLevel.TRACE)
-        NoorCore.initLogger(NoorCore.LogLevel.DEBUG)
-        NoorCore.initLogger(NoorCore.LogLevel.INFO)
-        NoorCore.initLogger(NoorCore.LogLevel.WARN)
-        NoorCore.initLogger(NoorCore.LogLevel.ERROR)
+        NorCore.initLogger(NorCore.LogLevel.TRACE)
+        NorCore.initLogger(NorCore.LogLevel.DEBUG)
+        NorCore.initLogger(NorCore.LogLevel.INFO)
+        NorCore.initLogger(NorCore.LogLevel.WARN)
+        NorCore.initLogger(NorCore.LogLevel.ERROR)
     }
 
     @Test
     fun testMemoryManagement() {
         // Create many wallets to test memory is properly freed
         repeat(100) {
-            val wallet = NoorCore.createWallet()
+            val wallet = NorCore.createWallet()
             assertNotNull("Wallet $it should be created", wallet)
         }
 
@@ -117,11 +117,11 @@ class NoorCoreTest {
 
     @Test
     fun testConcurrentWalletCreation() {
-        val wallets = mutableListOf<NoorCore.WalletInfo?>()
+        val wallets = mutableListOf<NorCore.WalletInfo?>()
         val threads =
                 List(10) {
                     Thread {
-                        val wallet = NoorCore.createWallet()
+                        val wallet = NorCore.createWallet()
                         synchronized(wallets) { wallets.add(wallet) }
                     }
                 }

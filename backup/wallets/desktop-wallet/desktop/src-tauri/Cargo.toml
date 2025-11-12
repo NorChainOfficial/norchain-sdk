@@ -1,8 +1,8 @@
 [package]
 name = "desktop-wallet"
 version = "0.1.0"
-description = "Noor Wallet Desktop Application"
-authors = ["Noor Wallet Team"]
+description = "Nor Wallet Desktop Application"
+authors = ["Nor Wallet Team"]
 license = ""
 repository = ""
 edition = "2021"
@@ -21,8 +21,8 @@ uuid = { version = "1.0", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 serde_json = "1.0"
 
-# Noor Core (Rust)
-noor-core = { path = "../../packages/core-rust" }
+# Nor Core (Rust)
+nor-core = { path = "../../packages/core-rust" }
 
 [features]
 # This feature is used for production builds or when `devPath` points to the filesystem

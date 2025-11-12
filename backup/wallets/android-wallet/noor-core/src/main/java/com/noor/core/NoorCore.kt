@@ -1,13 +1,13 @@
-package com.noor.core
+package com.nor.core
 
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 
-/** Kotlin wrapper for Noor Core FFI */
-object NoorCore {
+/** Kotlin wrapper for Nor Core FFI */
+object NorCore {
 
     init {
-        System.loadLibrary("noor_core")
+        System.loadLibrary("nor_core")
     }
 
     // MARK: - Data Models
@@ -26,19 +26,19 @@ object NoorCore {
     )
 
     // C-compatible string structure
-    private data class NoorString(val ptr: Long, val len: Long)
+    private data class NorString(val ptr: Long, val len: Long)
 
     // MARK: - Native Methods
 
-    private external fun noorWalletCreate(): NoorString
-    private external fun noorWalletFromMnemonic(mnemonic: String): NoorString
-    private external fun noorWalletFromPrivateKey(privateKey: String): NoorString
-    private external fun noorGetChainRpc(): NoorString
-    private external fun noorGetChainId(): Long
-    private external fun noorStringFree(s: NoorString)
-    private external fun noorInitLogger(level: Byte)
-    private external fun noorStringGetCString(ptr: Long): String
-    private external fun noorSignTransaction(
+    private external fun norWalletCreate(): NorString
+    private external fun norWalletFromMnemonic(mnemonic: String): NorString
+    private external fun norWalletFromPrivateKey(privateKey: String): NorString
+    private external fun norGetChainRpc(): NorString
+    private external fun norGetChainId(): Long
+    private external fun norStringFree(s: NorString)
+    private external fun norInitLogger(level: Byte)
+    private external fun norStringGetCString(ptr: Long): String
+    private external fun norSignTransaction(
             fromAddress: String,
             toAddress: String,
             value: String,
@@ -47,8 +47,8 @@ object NoorCore {
             gasPrice: String,
             nonce: Long,
             chainId: Long
-    ): NoorString
-    private external fun noorGetBalance(address: String, rpcUrl: String): NoorString
+    ): NorString
+    private external fun norGetBalance(address: String, rpcUrl: String): NorString
 
     // MARK: - Public API
 
@@ -56,10 +56,10 @@ object NoorCore {
 
     /** Create a new wallet with random entropy */
     fun createWallet(): WalletInfo? {
-        val result = noorWalletCreate()
+        val result = norWalletCreate()
         return try {
-            val jsonString = noorStringGetCString(result.ptr)
-            noorStringFree(result)
+            val jsonString = norStringGetCString(result.ptr)
+            norStringFree(result)
             gson.fromJson(jsonString, WalletInfo::class.java)
         } catch (e: Exception) {
             null
@@ -68,10 +68,10 @@ object NoorCore {
 
     /** Import wallet from mnemonic phrase */
     fun importWallet(mnemonic: String): WalletInfo? {
-        val result = noorWalletFromMnemonic(mnemonic)
+        val result = norWalletFromMnemonic(mnemonic)
         return try {
-            val jsonString = noorStringGetCString(result.ptr)
-            noorStringFree(result)
+            val jsonString = norStringGetCString(result.ptr)
+            norStringFree(result)
             gson.fromJson(jsonString, WalletInfo::class.java)
         } catch (e: Exception) {
             null
@@ -80,32 +80,32 @@ object NoorCore {
 
     /** Import wallet from private key */
     fun importWallet(privateKey: String): WalletInfo? {
-        val result = noorWalletFromPrivateKey(privateKey)
+        val result = norWalletFromPrivateKey(privateKey)
         return try {
-            val jsonString = noorStringGetCString(result.ptr)
-            noorStringFree(result)
+            val jsonString = norStringGetCString(result.ptr)
+            norStringFree(result)
             gson.fromJson(jsonString, WalletInfo::class.java)
         } catch (e: Exception) {
             null
         }
     }
 
-    /** Get Noor Chain RPC URL */
+    /** Get Nor Chain RPC URL */
     val chainRpcUrl: String
         get() {
-            val result = noorGetChainRpc()
+            val result = norGetChainRpc()
             return try {
-                val url = noorStringGetCString(result.ptr)
-                noorStringFree(result)
+                val url = norStringGetCString(result.ptr)
+                norStringFree(result)
                 url
             } catch (e: Exception) {
                 ""
             }
         }
 
-    /** Get Noor Chain ID */
+    /** Get Nor Chain ID */
     val chainId: Long
-        get() = noorGetChainId()
+        get() = norGetChainId()
 
     // MARK: - Logging
 
@@ -119,7 +119,7 @@ object NoorCore {
 
     /** Initialize logger with specified level */
     fun initLogger(level: LogLevel = LogLevel.INFO) {
-        noorInitLogger(level.value)
+        norInitLogger(level.value)
     }
 
     // MARK: - Transaction Operations
@@ -135,10 +135,10 @@ object NoorCore {
             nonce: Long,
             chainId: Long
     ): String? {
-        val result = noorSignTransaction(from, to, value, data, gasLimit, gasPrice, nonce, chainId)
+        val result = norSignTransaction(from, to, value, data, gasLimit, gasPrice, nonce, chainId)
         return try {
-            val txHash = noorStringGetCString(result.ptr)
-            noorStringFree(result)
+            val txHash = norStringGetCString(result.ptr)
+            norStringFree(result)
             txHash
         } catch (e: Exception) {
             null
@@ -147,10 +147,10 @@ object NoorCore {
 
     /** Get balance for an address */
     fun getBalance(address: String, rpcUrl: String): String? {
-        val result = noorGetBalance(address, rpcUrl)
+        val result = norGetBalance(address, rpcUrl)
         return try {
-            val balance = noorStringGetCString(result.ptr)
-            noorStringFree(result)
+            val balance = norStringGetCString(result.ptr)
+            norStringFree(result)
             balance
         } catch (e: Exception) {
             "0"

@@ -1,61 +1,61 @@
-package com.noor.wallet
+package com.nor.wallet
 
-import com.noor.core.NoorCore
+import com.nor.core.NorCore
 
-/** Service layer for wallet operations using Noor Core FFI */
+/** Service layer for wallet operations using Nor Core FFI */
 object WalletService {
 
     init {
         // Initialize logger on first use
-        NoorCore.initLogger(NoorCore.LogLevel.INFO)
+        NorCore.initLogger(NorCore.LogLevel.INFO)
     }
 
     // MARK: - Wallet Operations
 
     /** Create a new HD wallet */
     @Throws(WalletException::class)
-    fun createWallet(): NoorCore.WalletInfo {
-        return NoorCore.createWallet() ?: throw WalletException.CreationFailed()
+    fun createWallet(): NorCore.WalletInfo {
+        return NorCore.createWallet() ?: throw WalletException.CreationFailed()
     }
 
     /** Import wallet from mnemonic phrase */
     @Throws(WalletException::class)
-    fun importWallet(mnemonic: String): NoorCore.WalletInfo {
+    fun importWallet(mnemonic: String): NorCore.WalletInfo {
         if (mnemonic.isBlank()) {
             throw WalletException.InvalidMnemonic()
         }
 
-        return NoorCore.importWallet(mnemonic) ?: throw WalletException.ImportFailed()
+        return NorCore.importWallet(mnemonic) ?: throw WalletException.ImportFailed()
     }
 
     /** Import wallet from private key */
     @Throws(WalletException::class)
-    fun importWallet(privateKey: String): NoorCore.WalletInfo {
+    fun importWallet(privateKey: String): NorCore.WalletInfo {
         if (privateKey.isBlank()) {
             throw WalletException.InvalidPrivateKey()
         }
 
-        return NoorCore.importWallet(privateKey) ?: throw WalletException.ImportFailed()
+        return NorCore.importWallet(privateKey) ?: throw WalletException.ImportFailed()
     }
 
     // MARK: - Chain Configuration
 
     /** Get current chain RPC URL */
     val chainRpcUrl: String
-        get() = NoorCore.chainRpcUrl
+        get() = NorCore.chainRpcUrl
 
     /** Get current chain ID */
     val chainId: Long
-        get() = NoorCore.chainId
+        get() = NorCore.chainId
 
     /** Get chain information */
     fun getChainInfo(): ChainInfo {
         return ChainInfo(
-                name = "Noor Chain",
+                name = "Nor Chain",
                 rpcUrl = chainRpcUrl,
                 chainId = chainId,
                 symbol = "NOR",
-                explorerUrl = "https://explorer.noorchain.org"
+                explorerUrl = "https://explorer.norchain.org"
         )
     }
 
@@ -71,7 +71,7 @@ object WalletService {
             nonce: Long,
             data: String = "0x"
     ): String {
-        return NoorCore.signTransaction(
+        return NorCore.signTransaction(
                 from = from,
                 to = to,
                 value = value,
@@ -87,7 +87,7 @@ object WalletService {
     /** Get account balance */
     @Throws(WalletException::class)
     fun getBalance(address: String): String {
-        return NoorCore.getBalance(address = address, rpcUrl = chainRpcUrl)
+        return NorCore.getBalance(address = address, rpcUrl = chainRpcUrl)
                 ?: throw WalletException.BalanceQueryFailed()
     }
 }

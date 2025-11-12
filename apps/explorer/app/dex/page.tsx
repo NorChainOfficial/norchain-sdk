@@ -197,8 +197,8 @@ export default function DEXPage(): JSX.Element {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Noor DEX</h1>
-              <p className="text-gray-400 text-lg">Decentralized Exchange on Noor Chain</p>
+              <h1 className="text-4xl font-bold text-white mb-2">Nor DEX</h1>
+              <p className="text-gray-400 text-lg">Decentralized Exchange on Nor Chain</p>
             </div>
 
             {/* Wallet Connection */}
@@ -226,9 +226,9 @@ export default function DEXPage(): JSX.Element {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Noor Native DEX - Powered by NoorDEXRouter</h3>
+                <h3 className="text-lg font-semibold text-white mb-2">Nor Native DEX - Powered by NorDEXRouter</h3>
                 <p className="text-gray-300">
-                  Trade NOR, BTCBR, and other tokens directly on Noor Chain. Ultra-low fees, instant swaps, and full decentralization.
+                  Trade NOR, BTCBR, and other tokens directly on Nor Chain. Ultra-low fees, instant swaps, and full decentralization.
                 </p>
               </div>
             </div>
@@ -601,7 +601,7 @@ export default function DEXPage(): JSX.Element {
               <h2 className="text-2xl font-bold text-white mb-4">DEX Overview</h2>
               <div className="space-y-4">
                 <p className="text-gray-300">
-                  Noor DEX is a decentralized exchange built on Noor Chain, offering ultra-low fees and instant token swaps.
+                  Nor DEX is a decentralized exchange built on Nor Chain, offering ultra-low fees and instant token swaps.
                 </p>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-slate-700/50 rounded-lg p-4">
@@ -636,7 +636,7 @@ export default function DEXPage(): JSX.Element {
                   </div>
                   <div>
                     <div className="text-white font-medium">Ultra-Low Fees</div>
-                    <div className="text-gray-400 text-sm">Gas fees on Noor Chain are minimal</div>
+                    <div className="text-gray-400 text-sm">Gas fees on Nor Chain are minimal</div>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -720,7 +720,7 @@ export default function DEXPage(): JSX.Element {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div>
-                      <strong className="text-white">Switch to Noor Network:</strong> Your bridged assets will appear after you add Noor Chain to MetaMask
+                      <strong className="text-white">Switch to Nor Network:</strong> Your bridged assets will appear after you add Nor Chain to MetaMask
                     </div>
                   </div>
                   <div className="flex items-start gap-3">

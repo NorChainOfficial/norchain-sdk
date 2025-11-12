@@ -1,8 +1,8 @@
-// UniFFI interface definition for Noor Wallet Core
-namespace noor {
+// UniFFI interface definition for Nor Wallet Core
+namespace nor {
     void init_logger(LogLevel level);
-    string get_noor_chain_rpc();
-    u64 get_noor_chain_id();
+    string get_nor_chain_rpc();
+    u64 get_nor_chain_id();
 };
 
 enum LogLevel {

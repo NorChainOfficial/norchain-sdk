@@ -332,7 +332,7 @@ async function testNestedQueries(height: number): Promise<void> {
  */
 export async function runGraphQLTests(): Promise<void> {
   console.log('\n╔═══════════════════════════════════════════════╗');
-  console.log('║   NoorExplorer GraphQL API Test Suite      ║');
+  console.log('║   NorExplorer GraphQL API Test Suite      ║');
   console.log('╚═══════════════════════════════════════════════╝');
 
   try {

@@ -89,7 +89,7 @@ export default function FinancialProducts() {
     {
       industry: "Banks",
       challenge: "Legacy core systems, lack of blockchain integration",
-      solution: "Plug-and-play tokenization via Noor API",
+      solution: "Plug-and-play tokenization via Nor API",
       icon: "🏦",
     },
     {
@@ -118,7 +118,7 @@ export default function FinancialProducts() {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Noor Funds: Halal Finance for a Digital World
+            Nor Funds: Halal Finance for a Digital World
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             Built for <strong>profit-sharing, not interest</strong>. Each fund
@@ -270,7 +270,7 @@ export default function FinancialProducts() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500 font-medium mb-1">
-                        Noor Solution:
+                        Nor Solution:
                       </p>
                       <p className="text-green-700 font-semibold">
                         {item.solution}

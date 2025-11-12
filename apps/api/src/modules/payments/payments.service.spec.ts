@@ -16,6 +16,7 @@ import { Refund, RefundStatus } from './entities/refund.entity';
 import { Subscription, SubscriptionStatus } from './entities/subscription.entity';
 import { Dispute, DisputeStatus } from './entities/dispute.entity';
 import { WebhookEndpoint } from './entities/webhook-endpoint.entity';
+import { Coupon, CouponType, CouponStatus } from './entities/coupon.entity';
 import { RpcService } from '@/common/services/rpc.service';
 import { PolicyService } from '../policy/policy.service';
 import { LedgerService } from '../ledger/ledger.service';
@@ -31,7 +32,9 @@ import { CreatePriceDto } from './dto/create-price.dto';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { CreateDisputeDto } from './dto/create-dispute.dto';
-import { BadRequestException, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { CreateCouponDto } from './dto/create-coupon.dto';
+import { ApplyCouponDto } from './dto/apply-coupon.dto';
+import { BadRequestException, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 
 describe('PaymentsService', () => {
   let service: PaymentsService;
@@ -48,6 +51,7 @@ describe('PaymentsService', () => {
   let subscriptionRepository: Repository<Subscription>;
   let disputeRepository: Repository<Dispute>;
   let webhookEndpointRepository: Repository<WebhookEndpoint>;
+  let couponRepository: Repository<Coupon>;
   let rpcService: RpcService;
   let policyService: PolicyService;
   let ledgerService: LedgerService;
@@ -138,6 +142,13 @@ describe('PaymentsService', () => {
     findOne: jest.fn(),
   };
 
+  const mockCouponRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn(),
+  };
+
   const mockRpcService = {
     getProvider: jest.fn(),
   };
@@ -219,6 +230,10 @@ describe('PaymentsService', () => {
           useValue: mockWebhookEndpointRepository,
         },
         {
+          provide: getRepositoryToken(Coupon),
+          useValue: mockCouponRepository,
+        },
+        {
           provide: RpcService,
           useValue: mockRpcService,
         },
@@ -255,6 +270,7 @@ describe('PaymentsService', () => {
     subscriptionRepository = module.get<Repository<Subscription>>(getRepositoryToken(Subscription));
     disputeRepository = module.get<Repository<Dispute>>(getRepositoryToken(Dispute));
     webhookEndpointRepository = module.get<Repository<WebhookEndpoint>>(getRepositoryToken(WebhookEndpoint));
+    couponRepository = module.get<Repository<Coupon>>(getRepositoryToken(Coupon));
     rpcService = module.get<RpcService>(RpcService);
     policyService = module.get<PolicyService>(PolicyService);
     ledgerService = module.get<LedgerService>(LedgerService);
@@ -1833,6 +1849,436 @@ describe('PaymentsService', () => {
       expect(result).toHaveProperty('id');
       expect(result).toHaveProperty('hmacSecret');
       expect(mockWebhookEndpointRepository.save).toHaveBeenCalled();
+    });
+  });
+
+  describe('createCoupon', () => {
+    it('should create coupon successfully', async () => {
+      const userId = 'user-123';
+      const dto: CreateCouponDto = {
+        orgId: 'org-123',
+        code: 'SUMMER2024',
+        name: 'Summer Sale',
+        type: CouponType.PERCENTAGE,
+        discountValue: '10.00',
+        maxRedemptions: 100,
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        ...dto,
+        code: 'SUMMER2024',
+        status: CouponStatus.ACTIVE,
+        timesRedeemed: 0,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(null); // No existing coupon
+      mockCouponRepository.create.mockReturnValue(mockCoupon);
+      mockCouponRepository.save.mockResolvedValue(mockCoupon);
+
+      const result = await service.createCoupon(dto, userId);
+
+      expect(result).toHaveProperty('id');
+      expect(result.code).toBe('SUMMER2024');
+      expect(result.status).toBe(CouponStatus.ACTIVE);
+      expect(mockCouponRepository.save).toHaveBeenCalled();
+    });
+
+    it('should throw ConflictException if coupon code already exists', async () => {
+      const userId = 'user-123';
+      const dto: CreateCouponDto = {
+        orgId: 'org-123',
+        code: 'EXISTING',
+        type: CouponType.PERCENTAGE,
+        discountValue: '10.00',
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue({ id: 'existing-coupon' });
+
+      await expect(
+        service.createCoupon(dto, userId),
+      ).rejects.toThrow(ConflictException);
+    });
+
+    it('should uppercase coupon code', async () => {
+      const userId = 'user-123';
+      const dto: CreateCouponDto = {
+        orgId: 'org-123',
+        code: 'summer2024',
+        type: CouponType.PERCENTAGE,
+        discountValue: '10.00',
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'SUMMER2024',
+        status: CouponStatus.ACTIVE,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(null);
+      mockCouponRepository.create.mockReturnValue(mockCoupon);
+      mockCouponRepository.save.mockResolvedValue(mockCoupon);
+
+      const result = await service.createCoupon(dto, userId);
+
+      expect(mockCouponRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ code: 'SUMMER2024' }),
+      );
+    });
+  });
+
+  describe('getCoupons', () => {
+    it('should return coupons for organization', async () => {
+      const orgId = 'org-123';
+      const mockCoupons = [
+        {
+          id: 'coupon-1',
+          code: 'COUPON1',
+          status: CouponStatus.ACTIVE,
+        },
+        {
+          id: 'coupon-2',
+          code: 'COUPON2',
+          status: CouponStatus.INACTIVE,
+        },
+      ];
+
+      mockCouponRepository.find.mockResolvedValue(mockCoupons);
+
+      const result = await service.getCoupons(orgId);
+
+      expect(result).toHaveLength(2);
+      expect(mockCouponRepository.find).toHaveBeenCalledWith({
+        where: { orgId },
+        order: { createdAt: 'DESC' },
+      });
+    });
+
+    it('should filter by status', async () => {
+      const orgId = 'org-123';
+      const mockCoupons = [
+        {
+          id: 'coupon-1',
+          code: 'COUPON1',
+          status: CouponStatus.ACTIVE,
+        },
+      ];
+
+      mockCouponRepository.find.mockResolvedValue(mockCoupons);
+
+      const result = await service.getCoupons(orgId, CouponStatus.ACTIVE);
+
+      expect(result).toHaveLength(1);
+      expect(mockCouponRepository.find).toHaveBeenCalledWith({
+        where: { orgId, status: CouponStatus.ACTIVE },
+        order: { createdAt: 'DESC' },
+      });
+    });
+  });
+
+  describe('getCouponByCode', () => {
+    it('should return coupon by code', async () => {
+      const code = 'SUMMER2024';
+      const orgId = 'org-123';
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'SUMMER2024',
+        orgId,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+
+      const result = await service.getCouponByCode(code, orgId);
+
+      expect(result).toEqual(mockCoupon);
+      expect(mockCouponRepository.findOne).toHaveBeenCalledWith({
+        where: { code: 'SUMMER2024', orgId },
+      });
+    });
+
+    it('should throw NotFoundException if coupon not found', async () => {
+      const code = 'INVALID';
+      const orgId = 'org-123';
+
+      mockCouponRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.getCouponByCode(code, orgId),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('applyCoupon', () => {
+    it('should apply percentage coupon successfully', async () => {
+      const orgId = 'org-123';
+      const dto: ApplyCouponDto = {
+        code: 'SUMMER2024',
+        amount: '1.0', // 1 NOR
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'SUMMER2024',
+        orgId,
+        type: CouponType.PERCENTAGE,
+        discountValue: '10.00',
+        status: CouponStatus.ACTIVE,
+        timesRedeemed: 0,
+        maxRedemptions: null,
+        validFrom: null,
+        validUntil: null,
+        minimumAmount: null,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+
+      const result = await service.applyCoupon(dto, orgId);
+
+      expect(result.valid).toBe(true);
+      expect(result.discountAmount).toBeDefined();
+      expect(result.finalAmount).toBeDefined();
+      expect(parseFloat(result.discountAmount)).toBeGreaterThan(0);
+    });
+
+    it('should apply fixed amount coupon successfully', async () => {
+      const orgId = 'org-123';
+      const dto: ApplyCouponDto = {
+        code: 'FIXED10',
+        amount: '1.0', // 1 NOR
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'FIXED10',
+        orgId,
+        type: CouponType.FIXED_AMOUNT,
+        discountValue: '0.1', // 0.1 NOR
+        status: CouponStatus.ACTIVE,
+        timesRedeemed: 0,
+        maxRedemptions: null,
+        validFrom: null,
+        validUntil: null,
+        minimumAmount: null,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+
+      const result = await service.applyCoupon(dto, orgId);
+
+      expect(result.valid).toBe(true);
+      expect(parseFloat(result.discountAmount)).toBe(0.1);
+      expect(parseFloat(result.finalAmount)).toBe(0.9);
+    });
+
+    it('should return invalid if coupon is not active', async () => {
+      const orgId = 'org-123';
+      const dto: ApplyCouponDto = {
+        code: 'INACTIVE',
+        amount: '1.0',
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'INACTIVE',
+        orgId,
+        status: CouponStatus.INACTIVE,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+
+      const result = await service.applyCoupon(dto, orgId);
+
+      expect(result.valid).toBe(false);
+      expect(result.reason).toBe('Coupon is not active');
+    });
+
+    it('should return invalid if coupon has expired', async () => {
+      const orgId = 'org-123';
+      const dto: ApplyCouponDto = {
+        code: 'EXPIRED',
+        amount: '1.0',
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'EXPIRED',
+        orgId,
+        status: CouponStatus.ACTIVE,
+        validUntil: new Date(Date.now() - 86400000), // Yesterday
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+      mockCouponRepository.save.mockResolvedValue({
+        ...mockCoupon,
+        status: CouponStatus.EXPIRED,
+      });
+
+      const result = await service.applyCoupon(dto, orgId);
+
+      expect(result.valid).toBe(false);
+      expect(result.reason).toBe('Coupon has expired');
+    });
+
+    it('should return invalid if max redemptions reached', async () => {
+      const orgId = 'org-123';
+      const dto: ApplyCouponDto = {
+        code: 'MAXED',
+        amount: '1.0',
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'MAXED',
+        orgId,
+        status: CouponStatus.ACTIVE,
+        timesRedeemed: 100,
+        maxRedemptions: 100,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+
+      const result = await service.applyCoupon(dto, orgId);
+
+      expect(result.valid).toBe(false);
+      expect(result.reason).toBe('Coupon has reached maximum redemptions');
+    });
+
+    it('should return invalid if minimum amount not met', async () => {
+      const orgId = 'org-123';
+      const dto: ApplyCouponDto = {
+        code: 'MIN100',
+        amount: '0.05', // Less than minimum
+      };
+
+      const mockCoupon = {
+        id: 'coupon-123',
+        code: 'MIN100',
+        orgId,
+        type: CouponType.PERCENTAGE,
+        discountValue: '10.00',
+        status: CouponStatus.ACTIVE,
+        timesRedeemed: 0,
+        maxRedemptions: null,
+        validFrom: null,
+        validUntil: null,
+        minimumAmount: '0.1', // 0.1 NOR minimum
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+
+      const result = await service.applyCoupon(dto, orgId);
+
+      expect(result.valid).toBe(false);
+      expect(result.reason).toContain('Minimum purchase amount');
+    });
+
+    it('should throw NotFoundException if coupon not found', async () => {
+      const orgId = 'org-123';
+      const dto: ApplyCouponDto = {
+        code: 'INVALID',
+        amount: '1.0',
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.applyCoupon(dto, orgId),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('redeemCoupon', () => {
+    it('should increment redemption count', async () => {
+      const couponId = 'coupon-123';
+      const mockCoupon = {
+        id: couponId,
+        timesRedeemed: 5,
+        maxRedemptions: 100,
+        status: CouponStatus.ACTIVE,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+      mockCouponRepository.save.mockResolvedValue({
+        ...mockCoupon,
+        timesRedeemed: 6,
+      });
+
+      const result = await service.redeemCoupon(couponId);
+
+      expect(result.timesRedeemed).toBe(6);
+      expect(mockCouponRepository.save).toHaveBeenCalled();
+    });
+
+    it('should deactivate coupon when max redemptions reached', async () => {
+      const couponId = 'coupon-123';
+      const mockCoupon = {
+        id: couponId,
+        timesRedeemed: 99,
+        maxRedemptions: 100,
+        status: CouponStatus.ACTIVE,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+      mockCouponRepository.save.mockResolvedValue({
+        ...mockCoupon,
+        timesRedeemed: 100,
+        status: CouponStatus.INACTIVE,
+      });
+
+      const result = await service.redeemCoupon(couponId);
+
+      expect(result.timesRedeemed).toBe(100);
+      expect(result.status).toBe(CouponStatus.INACTIVE);
+    });
+
+    it('should throw NotFoundException if coupon not found', async () => {
+      const couponId = 'invalid';
+
+      mockCouponRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.redeemCoupon(couponId),
+      ).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('updateCouponStatus', () => {
+    it('should update coupon status', async () => {
+      const couponId = 'coupon-123';
+      const orgId = 'org-123';
+      const newStatus = CouponStatus.INACTIVE;
+
+      const mockCoupon = {
+        id: couponId,
+        orgId,
+        status: CouponStatus.ACTIVE,
+      };
+
+      mockCouponRepository.findOne.mockResolvedValue(mockCoupon);
+      mockCouponRepository.save.mockResolvedValue({
+        ...mockCoupon,
+        status: newStatus,
+      });
+
+      const result = await service.updateCouponStatus(
+        couponId,
+        newStatus,
+        orgId,
+      );
+
+      expect(result.status).toBe(newStatus);
+      expect(mockCouponRepository.save).toHaveBeenCalled();
+    });
+
+    it('should throw NotFoundException if coupon not found', async () => {
+      const couponId = 'invalid';
+      const orgId = 'org-123';
+
+      mockCouponRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.updateCouponStatus(couponId, CouponStatus.INACTIVE, orgId),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

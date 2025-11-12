@@ -16,6 +16,7 @@ import { PaymentMethod } from './entities/payment-method.entity';
 import { Subscription } from './entities/subscription.entity';
 import { Dispute } from './entities/dispute.entity';
 import { WebhookEndpoint } from './entities/webhook-endpoint.entity';
+import { Coupon } from './entities/coupon.entity';
 import { CommonModule } from '@/common/common.module';
 import { PolicyModule } from '../policy/policy.module';
 import { LedgerModule } from '../ledger/ledger.module';
@@ -38,6 +39,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       Subscription,
       Dispute,
       WebhookEndpoint,
+      Coupon,
     ]),
     CommonModule,
     PolicyModule,

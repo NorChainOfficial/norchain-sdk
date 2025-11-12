@@ -123,7 +123,7 @@ All frontend applications connect to the Unified API at `http://localhost:4000`:
 - ✅ Wallet Web: `apps/wallet/src/lib/api-client.ts`
 
 #### Mobile Apps
-- ✅ Android: `apps/wallet-android/app/src/main/java/com/noor/wallet/services/ApiClient.kt`
+- ✅ Android: `apps/wallet-android/app/src/main/java/com/nor/wallet/services/ApiClient.kt`
 - ✅ iOS: `apps/wallet-ios/NorWallet/Services/ApiClient.swift`
 
 ## Configuration

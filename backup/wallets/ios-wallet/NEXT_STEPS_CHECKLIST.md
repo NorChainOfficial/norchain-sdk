@@ -12,7 +12,7 @@
 
 **Solution:**
 ```bash
-cd /Volumes/Development/sahalat/private\ server/noor-wallet/ios-wallet
+cd /Volumes/Development/sahalat/private\ server/nor-wallet/ios-wallet
 open NorWallet.xcodeproj
 ```
 
@@ -230,11 +230,11 @@ xcodebuild archive \
 **App Store Copy:**
 
 ```markdown
-Title: Noor Wallet - Secure Crypto Wallet
+Title: Nor Wallet - Secure Crypto Wallet
 Subtitle: Multi-chain cryptocurrency wallet
 
 Description:
-Noor Wallet is your secure gateway to the world of cryptocurrency.
+Nor Wallet is your secure gateway to the world of cryptocurrency.
 With support for multiple blockchains and cutting-edge security
 features, managing your digital assets has never been easier.
 
@@ -385,7 +385,7 @@ External Testing (10-20 testers):
 
 ```bash
 # 1. Fix Xcode project (FIRST!)
-cd /Volumes/Development/sahalat/private\ server/noor-wallet/ios-wallet
+cd /Volumes/Development/sahalat/private\ server/nor-wallet/ios-wallet
 open NorWallet.xcodeproj
 
 # 2. Run tests (after Xcode fix)

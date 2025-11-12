@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "NoorWallet"
+rootProject.name = "NorWallet"
 
 include(":app")
-include(":noor-core")
+include(":nor-core")

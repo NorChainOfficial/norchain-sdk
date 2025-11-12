@@ -10,7 +10,7 @@ export default function FlashCoinsPage(): JSX.Element {
           Flash Coins
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
-          Test tokens for development and experimentation on the Noor Chain
+          Test tokens for development and experimentation on the Nor Chain
         </p>
       </div>
 
@@ -27,7 +27,7 @@ export default function FlashCoinsPage(): JSX.Element {
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Flash Coins are test tokens designed for development and testing
-            purposes on the Noor Chain. They can be generated on-demand and
+            purposes on the Nor Chain. They can be generated on-demand and
             are perfect for experimenting with smart contracts and DeFi
             protocols.
           </p>
@@ -108,7 +108,7 @@ export default function FlashCoinsPage(): JSX.Element {
                 Add Network & Token
               </h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Add the Noor Chain network and Flash Coins token to your
+                Add the Nor Chain network and Flash Coins token to your
                 wallet with one click.
               </p>
             </div>

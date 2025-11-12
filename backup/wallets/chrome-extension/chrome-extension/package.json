@@ -1,7 +1,7 @@
 {
-  "name": "noor-wallet-extension",
+  "name": "nor-wallet-extension",
   "version": "1.0.0",
-  "description": "Noor Wallet Chrome Extension",
+  "description": "Nor Wallet Chrome Extension",
   "scripts": {
     "build": "tsc && webpack --mode production",
     "dev": "webpack --mode development --watch",

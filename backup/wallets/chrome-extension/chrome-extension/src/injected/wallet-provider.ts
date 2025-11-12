@@ -5,14 +5,14 @@
 
 interface EthereumProvider {
   isMetaMask?: boolean;
-  isNoorWallet?: boolean;
+  isNorWallet?: boolean;
   request(args: { method: string; params?: any[] }): Promise<any>;
   on(event: string, callback: (...args: any[]) => void): void;
   removeListener(event: string, callback: (...args: any[]) => void): void;
 }
 
-class NoorWalletProvider implements EthereumProvider {
-  isNoorWallet = true;
+class NorWalletProvider implements EthereumProvider {
+  isNorWallet = true;
   private listeners: Map<string, Set<Function>> = new Map();
 
   async request(args: { method: string; params?: any[] }): Promise<any> {
@@ -92,7 +92,7 @@ class NoorWalletProvider implements EthereumProvider {
 
 // Inject provider into window.ethereum
 if (typeof window !== 'undefined') {
-  const provider = new NoorWalletProvider();
+  const provider = new NorWalletProvider();
   
   // Make provider available as window.ethereum
   Object.defineProperty(window, 'ethereum', {
@@ -101,8 +101,8 @@ if (typeof window !== 'undefined') {
     configurable: false,
   });
 
-  // Also provide as window.noorWallet
-  Object.defineProperty(window, 'noorWallet', {
+  // Also provide as window.norWallet
+  Object.defineProperty(window, 'norWallet', {
     value: provider,
     writable: false,
     configurable: false,

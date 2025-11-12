@@ -8,15 +8,20 @@ import { TradeHistory } from "@/components/trade/trade-history";
 import { LimitOrders } from "@/components/trade/limit-orders";
 import { StopLossOrders } from "@/components/trade/stop-loss-orders";
 import { DCAScheduler } from "@/components/trade/dca-scheduler";
+import { TradingChart } from "@/components/trade/trading-chart";
 
 export default function TradePage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-6">Advanced Trading</h1>
-          
+        <div className="max-w-7xl mx-auto space-y-6">
+          <h1 className="text-3xl font-bold">Advanced Trading</h1>
+
+          {/* Trading Chart */}
+          <TradingChart pair="NOR/USDT" interval="1h" />
+
+          {/* Trading Tabs */}
           <Tabs defaultValue="orderbook" className="space-y-4">
             <TabsList>
               <TabsTrigger value="orderbook">Order Book</TabsTrigger>
@@ -25,23 +30,23 @@ export default function TradePage() {
               <TabsTrigger value="stoploss">Stop-Loss</TabsTrigger>
               <TabsTrigger value="dca">DCA</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="orderbook">
               <OrderBook />
             </TabsContent>
-            
+
             <TabsContent value="history">
               <TradeHistory />
             </TabsContent>
-            
+
             <TabsContent value="limit">
               <LimitOrders />
             </TabsContent>
-            
+
             <TabsContent value="stoploss">
               <StopLossOrders />
             </TabsContent>
-            
+
             <TabsContent value="dca">
               <DCAScheduler />
             </TabsContent>

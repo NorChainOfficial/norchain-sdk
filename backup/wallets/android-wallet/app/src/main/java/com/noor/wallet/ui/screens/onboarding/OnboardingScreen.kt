@@ -1,4 +1,4 @@
-package com.noor.wallet.ui.screens.onboarding
+package com.nor.wallet.ui.screens.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.noor.wallet.viewmodels.WalletViewModel
+import com.nor.wallet.viewmodels.WalletViewModel
 
 /**
  * OnboardingScreen - Wallet creation/import screen
@@ -60,7 +60,7 @@ fun OnboardingScreen(
             Spacer(modifier = Modifier.height(80.dp))
             
             Text(
-                text = "Noor Wallet",
+                text = "Nor Wallet",
                 fontSize = 42.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White

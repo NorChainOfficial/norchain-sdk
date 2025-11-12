@@ -48,7 +48,7 @@ export default async function TransactionsPage({ searchParams }: PageProps): Pro
           </div>
           <div>
             <h1 className="text-3xl font-bold text-white">Transactions</h1>
-            <p className="text-gray-400 mt-1">Recent transaction activity on Noor Chain</p>
+            <p className="text-gray-400 mt-1">Recent transaction activity on Nor Chain</p>
           </div>
         </div>
 

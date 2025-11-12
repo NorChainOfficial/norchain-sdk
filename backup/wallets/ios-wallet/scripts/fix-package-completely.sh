@@ -3,7 +3,7 @@
 
 set -e
 
-PROJECT_DIR="/Volumes/Development/sahalat/private server/noor-wallet/ios-wallet"
+PROJECT_DIR="/Volumes/Development/sahalat/private server/nor-wallet/ios-wallet"
 
 echo "🧹 Complete package resolution fix..."
 echo ""

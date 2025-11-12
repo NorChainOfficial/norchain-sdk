@@ -11,14 +11,14 @@ export default function FAQ() {
       questions: [
         {
           q: "What is NorChain?",
-          a: "Noor is an EVM-compatible blockchain designed for speed, affordability, and social impact. We offer 3-second block times, sub-cent transaction fees, and automatically donate 5% of all network fees to verified charitable causes.",
+          a: "Nor is an EVM-compatible blockchain designed for speed, affordability, and social impact. We offer 3-second block times, sub-cent transaction fees, and automatically donate 5% of all network fees to verified charitable causes.",
         },
         {
-          q: "How is Noor different from Ethereum?",
-          a: "Noor is 20x faster (3s vs 12s blocks), 10,000x cheaper (<$0.001 vs $5-50 fees), and includes built-in charitable giving. We're fully EVM-compatible, so you can use the same tools and deploy the same contracts.",
+          q: "How is Nor different from Ethereum?",
+          a: "Nor is 20x faster (3s vs 12s blocks), 10,000x cheaper (<$0.001 vs $5-50 fees), and includes built-in charitable giving. We're fully EVM-compatible, so you can use the same tools and deploy the same contracts.",
         },
         {
-          q: "Is Noor truly decentralized?",
+          q: "Is Nor truly decentralized?",
           a: "NorChain uses Proof of Stake (PoS) consensus with 500+ validators globally. Validators stake NOR tokens to secure the network and earn rewards, enabling ultra-low fees and fast finality while maintaining decentralization.",
         },
       ],
@@ -27,11 +27,11 @@ export default function FAQ() {
       category: "For Developers",
       questions: [
         {
-          q: "Can I deploy my Ethereum contracts on Noor?",
-          a: "Yes! Noor is 100% EVM-compatible. Simply change your RPC endpoint to Noor and deploy with zero code changes. All Ethereum tools work: Hardhat, Truffle, Remix, MetaMask, Web3.js, Ethers.js.",
+          q: "Can I deploy my Ethereum contracts on Nor?",
+          a: "Yes! Nor is 100% EVM-compatible. Simply change your RPC endpoint to Nor and deploy with zero code changes. All Ethereum tools work: Hardhat, Truffle, Remix, MetaMask, Web3.js, Ethers.js.",
         },
         {
-          q: "What programming languages does Noor support?",
+          q: "What programming languages does Nor support?",
           a: "Solidity and Vyper (same as Ethereum). Our SDK supports JavaScript/TypeScript, Python, Go, and Rust.",
         },
         {
@@ -61,15 +61,15 @@ export default function FAQ() {
       category: "Getting Started",
       questions: [
         {
-          q: "How do I add Noor to MetaMask?",
+          q: "How do I add Nor to MetaMask?",
           a: 'Click "Add to MetaMask" at the top of this page, or manually add: Chain ID 65001, RPC https://rpc.norchain.org, Symbol NOR.',
         },
         {
           q: "Where can I get NOR tokens?",
-          a: "Buy NOR on NoorSwap (our DEX), bridge from Ethereum using our official bridge, or receive from faucet for testing (testnet.norchain.org/faucet).",
+          a: "Buy NOR on NorSwap (our DEX), bridge from Ethereum using our official bridge, or receive from faucet for testing (testnet.norchain.org/faucet).",
         },
         {
-          q: "What can I do on Noor?",
+          q: "What can I do on Nor?",
           a: "Trade on DEXs, stake for rewards, participate in governance, bridge assets, crowdfund projects, create NFTs, and build dApps. Our ecosystem is growing daily!",
         },
       ],
@@ -78,11 +78,11 @@ export default function FAQ() {
       category: "Technical",
       questions: [
         {
-          q: "What consensus mechanism does Noor use?",
+          q: "What consensus mechanism does Nor use?",
           a: "Proof of Stake (PoS) with 500+ validators. Validators stake NOR tokens to secure the network, enabling fast finality and low fees while maintaining true decentralization.",
         },
         {
-          q: "Is Noor secure?",
+          q: "Is Nor secure?",
           a: "Yes. We use battle-tested Geth (Go Ethereum) infrastructure, undergo regular security audits, and have a bug bounty program. All smart contracts are audited before deployment.",
         },
         {

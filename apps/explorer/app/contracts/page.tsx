@@ -17,7 +17,7 @@ interface ContractInfo {
   readonly isToken: boolean;
 }
 
-// All verified contracts on Noor Chain
+// All verified contracts on Nor Chain
 const CONTRACTS: ContractInfo[] = [
   {
     name: 'XHN Governance Token',
@@ -173,7 +173,7 @@ export default function ContractsPage(): JSX.Element {
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">Smart Contracts</h1>
           <p className="text-gray-400 text-lg">
-            All verified contracts deployed on Noor Chain
+            All verified contracts deployed on Nor Chain
           </p>
         </div>
 

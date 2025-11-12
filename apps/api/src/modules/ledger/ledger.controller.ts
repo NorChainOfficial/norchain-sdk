@@ -9,6 +9,8 @@ import {
   Request,
   Headers,
   ParseUUIDPipe,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,14 +19,23 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiHeader,
+  ApiParam,
 } from '@nestjs/swagger';
 import { LedgerService } from './ledger.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 import { CreateJournalEntryDto } from './dto/create-journal-entry.dto';
 import { ClosePeriodDto } from './dto/close-period.dto';
+import { CalculateVatDto } from './dto/calculate-vat.dto';
+import { GetFinancialReportDto } from './dto/get-financial-report.dto';
+import { CreateReconciliationDto } from './dto/create-reconciliation.dto';
+import { MatchTransactionDto } from './dto/match-transaction.dto';
 import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
 import { Idempotent } from '@/common/decorators/idempotency.decorator';
 import { AccountStatus } from './entities/ledger-account.entity';
+import {
+  ReconciliationType,
+  ReconciliationStatus,
+} from './entities/reconciliation.entity';
 
 @ApiTags('Ledger')
 @Controller('ledger')
@@ -221,5 +232,193 @@ export class LedgerController {
     @Query('orgId', ParseUUIDPipe) orgId: string,
   ) {
     return this.ledgerService.getPeriodClosure(period, orgId);
+  }
+
+  @Post('vat/calculate')
+  @ApiOperation({
+    summary: 'Calculate VAT/MVA',
+    description:
+      'Calculates VAT/MVA amount based on country, rate, and transaction type',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'VAT calculated successfully',
+  })
+  async calculateVat(@Body() dto: CalculateVatDto) {
+    return this.ledgerService.calculateVat(dto);
+  }
+
+  @Get('reports')
+  @ApiOperation({
+    summary: 'Generate financial report',
+    description:
+      'Generates Profit & Loss, Balance Sheet, or Cashflow report for a period',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Financial report generated successfully',
+  })
+  @ApiResponse({ status: 400, description: 'Invalid report parameters' })
+  async getFinancialReport(@Query() dto: GetFinancialReportDto) {
+    return this.ledgerService.getFinancialReport(dto);
+  }
+
+  // ========== Reconciliation Endpoints ==========
+
+  @Post('reconciliations')
+  @Idempotent()
+  @ApiOperation({
+    summary: 'Create a reconciliation',
+    description:
+      'Creates a reconciliation for bank/wallet/exchange account matching',
+  })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Reconciliation created successfully',
+  })
+  async createReconciliation(
+    @Request() req: any,
+    @Body() dto: CreateReconciliationDto,
+  ) {
+    return this.ledgerService.createReconciliation(dto, req.user.id);
+  }
+
+  @Get('reconciliations')
+  @ApiOperation({ summary: 'List reconciliations for organization' })
+  @ApiQuery({
+    name: 'orgId',
+    required: true,
+    type: String,
+    description: 'Organization ID',
+  })
+  @ApiQuery({
+    name: 'type',
+    required: false,
+    enum: ReconciliationType,
+    description: 'Filter by reconciliation type',
+  })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: ReconciliationStatus,
+    description: 'Filter by status',
+  })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'offset', required: false, type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Reconciliations retrieved successfully',
+  })
+  async listReconciliations(
+    @Query('orgId', ParseUUIDPipe) orgId: string,
+    @Query('type') type?: ReconciliationType,
+    @Query('status') status?: ReconciliationStatus,
+    @Query('limit', new DefaultValuePipe(50), ParseIntPipe) limit: number = 50,
+    @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number = 0,
+  ) {
+    return this.ledgerService.listReconciliations(
+      orgId,
+      type,
+      status,
+      limit,
+      offset,
+    );
+  }
+
+  @Get('reconciliations/:id')
+  @ApiOperation({ summary: 'Get reconciliation by ID' })
+  @ApiParam({ name: 'id', description: 'Reconciliation ID' })
+  @ApiQuery({
+    name: 'orgId',
+    required: true,
+    type: String,
+    description: 'Organization ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reconciliation retrieved successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Reconciliation not found' })
+  async getReconciliation(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('orgId', ParseUUIDPipe) orgId: string,
+  ) {
+    return this.ledgerService.getReconciliation(id, orgId);
+  }
+
+  @Get('reconciliations/:id/details')
+  @ApiOperation({
+    summary: 'Get reconciliation details with matches',
+    description:
+      'Returns reconciliation with matched transactions and unmatched entries',
+  })
+  @ApiParam({ name: 'id', description: 'Reconciliation ID' })
+  @ApiQuery({
+    name: 'orgId',
+    required: true,
+    type: String,
+    description: 'Organization ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reconciliation details retrieved successfully',
+  })
+  async getReconciliationDetails(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('orgId', ParseUUIDPipe) orgId: string,
+  ) {
+    return this.ledgerService.getReconciliationDetails(id, orgId);
+  }
+
+  @Post('reconciliations/:id/match')
+  @Idempotent()
+  @ApiOperation({
+    summary: 'Match a transaction',
+    description:
+      'Manually match a ledger entry with an external transaction',
+  })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Transaction matched successfully',
+  })
+  async matchTransaction(
+    @Request() req: any,
+    @Body() dto: MatchTransactionDto,
+  ) {
+    return this.ledgerService.matchTransaction(dto, req.user.id);
+  }
+
+  @Post('reconciliations/:id/auto-match')
+  @ApiOperation({
+    summary: 'Auto-match transactions',
+    description:
+      'Automatically match ledger entries with external transactions using fuzzy matching',
+  })
+  @ApiParam({ name: 'id', description: 'Reconciliation ID' })
+  @ApiQuery({
+    name: 'orgId',
+    required: true,
+    type: String,
+    description: 'Organization ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Auto-matching completed',
+  })
+  async autoMatchTransactions(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('orgId', ParseUUIDPipe) orgId: string,
+  ) {
+    return this.ledgerService.autoMatchTransactions(id, orgId);
   }
 }

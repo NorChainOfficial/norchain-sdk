@@ -1,0 +1,139 @@
+/**
+ * NorChain Brand System - CSS Variables
+ *
+ * These CSS custom properties can be used for dynamic theming
+ * and are automatically synchronized with Tailwind tokens.
+ */
+
+:root {
+  /* Brand Colors - Light Mode */
+  --nc-primary: #0057B8;
+  --nc-secondary: #0B132B;
+  --nc-accent: #2EC4B6;
+  --nc-highlight: #33F2FF;
+  --nc-background: #FFFFFF;
+  --nc-surface: #F9FAFB;
+  --nc-divider: #E5E7EB;
+
+  /* Semantic Colors */
+  --nc-success: #16A34A;
+  --nc-error: #DC2626;
+  --nc-warning: #F59E0B;
+  --nc-info: #0EA5E9;
+
+  /* Text Colors - Light Mode */
+  --nc-text-primary: #0B132B;
+  --nc-text-secondary: #6B7280;
+  --nc-text-tertiary: #9CA3AF;
+
+  /* Effects */
+  --nc-shadow-glow: 0 0 20px rgba(46, 196, 182, 0.4);
+  --nc-shadow-glow-intense: 0 0 40px rgba(46, 196, 182, 0.6);
+  --nc-shadow-card: 0 6px 25px rgba(11, 19, 43, 0.25);
+  --nc-shadow-card-light: 0 4px 20px rgba(11, 19, 43, 0.15);
+
+  /* Gradients */
+  --nc-gradient-aurora: linear-gradient(135deg, #0057B8 0%, #2EC4B6 50%, #33F2FF 100%);
+  --nc-gradient-aurora-dark: linear-gradient(135deg, #0B132B 0%, #0057B8 50%, #2EC4B6 100%);
+  --nc-gradient-primary-glow: linear-gradient(135deg, #0057B8 0%, #2EC4B6 100%);
+  --nc-gradient-accent-glow: linear-gradient(135deg, #2EC4B6 0%, #33F2FF 100%);
+
+  /* Border Radius */
+  --nc-radius-sm: 0.5rem;
+  --nc-radius-md: 0.75rem;
+  --nc-radius-lg: 1rem;
+  --nc-radius-xl: 1.5rem;
+  --nc-radius-2xl: 2rem;
+
+  /* Transitions */
+  --nc-transition-fast: 150ms;
+  --nc-transition-normal: 300ms;
+  --nc-transition-slow: 500ms;
+
+  /* Spacing */
+  --nc-section-spacing: 6rem;
+  --nc-container-max: 1280px;
+  --nc-container-wide: 1440px;
+}
+
+.dark {
+  /* Brand Colors - Dark Mode */
+  --nc-primary: #2EC4B6;
+  --nc-secondary: #021D39;
+  --nc-accent: #0057B8;
+  --nc-highlight: #33F2FF;
+  --nc-background: #0B132B;
+  --nc-surface: #1C2438;
+  --nc-divider: #28314A;
+
+  /* Text Colors - Dark Mode */
+  --nc-text-primary: #FFFFFF;
+  --nc-text-secondary: #BFC6D4;
+  --nc-text-tertiary: #8B95A8;
+
+  /* Semantic Colors (same in dark mode) */
+  --nc-success: #16A34A;
+  --nc-error: #DC2626;
+  --nc-warning: #F59E0B;
+  --nc-info: #0EA5E9;
+}
+
+/* Typography Variables */
+:root {
+  --nc-font-display: 'Orbitron', sans-serif;
+  --nc-font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --nc-font-mono: 'JetBrains Mono', 'Menlo', 'Monaco', monospace;
+}
+
+/* Utility Classes for CSS Variables */
+.nc-bg-primary {
+  background-color: var(--nc-primary);
+}
+
+.nc-bg-secondary {
+  background-color: var(--nc-secondary);
+}
+
+.nc-bg-accent {
+  background-color: var(--nc-accent);
+}
+
+.nc-bg-surface {
+  background-color: var(--nc-surface);
+}
+
+.nc-text-primary {
+  color: var(--nc-text-primary);
+}
+
+.nc-text-secondary {
+  color: var(--nc-text-secondary);
+}
+
+.nc-gradient-aurora {
+  background-image: var(--nc-gradient-aurora);
+}
+
+.nc-gradient-aurora-dark {
+  background-image: var(--nc-gradient-aurora-dark);
+}
+
+.nc-shadow-glow {
+  box-shadow: var(--nc-shadow-glow);
+}
+
+.nc-shadow-card {
+  box-shadow: var(--nc-shadow-card);
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: var(--nc-transition-normal);
+}
+
+/* Disable transitions on theme change to prevent flickering */
+.theme-changing * {
+  transition: none !important;
+}

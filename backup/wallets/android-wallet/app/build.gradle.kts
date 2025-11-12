@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.noor.wallet"
+    namespace = "com.nor.wallet"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.noor.wallet"
+        applicationId = "com.nor.wallet"
         minSdk = 28
         targetSdk = 34
         versionCode = 1
@@ -68,8 +68,8 @@ android {
 }
 
 dependencies {
-    // Noor Core (Rust FFI)
-    implementation(project(":noor-core"))
+    // Nor Core (Rust FFI)
+    implementation(project(":nor-core"))
 
     // Compose BOM
     val composeBom = platform("androidx.compose:compose-bom:2024.02.00")

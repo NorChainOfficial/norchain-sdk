@@ -6,8 +6,8 @@ import { ModernNavbar } from '@/components/layout/ModernNavbar'
 import { Footer } from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
-  title: 'Noor Chain Explorer',
-  description: 'Real-time blockchain explorer and analytics for Noor Chain',
+  title: 'Nor Chain Explorer',
+  description: 'Real-time blockchain explorer and analytics for Nor Chain',
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',

@@ -7,6 +7,7 @@ import { Conversation } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { DeviceKey } from './entities/device-key.entity';
 import { MessageReaction } from './entities/reaction.entity';
+import { GroupMember } from './entities/group-member.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
@@ -17,6 +18,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       Message,
       DeviceKey,
       MessageReaction,
+      GroupMember,
     ]),
     EventEmitterModule,
   ],

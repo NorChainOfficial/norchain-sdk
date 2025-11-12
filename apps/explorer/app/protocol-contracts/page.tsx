@@ -15,7 +15,7 @@ interface ProtocolContract {
   readonly dappUrl?: string;
 }
 
-// All verified protocol contracts on Noor Chain
+// All verified protocol contracts on Nor Chain
 const PROTOCOL_CONTRACTS: ProtocolContract[] = [
   {
     name: 'XHN Governance Token',
@@ -146,7 +146,7 @@ export default function ProtocolContractsPage(): JSX.Element {
           <div>
             <h1 className="text-4xl font-bold text-white mb-2">Protocol Contracts</h1>
             <p className="text-gray-400 text-lg">
-              All verified protocol contracts deployed on Noor Chain
+              All verified protocol contracts deployed on Nor Chain
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -170,9 +170,9 @@ export default function ProtocolContractsPage(): JSX.Element {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Noor Chain Infrastructure</h3>
+              <h3 className="text-lg font-semibold text-white mb-2">Nor Chain Infrastructure</h3>
               <p className="text-gray-300">
-                These are the core protocol contracts that power Noor Chain. All contracts are verified, audited, and operational.
+                These are the core protocol contracts that power Nor Chain. All contracts are verified, audited, and operational.
                 Click on any contract to view details, or use the dApp links to interact with them.
               </p>
             </div>
@@ -325,7 +325,7 @@ export default function ProtocolContractsPage(): JSX.Element {
         <h2 className="text-2xl font-bold text-white mb-4">For Developers</h2>
         <div className="space-y-4 text-gray-300">
           <p>
-            All contracts are deployed on Noor Chain and available for integration.
+            All contracts are deployed on Nor Chain and available for integration.
             You can interact with these contracts using Web3 libraries like ethers.js or web3.js.
           </p>
           <div className="p-4 bg-slate-900 rounded-lg font-mono text-sm">

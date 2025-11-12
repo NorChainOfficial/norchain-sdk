@@ -1,15 +1,15 @@
 #!/bin/bash
-# Install and run Noor Wallet on iOS Simulator
+# Install and run Nor Wallet on iOS Simulator
 
 set -e
 
-PROJECT_DIR="/Volumes/Development/sahalat/private server/noor-wallet/ios-wallet"
+PROJECT_DIR="/Volumes/Development/sahalat/private server/nor-wallet/ios-wallet"
 SIMULATOR_NAME="iPhone 16 Pro"
 SCHEME="NorWallet"
 
 cd "$PROJECT_DIR"
 
-echo "📱 Installing Noor Wallet on iOS Simulator..."
+echo "📱 Installing Nor Wallet on iOS Simulator..."
 echo ""
 
 # Step 1: Build the app
@@ -79,15 +79,15 @@ echo "   ✅ App installed"
 
 # Step 5: Launch the app
 echo "4. Launching app..."
-xcrun simctl launch --console booted com.noor.wallet
+xcrun simctl launch --console booted com.nor.wallet
 
 if [ $? -eq 0 ]; then
   echo "   ✅ App launched"
   echo ""
-  echo "🎉 Noor Wallet is now running on the simulator!"
+  echo "🎉 Nor Wallet is now running on the simulator!"
   echo ""
   echo "💡 To launch again, run:"
-  echo "   xcrun simctl launch booted com.noor.wallet"
+  echo "   xcrun simctl launch booted com.nor.wallet"
 else
   echo "⚠️  App may already be running"
 fi

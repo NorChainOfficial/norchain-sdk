@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Body,
   Param,
   Query,
@@ -33,7 +34,10 @@ import { CreateCheckoutSessionWithLineItemsDto } from './dto/create-checkout-ses
 import { CreateCheckoutSessionDto } from './dto/create-checkout-session.dto';
 import { CreateRefundDto } from './dto/create-refund.dto';
 import { OnboardMerchantDto } from './dto/onboard-merchant.dto';
+import { CreateCouponDto } from './dto/create-coupon.dto';
+import { ApplyCouponDto } from './dto/apply-coupon.dto';
 import { InvoiceStatus } from './entities/payment-invoice.entity';
+import { CouponStatus } from './entities/coupon.entity';
 import { ErrorResponseDto } from '@/common/dto/error-response.dto';
 import { ApiHeader } from '@nestjs/swagger';
 
@@ -382,6 +386,86 @@ export class PaymentsController {
       dto.url,
       dto.events,
       req.user.id,
+    );
+  }
+
+  // ========== Coupons Endpoints ==========
+
+  @Post('coupons')
+  @Idempotent()
+  @ApiOperation({ summary: 'Create a coupon' })
+  @ApiHeader({
+    name: 'Idempotency-Key',
+    description: 'Idempotency key for safe retries',
+    required: true,
+  })
+  @ApiResponse({ status: 201, description: 'Coupon created successfully' })
+  @ApiResponse({ status: 409, description: 'Coupon code already exists' })
+  async createCoupon(@Request() req: any, @Body() dto: CreateCouponDto) {
+    return this.paymentsService.createCoupon(dto, req.user.id);
+  }
+
+  @Get('coupons')
+  @ApiOperation({ summary: 'Get coupons for organization' })
+  @ApiQuery({ name: 'status', required: false, enum: CouponStatus })
+  @ApiResponse({ status: 200, description: 'Coupons retrieved successfully' })
+  async getCoupons(
+    @Request() req: any,
+    @Query('orgId') orgId?: string,
+    @Query('status') status?: CouponStatus,
+  ) {
+    const targetOrgId = orgId || req.user.orgId || req.user.id;
+    return this.paymentsService.getCoupons(targetOrgId, status);
+  }
+
+  @Get('coupons/:code')
+  @ApiOperation({ summary: 'Get coupon by code' })
+  @ApiParam({ name: 'code', description: 'Coupon code' })
+  @ApiResponse({ status: 200, description: 'Coupon retrieved successfully' })
+  @ApiResponse({ status: 404, description: 'Coupon not found' })
+  async getCouponByCode(
+    @Request() req: any,
+    @Param('code') code: string,
+    @Query('orgId') orgId?: string,
+  ) {
+    const targetOrgId = orgId || req.user.orgId || req.user.id;
+    return this.paymentsService.getCouponByCode(code, targetOrgId);
+  }
+
+  @Post('coupons/apply')
+  @ApiOperation({ summary: 'Apply coupon and calculate discount' })
+  @ApiResponse({
+    status: 200,
+    description: 'Coupon applied successfully',
+  })
+  @ApiResponse({ status: 404, description: 'Coupon not found' })
+  async applyCoupon(
+    @Request() req: any,
+    @Body() dto: ApplyCouponDto,
+    @Query('orgId') orgId?: string,
+  ) {
+    const targetOrgId = orgId || req.user.orgId || req.user.id;
+    return this.paymentsService.applyCoupon(dto, targetOrgId);
+  }
+
+  @Patch('coupons/:id/status')
+  @ApiOperation({ summary: 'Update coupon status' })
+  @ApiParam({ name: 'id', description: 'Coupon ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Coupon status updated successfully',
+  })
+  async updateCouponStatus(
+    @Request() req: any,
+    @Param('id') couponId: string,
+    @Body('status') status: CouponStatus,
+    @Query('orgId') orgId?: string,
+  ) {
+    const targetOrgId = orgId || req.user.orgId || req.user.id;
+    return this.paymentsService.updateCouponStatus(
+      couponId,
+      status,
+      targetOrgId,
     );
   }
 }
