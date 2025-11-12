@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { formatDistanceToNow, format } from 'date-fns';
 import { formatXAHEEN, truncateHash } from '@/lib/utils';
 import { CopyButton } from '@/components/ui/CopyButton';
+import { TransactionAI } from '@/components/ai/TransactionAI';
 
 export default function TransactionDetailPage(): JSX.Element {
   const params = useParams();
@@ -266,6 +267,16 @@ export default function TransactionDetailPage(): JSX.Element {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* AI Transaction Analysis */}
+        <div className="mt-6">
+          <TransactionAI
+            txHash={hash}
+            fromAddress={tx.sender}
+            gasUsed={tx.gas_used?.toString()}
+            gasPrice={tx.fee ? (parseFloat(tx.fee) / tx.gas_used).toString() : undefined}
+          />
         </div>
 
         {/* Additional Information (Future: Input Data, Event Logs, etc.) */}

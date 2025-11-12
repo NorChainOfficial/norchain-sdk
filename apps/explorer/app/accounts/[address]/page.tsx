@@ -14,6 +14,7 @@ import { InternalTransactions } from '@/components/accounts/InternalTransactions
 import { BalanceHistoryChart } from '@/components/accounts/BalanceHistoryChart';
 import { RiskScore } from '@/components/accounts/RiskScore';
 import { AddressLabelManager } from '@/components/search/AddressLabels';
+import { AddressAI } from '@/components/ai/AddressAI';
 
 type TabType = 'overview' | 'transactions' | 'tokens' | 'contract';
 
@@ -390,6 +391,11 @@ function OverviewTabEnhanced({
 
       {/* Risk Score */}
       <RiskScore address={address} />
+
+      {/* AI Address Analysis */}
+      <div className="mt-6">
+        <AddressAI address={address} />
+      </div>
 
       {/* Balance History */}
       <BalanceHistoryChart address={address} />

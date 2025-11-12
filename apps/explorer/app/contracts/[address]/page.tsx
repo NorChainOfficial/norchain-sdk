@@ -26,6 +26,8 @@ import {
 import { ContractVerificationForm } from '@/components/contracts/ContractVerificationForm';
 import { AbiViewer } from '@/components/contracts/AbiViewer';
 import { SourceCodeViewer } from '@/components/contracts/SourceCodeViewer';
+import { ContractAudit } from '@/components/ai/ContractAudit';
+import { ContractFunctionExplainer } from '@/components/ai/ContractFunctionExplainer';
 
 interface ContractDetails {
   readonly address: string;
@@ -462,6 +464,12 @@ export default function ContractDetailPage(): JSX.Element {
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Contract Overview</h3>
                 <div className="space-y-4">
+                  {/* AI Contract Audit */}
+                  {contract.isContract && (
+                    <div className="mb-6">
+                      <ContractAudit contractAddress={address} />
+                    </div>
+                  )}
                   <div className="p-4 bg-slate-700/50 rounded-lg hover:bg-slate-700 transition-all">
                     <p className="text-gray-400 text-sm mb-1">Contract Type</p>
                     <p className="text-white text-lg font-semibold flex items-center gap-2">
@@ -533,7 +541,16 @@ export default function ContractDetailPage(): JSX.Element {
 
                 {/* ABI Viewer (if available) */}
                 {contract.abi && (
-                  <AbiViewer abi={contract.abi} contractAddress={contract.address} />
+                  <>
+                    <AbiViewer abi={contract.abi} contractAddress={contract.address} />
+                    {/* AI Function Explainer */}
+                    <div className="mt-6">
+                      <ContractFunctionExplainer
+                        contractAddress={contract.address}
+                        abi={contract.abi}
+                      />
+                    </div>
+                  </>
                 )}
 
                 {/* Bytecode Viewer */}

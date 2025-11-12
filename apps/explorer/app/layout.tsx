@@ -4,6 +4,8 @@ import { Providers } from './providers'
 import { SearchBar } from '@/components/layout/SearchBar'
 import { ModernNavbar } from '@/components/layout/ModernNavbar'
 import { Footer } from '@/components/layout/Footer'
+import { AIChatWidget } from '@/components/ai/AIChatWidget'
+import { AISidebarProvider } from '@/components/ai/AISidebarProvider'
 
 export const metadata: Metadata = {
   title: 'Nor Chain Explorer',
@@ -30,6 +32,8 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
           </div>
+          <AIChatWidget />
+          <AISidebarProvider />
         </Providers>
       </body>
     </html>

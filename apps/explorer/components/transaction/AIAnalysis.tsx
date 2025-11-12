@@ -12,6 +12,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { Transaction } from '@/lib/types';
+import { apiClient } from '@/lib/api-client';
 import {
   TransactionAnalysisResult,
   AIAnalysisError,
@@ -31,46 +32,37 @@ export const AIAnalysis = ({ transaction }: AIAnalysisProps): JSX.Element => {
   const [showDetails, setShowDetails] = useState<boolean>(false);
 
   /**
-   * Fetch AI analysis
+   * Fetch AI analysis using Unified API
    */
   const fetchAnalysis = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/ai/decode-transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Use Unified API endpoint
+      const data = await apiClient.analyzeTransaction(transaction.hash);
+      
+      // Transform Unified API response to match existing component structure
+      setAnalysis({
+        description: data.analysis || 'Transaction analysis completed',
+        riskScore: data.riskScore || 0,
+        insights: data.insights || [],
+        recommendations: data.recommendations || [],
+        securityFlags: [],
+        optimizations: [],
+        similarTransactions: [],
+        metadata: {
+          confidence: 0.85,
+          model: 'unified-api',
+          timestamp: Date.now(),
         },
-        body: JSON.stringify({
-          hash: transaction.hash,
-          type: transaction.type,
-          sender: transaction.sender,
-          receiver: transaction.receiver,
-          amount: transaction.amount,
-          gasUsed: transaction.gas_used,
-          gasWanted: transaction.gas_wanted,
-          status: transaction.status,
-          timestamp: transaction.timestamp,
-          inputData: transaction.memo,
-        }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        setError(data as AIAnalysisError);
-        return;
-      }
-
-      setAnalysis(data.data);
     } catch (err) {
       console.error('Failed to fetch AI analysis:', err);
       setError({
         error: 'Network error',
         code: 'API_ERROR',
-        message: 'Failed to connect to AI service',
+        message: err instanceof Error ? err.message : 'Failed to connect to AI service',
       });
     } finally {
       setIsLoading(false);

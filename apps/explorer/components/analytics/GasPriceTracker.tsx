@@ -44,8 +44,22 @@ export const GasPriceTracker = (): JSX.Element => {
     timestamp: Date.now(),
   }), []);
 
-  // Mock prediction data
-  const prediction: GasPricePrediction = {
+  // Fetch AI gas prediction from Unified API
+  const { data: gasPrediction } = useQuery({
+    queryKey: ['gas-prediction'],
+    queryFn: () => apiClient.predictGas(),
+    refetchInterval: 60000, // Refresh every minute
+    staleTime: 30000, // Cache for 30 seconds
+  });
+
+  // Use AI prediction if available, otherwise use mock data
+  const prediction: GasPricePrediction = gasPrediction ? {
+    nextHour: parseFloat(gasPrediction.predictedGasPrice) || 2.2,
+    next4Hours: parseFloat(gasPrediction.predictedGasPrice) * 0.9 || 1.8,
+    next24Hours: parseFloat(gasPrediction.predictedGasPrice) || 2.5,
+    confidence: gasPrediction.confidence || 85,
+    trend: gasPrediction.trend === 'increasing' ? 'rising' : gasPrediction.trend === 'decreasing' ? 'falling' : 'stable',
+  } : {
     nextHour: 2.2,
     next4Hours: 1.8,
     next24Hours: 2.5,

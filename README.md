@@ -1,13 +1,39 @@
 # NorChain
 
-**Core NorChain blockchain infrastructure in a single repository**
+**Full-Stack Blockchain Operating System**
 
-This monorepo contains:
-- **Unified API** (`apps/api`) - NestJS backend API (handles all database operations for Explorer, Exchange, and blockchain services)
-- **Explorer** (`apps/explorer`) - World-class blockchain explorer (production-ready, competing with Etherscan/BSCscan)
+NorChain is the world's first comprehensive blockchain ecosystem — 16 modular, focused applications unified under one chain, one token (NOR), and one API. Each application serves a specific purpose, competing with world-class analogues (Etherscan, Stripe, QuickBooks, WhatsApp, Binance, etc.), but integrated into a seamless, enterprise-ready platform.
+
+## 🌍 Ecosystem Overview
+
+This monorepo contains the complete NorChain ecosystem:
+
+### ✅ Production Ready
+- **Unified API** (`apps/api`) - NestJS backend API (110+ endpoints, 21 modules)
+- **NorExplorer** (`apps/explorer`) - World-class blockchain explorer (production-ready)
+- **NEX Exchange** (`apps/nex-exchange`) - Retail on/off-ramp exchange
+- **NorDev Portal** (`apps/dev-portal`) - Developer hub for APIs and SDKs
 - **Landing Page** (`apps/landing`) - Marketing website
-- **NEX Exchange** (`apps/nex-exchange`) - DEX platform frontend
 - **Documentation** (`apps/docs`) - Nextra documentation site
+
+### 🚧 In Development / Planned
+- **NorPay** - Payment gateway (Stripe competitor)
+- **NorLedger** - Double-entry accounting (QuickBooks competitor)
+- **NorRegnskap** - ERP suite (Fiken competitor)
+- **NorChat** - E2EE messaging (WhatsApp competitor)
+- **NorSwap** - DEX swap interface (Uniswap competitor)
+- **NorDEX** - Professional exchange (Binance competitor)
+- **NorBridge** - Cross-chain bridge (API ready, frontend needed)
+- **NorCompliance Hub** - Regulatory engine (API ready, frontend needed)
+- **NorAI** - AI analytics layer (API ready, frontend needed)
+- **NorGovernance** - DAO governance (API ready, frontend needed)
+- **NorAdmin** - Backoffice panel
+- **NorAnalytics** - Analytics platform
+- **NorWallet** - Multi-network wallet (exists in backup, needs integration)
+
+> **📖 Full Ecosystem Mapping**: See [ECOSYSTEM_MAPPING.md](./docs/architecture/ECOSYSTEM_MAPPING.md) for complete product catalog, integration matrix, and implementation roadmap.
+
+> **📊 Visual Architecture**: See [ECOSYSTEM_DIAGRAM.svg](./docs/architecture/ECOSYSTEM_DIAGRAM.svg) for visual representation of the entire ecosystem.
 
 > **Note**: Wallet applications have been moved to `backup/wallets/` for potential extraction into separate repositories, allowing them to support multiple blockchain networks independently.
 
@@ -157,12 +183,17 @@ See [SHARED_DATABASE.md](./SHARED_DATABASE.md) for details.
 
 ## 📚 Documentation
 
+### Ecosystem & Architecture
+- [Ecosystem Mapping](./docs/architecture/ECOSYSTEM_MAPPING.md) - Complete product catalog and integration matrix
+- [Ecosystem Diagram](./docs/architecture/ECOSYSTEM_DIAGRAM.svg) - Visual architecture diagram
 - [Architecture](./ARCHITECTURE.md) - System architecture
 - [Shared Database](./SHARED_DATABASE.md) - Database setup
-- [Unified API README](./apps/api/README.md)
+
+### Application Documentation
+- [Unified API README](./apps/api/README.md) - API documentation
 - [Explorer Specification](./docs/product/NOREXPLORER_SPECIFICATION.md) - Explorer features and capabilities
 - [Explorer Implementation Plan](./docs/product/NOREXPLORER_IMPLEMENTATION_PLAN.md) - Implementation details
-- [NEX Exchange README](./apps/nex-exchange/README.md)
+- [NEX Exchange README](./apps/nex-exchange/README.md) - Exchange documentation
 
 ## 🧪 Testing
 
@@ -242,4 +273,26 @@ See `backup/wallets/README.md` for extraction guidance.
 
 ---
 
-**Status**: ✅ **BLOCKCHAIN INFRASTRUCTURE MONOREPO COMPLETE**
+## 🎯 Ecosystem Vision
+
+NorChain is designed as a **Full-Stack Blockchain Operating System** where:
+
+- **NorExplorer** = Transparency & Verification
+- **NorPay** = Payment Gateway & Billing
+- **NorLedger** = Accounting & Audit Integrity
+- **NorChat** = Communication Layer
+- **NEX/NorDEX** = Market Access & Trading
+- **NorCompliance** = Regulatory Trust
+- **NorAI** = Intelligence Layer
+- **NorWallet** = User Asset Control
+
+All unified under:
+- ✅ **One Blockchain** (NorChain)
+- ✅ **One Token** (NOR)
+- ✅ **One API** (Unified API)
+- ✅ **One Identity** (NorID SSO)
+- ✅ **One Compliance Layer** (Policy Gateway)
+
+---
+
+**Status**: ✅ **ECOSYSTEM FOUNDATION COMPLETE** | 🚧 **16 PRODUCTS IN PROGRESS**

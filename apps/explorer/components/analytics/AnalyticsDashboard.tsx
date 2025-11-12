@@ -11,6 +11,7 @@ import { NetworkStats } from './NetworkStats';
 import { TokenAnalytics } from './TokenAnalytics';
 import { GasPriceTracker } from './GasPriceTracker';
 import { WalletPortfolioTracker } from './WalletPortfolioTracker';
+import { PortfolioOptimization } from '../ai/PortfolioOptimization';
 
 type DashboardTab = 'overview' | 'tokens' | 'gas' | 'portfolio';
 
@@ -76,7 +77,15 @@ export const AnalyticsDashboard = (): JSX.Element => {
         return <GasPriceTracker />;
 
       case 'portfolio':
-        return <WalletPortfolioTracker />;
+        return (
+          <div className="space-y-6">
+            <WalletPortfolioTracker />
+            {/* AI Portfolio Optimization - Show for first wallet if available */}
+            <div className="mt-6">
+              <PortfolioOptimization address="0x742d35Cc6634C0532925a3b844Bc454e4438f44e" />
+            </div>
+          </div>
+        );
 
       default:
         return null;

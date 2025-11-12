@@ -1,0 +1,246 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 1800" style="background: #0a0a0a;">
+  <!-- Title -->
+  <text x="1200" y="40" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#ffffff" text-anchor="middle">NorChain Ecosystem Architecture</text>
+  <text x="1200" y="70" font-family="Arial, sans-serif" font-size="18" fill="#888888" text-anchor="middle">Full-Stack Blockchain Operating System</text>
+  
+  <!-- Core Layer - Blockchain & API -->
+  <rect x="800" y="120" width="800" height="120" rx="10" fill="#1a1a2e" stroke="#00d4ff" stroke-width="3"/>
+  <text x="1200" y="160" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#00d4ff" text-anchor="middle">NorChain Blockchain</text>
+  <text x="1200" y="185" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Core Infrastructure • Validators • Consensus</text>
+  <text x="1200" y="210" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">NOR Token • Smart Contracts • State</text>
+  
+  <rect x="800" y="280" width="800" height="120" rx="10" fill="#16213e" stroke="#00ff88" stroke-width="3"/>
+  <text x="1200" y="320" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#00ff88" text-anchor="middle">Unified API (NestJS)</text>
+  <text x="1200" y="345" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">110+ Endpoints • 21 Modules • PostgreSQL • Redis</text>
+  <text x="1200" y="370" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Policy Gateway • Real-time WebSocket • Supabase Auth</text>
+  
+  <!-- Application Layer - Row 1: Core Services -->
+  <!-- NorExplorer -->
+  <rect x="50" y="480" width="280" height="140" rx="8" fill="#1e3a5f" stroke="#00d4ff" stroke-width="2"/>
+  <text x="190" y="510" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#00d4ff" text-anchor="middle">🔍 NorExplorer</text>
+  <text x="190" y="535" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">✅ Production Ready</text>
+  <text x="190" y="555" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Blocks • Transactions</text>
+  <text x="190" y="570" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Contracts • Tokens</text>
+  <text x="190" y="590" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4002</text>
+  
+  <!-- NorPay -->
+  <rect x="360" y="480" width="280" height="140" rx="8" fill="#2d1e3a" stroke="#ff6b6b" stroke-width="2"/>
+  <text x="500" y="510" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ff6b6b" text-anchor="middle">💳 NorPay</text>
+  <text x="500" y="535" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="500" y="555" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Payment Gateway</text>
+  <text x="500" y="570" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Subscriptions • POS</text>
+  <text x="500" y="590" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4003</text>
+  
+  <!-- NorLedger -->
+  <rect x="670" y="480" width="280" height="140" rx="8" fill="#1e3a2d" stroke="#4ecdc4" stroke-width="2"/>
+  <text x="810" y="510" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#4ecdc4" text-anchor="middle">📒 NorLedger</text>
+  <text x="810" y="535" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="810" y="555" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Double-Entry</text>
+  <text x="810" y="570" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Accounting • Audit</text>
+  <text x="810" y="590" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4004</text>
+  
+  <!-- NorRegnskap -->
+  <rect x="980" y="480" width="280" height="140" rx="8" fill="#3a2d1e" stroke="#ffd93d" stroke-width="2"/>
+  <text x="1120" y="510" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffd93d" text-anchor="middle">🧾 NorRegnskap</text>
+  <text x="1120" y="535" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="1120" y="555" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">ERP Suite</text>
+  <text x="1120" y="570" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Invoices • Payroll</text>
+  <text x="1120" y="590" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4005</text>
+  
+  <!-- NorChat -->
+  <rect x="1290" y="480" width="280" height="140" rx="8" fill="#2d1e3a" stroke="#a78bfa" stroke-width="2"/>
+  <text x="1430" y="510" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#a78bfa" text-anchor="middle">💬 NorChat</text>
+  <text x="1430" y="535" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="1430" y="555" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">E2EE Messaging</text>
+  <text x="1430" y="570" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Pay in Chat</text>
+  <text x="1430" y="590" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4006</text>
+  
+  <!-- NorSwap -->
+  <rect x="1600" y="480" width="280" height="140" rx="8" fill="#1e3a2d" stroke="#00ff88" stroke-width="2"/>
+  <text x="1740" y="510" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#00ff88" text-anchor="middle">💱 NorSwap</text>
+  <text x="1740" y="535" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="1740" y="555" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">DEX Swap</text>
+  <text x="1740" y="570" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">AMM • Liquidity</text>
+  <text x="1740" y="590" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4007</text>
+  
+  <!-- NorDEX -->
+  <rect x="1910" y="480" width="280" height="140" rx="8" fill="#3a1e2d" stroke="#ff6b9d" stroke-width="2"/>
+  <text x="2050" y="510" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ff6b9d" text-anchor="middle">📊 NorDEX</text>
+  <text x="2050" y="535" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="2050" y="555" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Pro Exchange</text>
+  <text x="2050" y="570" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Orderbook • KYC</text>
+  <text x="2050" y="590" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4008</text>
+  
+  <!-- Row 2: Exchange & Bridge -->
+  <!-- NEX -->
+  <rect x="50" y="660" width="280" height="140" rx="8" fill="#1e3a5f" stroke="#00d4ff" stroke-width="2"/>
+  <text x="190" y="690" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#00d4ff" text-anchor="middle">🪙 NEX</text>
+  <text x="190" y="715" font-family="Arial, sans-serif" font-size="11" fill="#00ff88" text-anchor="middle">✅ Exists</text>
+  <text x="190" y="735" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Retail Exchange</text>
+  <text x="190" y="750" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">On/Off Ramp</text>
+  <text x="190" y="770" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4001</text>
+  
+  <!-- NorBridge -->
+  <rect x="360" y="660" width="280" height="140" rx="8" fill="#2d1e3a" stroke="#9b59b6" stroke-width="2"/>
+  <text x="500" y="690" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#9b59b6" text-anchor="middle">🌉 NorBridge</text>
+  <text x="500" y="715" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">✅ API Ready</text>
+  <text x="500" y="735" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Cross-Chain</text>
+  <text x="500" y="750" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">BSC • ETH • TRON</text>
+  <text x="500" y="770" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4009</text>
+  
+  <!-- NorCompliance -->
+  <rect x="670" y="660" width="280" height="140" rx="8" fill="#3a1e1e" stroke="#ef4444" stroke-width="2"/>
+  <text x="810" y="690" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ef4444" text-anchor="middle">🏦 NorCompliance</text>
+  <text x="810" y="715" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">✅ API Ready</text>
+  <text x="810" y="735" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">KYC • AML</text>
+  <text x="810" y="750" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Risk Scoring</text>
+  <text x="810" y="770" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4012</text>
+  
+  <!-- NorAI -->
+  <rect x="980" y="660" width="280" height="140" rx="8" fill="#1e1e3a" stroke="#8b5cf6" stroke-width="2"/>
+  <text x="1120" y="690" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#8b5cf6" text-anchor="middle">🧠 NorAI</text>
+  <text x="1120" y="715" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">✅ API Ready</text>
+  <text x="1120" y="735" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">AI Analytics</text>
+  <text x="1120" y="750" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Gas Prediction</text>
+  <text x="1120" y="770" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4013</text>
+  
+  <!-- NorDev Portal -->
+  <rect x="1290" y="660" width="280" height="140" rx="8" fill="#1e3a5f" stroke="#00d4ff" stroke-width="2"/>
+  <text x="1430" y="690" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#00d4ff" text-anchor="middle">⚙️ NorDev Portal</text>
+  <text x="1430" y="715" font-family="Arial, sans-serif" font-size="11" fill="#00ff88" text-anchor="middle">✅ Exists</text>
+  <text x="1430" y="735" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">API Keys • SDKs</text>
+  <text x="1430" y="750" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Documentation</text>
+  <text x="1430" y="770" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4014</text>
+  
+  <!-- NorAdmin -->
+  <rect x="1600" y="660" width="280" height="140" rx="8" fill="#2d2d1e" stroke="#fbbf24" stroke-width="2"/>
+  <text x="1740" y="690" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#fbbf24" text-anchor="middle">🧰 NorAdmin</text>
+  <text x="1740" y="715" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="1740" y="735" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">BackOffice</text>
+  <text x="1740" y="750" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Policies • Validators</text>
+  <text x="1740" y="770" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4015</text>
+  
+  <!-- NorGovernance -->
+  <rect x="1910" y="660" width="280" height="140" rx="8" fill="#1e3a2d" stroke="#10b981" stroke-width="2"/>
+  <text x="2050" y="690" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#10b981" text-anchor="middle">🗳️ NorGovernance</text>
+  <text x="2050" y="715" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">✅ API Ready</text>
+  <text x="2050" y="735" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">DAO • Proposals</text>
+  <text x="2050" y="750" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Voting • Treasury</text>
+  <text x="2050" y="770" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4016</text>
+  
+  <!-- Row 3: Wallet & Analytics -->
+  <!-- NorWallet -->
+  <rect x="50" y="840" width="280" height="140" rx="8" fill="#1e3a5f" stroke="#00d4ff" stroke-width="2"/>
+  <text x="190" y="870" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#00d4ff" text-anchor="middle">💼 NorWallet</text>
+  <text x="190" y="895" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">✅ In Backup</text>
+  <text x="190" y="915" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Multi-Network</text>
+  <text x="190" y="930" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Web • Mobile</text>
+  <text x="190" y="950" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4020</text>
+  
+  <!-- NorAnalytics -->
+  <rect x="360" y="840" width="280" height="140" rx="8" fill="#2d1e3a" stroke="#ec4899" stroke-width="2"/>
+  <text x="500" y="870" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ec4899" text-anchor="middle">📈 NorAnalytics</text>
+  <text x="500" y="895" font-family="Arial, sans-serif" font-size="11" fill="#ffaa00" text-anchor="middle">🚧 To Be Built</text>
+  <text x="500" y="915" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Data Insights</text>
+  <text x="500" y="930" font-family="Arial, sans-serif" font-size="10" fill="#aaaaaa" text-anchor="middle">Trends • Whales</text>
+  <text x="500" y="950" font-family="Arial, sans-serif" font-size="9" fill="#00ff88" text-anchor="middle">Port: 4017</text>
+  
+  <!-- Connection Lines from Apps to Unified API -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#00ff88" />
+    </marker>
+  </defs>
+  
+  <!-- Lines from Row 1 apps to API -->
+  <line x1="190" y1="480" x2="1000" y2="340" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="500" y1="480" x2="1100" y2="340" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="810" y1="480" x2="1200" y2="340" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="1120" y1="480" x2="1300" y2="340" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="1430" y1="480" x2="1400" y2="340" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="1740" y1="480" x2="1500" y2="340" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="2050" y1="480" x2="1600" y2="340" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  
+  <!-- Lines from Row 2 apps to API -->
+  <line x1="190" y1="660" x2="1000" y2="360" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="500" y1="660" x2="1100" y2="360" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="810" y1="660" x2="1200" y2="360" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="1120" y1="660" x2="1300" y2="360" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="1430" y1="660" x2="1400" y2="360" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="1740" y1="660" x2="1500" y2="360" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="2050" y1="660" x2="1600" y2="360" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  
+  <!-- Lines from Row 3 apps to API -->
+  <line x1="190" y1="840" x2="1000" y2="380" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  <line x1="500" y1="840" x2="1100" y2="380" stroke="#00ff88" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.3"/>
+  
+  <!-- Line from Unified API to Blockchain -->
+  <line x1="1200" y1="280" x2="1200" y2="240" stroke="#00d4ff" stroke-width="4" marker-end="url(#arrowhead)" opacity="0.5"/>
+  
+  <!-- Shared Services Layer -->
+  <rect x="50" y="1020" width="700" height="120" rx="8" fill="#1a1a2e" stroke="#ffd700" stroke-width="2"/>
+  <text x="400" y="1050" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffd700" text-anchor="middle">Shared Services</text>
+  <text x="150" y="1080" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">Supabase Auth</text>
+  <text x="300" y="1080" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">NorID SSO</text>
+  <text x="450" y="1080" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">Policy Gateway</text>
+  <text x="600" y="1080" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">PostgreSQL</text>
+  <text x="150" y="1105" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">Redis Cache</text>
+  <text x="300" y="1105" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">WebSocket</text>
+  <text x="450" y="1105" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">GraphQL</text>
+  <text x="600" y="1105" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">REST API</text>
+  
+  <!-- Integration Flows -->
+  <rect x="800" y="1020" width="700" height="120" rx="8" fill="#1a1a2e" stroke="#00ff88" stroke-width="2"/>
+  <text x="1150" y="1050" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#00ff88" text-anchor="middle">Key Integration Flows</text>
+  <text x="950" y="1080" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">NorPay → NorLedger</text>
+  <text x="1100" y="1080" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">NorChat → NorPay</text>
+  <text x="1250" y="1080" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">All → Compliance</text>
+  <text x="1400" y="1080" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">All → NorWallet</text>
+  <text x="950" y="1105" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">NorRegnskap → NorLedger</text>
+  <text x="1100" y="1105" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">NorSwap → NorAI</text>
+  <text x="1250" y="1105" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">NorDEX → Compliance</text>
+  <text x="1400" y="1105" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">NEX → Compliance</text>
+  
+  <!-- Status Legend -->
+  <rect x="1600" y="1020" width="590" height="120" rx="8" fill="#1a1a2e" stroke="#888888" stroke-width="2"/>
+  <text x="1895" y="1050" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">Status Legend</text>
+  <circle cx="1650" cy="1070" r="6" fill="#00ff88"/>
+  <text x="1670" y="1075" font-family="Arial, sans-serif" font-size="11" fill="#ffffff">Production Ready</text>
+  <circle cx="1800" cy="1070" r="6" fill="#ffaa00"/>
+  <text x="1820" y="1075" font-family="Arial, sans-serif" font-size="11" fill="#ffffff">API Ready / Exists</text>
+  <circle cx="1950" cy="1070" r="6" fill="#ff6b6b"/>
+  <text x="1970" y="1075" font-family="Arial, sans-serif" font-size="11" fill="#ffffff">To Be Built</text>
+  <circle cx="2100" cy="1070" r="6" fill="#888888"/>
+  <text x="2120" y="1075" font-family="Arial, sans-serif" font-size="11" fill="#ffffff">In Backup</text>
+  
+  <!-- Footer -->
+  <text x="1200" y="1200" font-family="Arial, sans-serif" font-size="14" fill="#888888" text-anchor="middle">All applications consume Unified API • No direct database access • Modular & independently deployable</text>
+  
+  <!-- Cross-linking visualization -->
+  <rect x="50" y="1250" width="2300" height="500" rx="8" fill="#0f0f0f" stroke="#444444" stroke-width="1" opacity="0.5"/>
+  <text x="1200" y="1280" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">Cross-App Integration Examples</text>
+  
+  <!-- Example flows -->
+  <g opacity="0.6">
+    <!-- NorPay to NorLedger -->
+    <path d="M 500 1320 Q 600 1300 810 1320" stroke="#4ecdc4" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+    <text x="655" y="1305" font-family="Arial, sans-serif" font-size="10" fill="#4ecdc4">Auto Sync</text>
+    
+    <!-- NorChat to NorPay -->
+    <path d="M 1430 1320 Q 1330 1300 500 1320" stroke="#a78bfa" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+    <text x="965" y="1305" font-family="Arial, sans-serif" font-size="10" fill="#a78bfa">Pay in Chat</text>
+    
+    <!-- All to Compliance -->
+    <path d="M 810 1340 Q 810 1380 810 1400" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+    <text x="820" y="1375" font-family="Arial, sans-serif" font-size="10" fill="#ef4444">KYC Check</text>
+    
+    <!-- NorSwap to NorAI -->
+    <path d="M 1740 1320 Q 1640 1300 1120 1320" stroke="#8b5cf6" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+    <text x="1430" y="1305" font-family="Arial, sans-serif" font-size="10" fill="#8b5cf6">Gas Prediction</text>
+    
+    <!-- NorWallet to All -->
+    <path d="M 190 1500 Q 190 1450 190 1400" stroke="#00d4ff" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+    <text x="200" y="1425" font-family="Arial, sans-serif" font-size="10" fill="#00d4ff">Wallet Connect</text>
+  </g>
+</svg>
+

@@ -257,4 +257,63 @@ export const apiClient = {
     const result = await response.json();
     return result.data || result.result || result;
   },
+
+  // AI Endpoints - Integrated from Unified API
+  analyzeTransaction: async (txHash: string) => {
+    const response = await fetch(`${API_BASE_URL}/ai/analyze-transaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ txHash }),
+    });
+    if (!response.ok) throw new Error('Failed to analyze transaction');
+    const result = await response.json();
+    return result.data || result;
+  },
+
+  auditContract: async (contractAddress: string) => {
+    const response = await fetch(`${API_BASE_URL}/ai/audit-contract`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contractAddress }),
+    });
+    if (!response.ok) throw new Error('Failed to audit contract');
+    const result = await response.json();
+    return result.data || result;
+  },
+
+  predictGas: async () => {
+    const response = await fetch(`${API_BASE_URL}/ai/predict-gas`);
+    if (!response.ok) throw new Error('Failed to predict gas');
+    const result = await response.json();
+    return result.data || result;
+  },
+
+  detectAnomalies: async (address: string, days: number = 7) => {
+    const response = await fetch(`${API_BASE_URL}/ai/detect-anomalies?address=${encodeURIComponent(address)}&days=${days}`);
+    if (!response.ok) throw new Error('Failed to detect anomalies');
+    const result = await response.json();
+    return result.data || result;
+  },
+
+  optimizePortfolio: async (address: string) => {
+    const response = await fetch(`${API_BASE_URL}/ai/optimize-portfolio`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address }),
+    });
+    if (!response.ok) throw new Error('Failed to optimize portfolio');
+    const result = await response.json();
+    return result.data || result;
+  },
+
+  aiChat: async (question: string, context?: any) => {
+    const response = await fetch(`${API_BASE_URL}/ai/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question, context }),
+    });
+    if (!response.ok) throw new Error('Failed to get chat response');
+    const result = await response.json();
+    return result.data || result;
+  },
 };
