@@ -128,4 +128,3 @@ export class AddCouponTable1739000000000 implements MigrationInterface {
     await queryRunner.dropTable('coupons');
   }
 }
-

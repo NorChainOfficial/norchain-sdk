@@ -497,7 +497,9 @@ export class MessagingService {
     const conversation = await this.getConversation(conversationId, userDid);
 
     if (conversation.kind === ConversationKind.P2P) {
-      throw new BadRequestException('P2P conversations do not support member management');
+      throw new BadRequestException(
+        'P2P conversations do not support member management',
+      );
     }
 
     // Check if user is admin/moderator
@@ -510,8 +512,14 @@ export class MessagingService {
         throw new ForbiddenException('Only admins can perform this action');
       }
     } else {
-      if (!member || (member.role !== GroupMemberRole.ADMIN && member.role !== GroupMemberRole.MODERATOR)) {
-        throw new ForbiddenException('Only admins and moderators can perform this action');
+      if (
+        !member ||
+        (member.role !== GroupMemberRole.ADMIN &&
+          member.role !== GroupMemberRole.MODERATOR)
+      ) {
+        throw new ForbiddenException(
+          'Only admins and moderators can perform this action',
+        );
       }
     }
 
@@ -526,7 +534,10 @@ export class MessagingService {
     dto: ManageGroupMemberDto,
     userDid: string,
   ): Promise<GroupMember> {
-    const { conversation } = await this.checkGroupPermission(conversationId, userDid);
+    const { conversation } = await this.checkGroupPermission(
+      conversationId,
+      userDid,
+    );
 
     // Check if member already exists
     const existing = await this.groupMemberRepository.findOne({
@@ -569,7 +580,10 @@ export class MessagingService {
     memberDid: string,
     userDid: string,
   ): Promise<void> {
-    const { conversation } = await this.checkGroupPermission(conversationId, userDid);
+    const { conversation } = await this.checkGroupPermission(
+      conversationId,
+      userDid,
+    );
 
     // Prevent removing yourself if you're the only admin
     if (memberDid === userDid) {
@@ -593,7 +607,9 @@ export class MessagingService {
     await this.groupMemberRepository.remove(member);
 
     // Remove from conversation members list
-    conversation.members = conversation.members.filter((did) => did !== memberDid);
+    conversation.members = conversation.members.filter(
+      (did) => did !== memberDid,
+    );
     await this.conversationRepository.save(conversation);
 
     this.eventEmitter.emit('messaging.group.member.removed', {
@@ -636,7 +652,10 @@ export class MessagingService {
   /**
    * List group/channel members
    */
-  async listGroupMembers(conversationId: string, userDid: string): Promise<GroupMember[]> {
+  async listGroupMembers(
+    conversationId: string,
+    userDid: string,
+  ): Promise<GroupMember[]> {
     // Verify user is a member
     await this.getConversation(conversationId, userDid);
 
@@ -706,7 +725,9 @@ export class MessagingService {
         });
 
         if (admins.length === 1) {
-          throw new BadRequestException('Cannot leave as the only admin. Transfer admin role first.');
+          throw new BadRequestException(
+            'Cannot leave as the only admin. Transfer admin role first.',
+          );
         }
       }
 
@@ -714,7 +735,9 @@ export class MessagingService {
     }
 
     // Remove from conversation members list
-    conversation.members = conversation.members.filter((did) => did !== userDid);
+    conversation.members = conversation.members.filter(
+      (did) => did !== userDid,
+    );
     await this.conversationRepository.save(conversation);
 
     this.eventEmitter.emit('messaging.group.member.left', {

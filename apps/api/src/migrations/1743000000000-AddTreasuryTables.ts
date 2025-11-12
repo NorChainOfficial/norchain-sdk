@@ -65,4 +65,3 @@ export class AddTreasuryTables1743000000000 implements MigrationInterface {
     `);
   }
 }
-

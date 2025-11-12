@@ -1,10 +1,10 @@
-# 🌐 Xaheen Chain - Landing Page
+# 🌐 NorChain Chain - Landing Page
 
-> Complete, production-ready landing page for Xaheen Chain
+> Complete, production-ready landing page for NorChain Chain
 
 ## 📋 Overview
 
-This is the public-facing landing page for Xaheen Chain, built with **Next.js 14**, **React 18**, and **Tailwind CSS**. It showcases Xaheen's unique value proposition: a fast, affordable, EVM-compatible blockchain with built-in charitable giving.
+This is the public-facing landing page for NorChain Chain, built with **Next.js 14**, **React 18**, and **Tailwind CSS**. It showcases NorChain's unique value proposition: a fast, affordable, EVM-compatible blockchain with built-in charitable giving.
 
 ## ✨ Features
 
@@ -14,7 +14,7 @@ This is the public-facing landing page for Xaheen Chain, built with **Next.js 14
 2. **Hero** - Above-the-fold with live network stats and one-click MetaMask setup
 3. **Features** - 4 key value propositions (Speed, Affordability, EVM Compatibility, Charity)
 4. **Network Stats** - Real-time blockchain data (blocks, transactions, wallets, charity)
-5. **Why Xaheen** - Comparison table vs Ethereum and Polygon
+5. **Why NorChain** - Comparison table vs Ethereum and Polygon
 6. **Charity Impact** - Live charity donation counter with partner breakdown
 7. **Technology Stack** - Technical architecture and compatible tools
 8. **Roadmap** - Timeline from Q4 2024 to Q4 2025
@@ -26,7 +26,7 @@ This is the public-facing landing page for Xaheen Chain, built with **Next.js 14
 
 #### One-Click MetaMask Integration
 ```typescript
-// Automatically adds Xaheen Chain to MetaMask
+// Automatically adds NorChain Chain to MetaMask
 Chain ID: 65001 (0xFDE9)
 RPC: https://rpc.xaheen.org
 Symbol: XHT
@@ -67,7 +67,7 @@ apps/landing/
 │   ├── Hero.tsx           # Hero section with MetaMask
 │   ├── Features.tsx       # 4 feature cards
 │   ├── NetworkStats.tsx   # Live blockchain stats
-│   ├── WhyXaheen.tsx      # Comparison table
+│   ├── WhyNorChain.tsx      # Comparison table
 │   ├── CharityImpact.tsx  # Charity counter & partners
 │   ├── TechnologyStack.tsx # Tech stack showcase
 │   ├── Roadmap.tsx        # Timeline component
@@ -128,7 +128,7 @@ NEXT_PUBLIC_RPC_URL=https://rpc.xaheen.org
 
 # Chain Configuration
 NEXT_PUBLIC_CHAIN_ID=65001
-NEXT_PUBLIC_CHAIN_NAME=Xaheen Chain
+NEXT_PUBLIC_CHAIN_NAME=NorChain Chain
 NEXT_PUBLIC_NATIVE_SYMBOL=XHT
 
 # Optional: Analytics
@@ -141,9 +141,9 @@ NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 // Chain Details
 {
   chainId: '0xFDE9',        // 65001 in hex
-  chainName: 'Xaheen Chain',
+  chainName: 'NorChain Chain',
   nativeCurrency: {
-    name: 'Xaheen Token',
+    name: 'NorChain Token',
     symbol: 'XHT',
     decimals: 18
   },
@@ -193,7 +193,7 @@ open http://localhost:3010
 
 ### RPC Calls
 
-The landing page fetches real-time data from the Xaheen blockchain:
+The landing page fetches real-time data from the NorChain blockchain:
 
 ```typescript
 // Fetch current block number
@@ -319,7 +319,7 @@ const csp = {
 ### Meta Tags
 
 ```html
-<title>Xaheen Chain - Blockchain for Good | Fast, Affordable, EVM Compatible</title>
+<title>NorChain Chain - Blockchain for Good | Fast, Affordable, EVM Compatible</title>
 <meta name="description" content="The world's first blockchain with built-in charity..." />
 <meta name="keywords" content="blockchain, charity, EVM, low fees, fast" />
 ```
@@ -327,7 +327,7 @@ const csp = {
 ### Open Graph
 
 ```html
-<meta property="og:title" content="Xaheen Chain" />
+<meta property="og:title" content="NorChain Chain" />
 <meta property="og:description" content="Blockchain. Fast. Affordable. For Good." />
 <meta property="og:image" content="/og-image.png" />
 <meta property="og:url" content="https://xaheen.org" />
@@ -338,7 +338,7 @@ const csp = {
 ```html
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@xaheen" />
-<meta name="twitter:title" content="Xaheen Chain" />
+<meta name="twitter:title" content="NorChain Chain" />
 ```
 
 ## 📝 Content Management
@@ -397,7 +397,7 @@ pnpm start
 
 ## 📚 Additional Resources
 
-- [Xaheen Docs](https://docs.xaheen.org)
+- [NorChain Docs](https://docs.xaheen.org)
 - [Block Explorer](https://explorer.xaheen.org)
 - [GitHub](https://github.com/xaheen)
 - [Discord Community](https://discord.gg/xaheen)
@@ -412,4 +412,4 @@ MIT License - See [LICENSE](../../LICENSE)
 
 ---
 
-**Built with ❤️ for the Xaheen community**
+**Built with ❤️ for the NorChain community**

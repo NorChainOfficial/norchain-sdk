@@ -7,6 +7,7 @@ import { Conversation, ConversationKind } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { MessageReaction } from './entities/reaction.entity';
 import { DeviceKey } from './entities/device-key.entity';
+import { GroupMember } from './entities/group-member.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 
@@ -54,6 +55,15 @@ describe('MessagingService', () => {
     save: jest.fn(),
   };
 
+  const mockGroupMemberRepository = {
+    findOne: jest.fn(),
+    find: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    remove: jest.fn(),
+    delete: jest.fn(),
+  };
+
   const mockEventEmitter = {
     emit: jest.fn(),
   };
@@ -89,6 +99,10 @@ describe('MessagingService', () => {
         {
           provide: getRepositoryToken(DeviceKey),
           useValue: mockDeviceKeyRepository,
+        },
+        {
+          provide: getRepositoryToken(GroupMember),
+          useValue: mockGroupMemberRepository,
         },
         {
           provide: EventEmitter2,

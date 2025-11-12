@@ -72,4 +72,3 @@ export class CreateStakingRewardDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

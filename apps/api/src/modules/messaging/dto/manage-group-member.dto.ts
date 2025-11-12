@@ -1,8 +1,4 @@
-import {
-  IsString,
-  IsEnum,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum GroupMemberRole {
@@ -27,4 +23,3 @@ export class ManageGroupMemberDto {
   @IsEnum(GroupMemberRole)
   role?: GroupMemberRole;
 }
-

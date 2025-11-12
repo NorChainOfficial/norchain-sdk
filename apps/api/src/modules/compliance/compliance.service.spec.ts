@@ -12,16 +12,19 @@ import {
   CaseStatus,
   CaseSeverity,
 } from './entities/compliance-case.entity';
+import { TravelRulePartner } from './entities/travel-rule-partner.entity';
 import { CreateScreeningDto } from './dto/create-screening.dto';
 import { CreateCaseDto } from './dto/create-case.dto';
 import { TravelRulePrecheckDto } from './dto/travel-rule-precheck.dto';
 import { TravelRuleDto } from './dto/travel-rule.dto';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 describe('ComplianceService', () => {
   let service: ComplianceService;
   let screeningRepository: Repository<ComplianceScreening>;
   let caseRepository: Repository<ComplianceCase>;
+  let travelRulePartnerRepository: Repository<TravelRulePartner>;
 
   const mockScreeningRepository = {
     create: jest.fn(),
@@ -39,6 +42,18 @@ describe('ComplianceService', () => {
     findAndCount: jest.fn(),
   };
 
+  const mockTravelRulePartnerRepository = {
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    find: jest.fn(),
+    findAndCount: jest.fn(),
+  };
+
+  const mockEventEmitter = {
+    emit: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -51,6 +66,14 @@ describe('ComplianceService', () => {
           provide: getRepositoryToken(ComplianceCase),
           useValue: mockCaseRepository,
         },
+        {
+          provide: getRepositoryToken(TravelRulePartner),
+          useValue: mockTravelRulePartnerRepository,
+        },
+        {
+          provide: EventEmitter2,
+          useValue: mockEventEmitter,
+        },
       ],
     }).compile();
 
@@ -60,6 +83,9 @@ describe('ComplianceService', () => {
     );
     caseRepository = module.get<Repository<ComplianceCase>>(
       getRepositoryToken(ComplianceCase),
+    );
+    travelRulePartnerRepository = module.get<Repository<TravelRulePartner>>(
+      getRepositoryToken(TravelRulePartner),
     );
   });
 

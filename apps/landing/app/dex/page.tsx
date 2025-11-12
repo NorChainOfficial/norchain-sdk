@@ -434,7 +434,7 @@ export default function DEXPage(): JSX.Element {
               </svg>
             </a>
             <a
-              href="/docs/NOOR_CHAIN_DEX_COMPLETE_DEPLOYMENT.md"
+              href="/docs/NOR_CHAIN_DEX_COMPLETE_DEPLOYMENT.md"
               className="h-14 px-8 bg-white border-2 border-gray-300 text-gray-900 font-semibold rounded-xl hover:border-blue-500 transition-colors flex items-center"
             >
               Read Documentation

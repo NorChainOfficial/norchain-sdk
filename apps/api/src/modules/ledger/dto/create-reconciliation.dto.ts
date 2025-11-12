@@ -28,7 +28,8 @@ export class CreateReconciliationDto {
   accountCode?: string;
 
   @ApiPropertyOptional({
-    description: 'External account identifier (bank account, wallet address, etc.)',
+    description:
+      'External account identifier (bank account, wallet address, etc.)',
   })
   @IsOptional()
   @IsString()
@@ -77,4 +78,3 @@ export class CreateReconciliationDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

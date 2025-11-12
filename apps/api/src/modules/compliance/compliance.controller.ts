@@ -31,7 +31,10 @@ import { UpdateCaseDto } from './dto/update-case.dto';
 import { AddCaseNoteDto } from './dto/add-case-note.dto';
 import { CreateTravelRulePartnerDto } from './dto/create-travel-rule-partner.dto';
 import { CaseStatus, CaseSeverity } from './entities/compliance-case.entity';
-import { PartnerStatus, PartnerType } from './entities/travel-rule-partner.entity';
+import {
+  PartnerStatus,
+  PartnerType,
+} from './entities/travel-rule-partner.entity';
 
 @ApiTags('Compliance')
 @Controller('compliance')

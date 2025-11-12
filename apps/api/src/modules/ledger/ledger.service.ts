@@ -528,16 +528,43 @@ export class LedgerService {
       // Default VAT account codes based on country and type
       if (dto.countryCode === 'NO' || !dto.countryCode) {
         // Norwegian MVA accounts
-        vatAccountCode =
-          dto.vatType === VatType.INPUT ? '2700' : '2701'; // Input MVA / Output MVA
-      } else if (['AT', 'BE', 'BG', 'CY', 'CZ', 'DE', 'DK', 'EE', 'ES', 'FI', 'FR', 'GR', 'HR', 'HU', 'IE', 'IT', 'LT', 'LU', 'LV', 'MT', 'NL', 'PL', 'PT', 'RO', 'SE', 'SI', 'SK'].includes(dto.countryCode)) {
+        vatAccountCode = dto.vatType === VatType.INPUT ? '2700' : '2701'; // Input MVA / Output MVA
+      } else if (
+        [
+          'AT',
+          'BE',
+          'BG',
+          'CY',
+          'CZ',
+          'DE',
+          'DK',
+          'EE',
+          'ES',
+          'FI',
+          'FR',
+          'GR',
+          'HR',
+          'HU',
+          'IE',
+          'IT',
+          'LT',
+          'LU',
+          'LV',
+          'MT',
+          'NL',
+          'PL',
+          'PT',
+          'RO',
+          'SE',
+          'SI',
+          'SK',
+        ].includes(dto.countryCode)
+      ) {
         // EU VAT accounts
-        vatAccountCode =
-          dto.vatType === VatType.INPUT ? '2710' : '2711'; // Input VAT / Output VAT
+        vatAccountCode = dto.vatType === VatType.INPUT ? '2710' : '2711'; // Input VAT / Output VAT
       } else {
         // GCC or other
-        vatAccountCode =
-          dto.vatType === VatType.INPUT ? '2720' : '2721'; // Input VAT / Output VAT
+        vatAccountCode = dto.vatType === VatType.INPUT ? '2720' : '2721'; // Input VAT / Output VAT
       }
     }
 
@@ -555,9 +582,7 @@ export class LedgerService {
   /**
    * Generate financial report (P&L, Balance Sheet, Cashflow)
    */
-  async getFinancialReport(
-    dto: GetFinancialReportDto,
-  ): Promise<any> {
+  async getFinancialReport(dto: GetFinancialReportDto): Promise<any> {
     // Determine date range based on period
     let startDate: Date;
     let endDate: Date;
@@ -684,8 +709,14 @@ export class LedgerService {
       currency,
     );
 
-    const totalIncome = income.reduce((sum, item) => sum + parseFloat(item.balance), 0);
-    const totalExpenses = expenses.reduce((sum, item) => sum + parseFloat(item.balance), 0);
+    const totalIncome = income.reduce(
+      (sum, item) => sum + parseFloat(item.balance),
+      0,
+    );
+    const totalExpenses = expenses.reduce(
+      (sum, item) => sum + parseFloat(item.balance),
+      0,
+    );
     const netProfit = totalIncome - totalExpenses;
 
     const report: any = {
@@ -703,16 +734,21 @@ export class LedgerService {
         total: totalExpenses.toFixed(2),
       },
       netProfit: netProfit.toFixed(2),
-      netProfitPercentage: totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(2) : '0.00',
+      netProfitPercentage:
+        totalIncome > 0 ? ((netProfit / totalIncome) * 100).toFixed(2) : '0.00',
     };
 
     // Add comparative period if requested
     if (includeComparative) {
       const comparativeStart = new Date(startDate);
       const comparativeEnd = new Date(endDate);
-      const periodDays = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      const periodDays = Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
       comparativeStart.setDate(comparativeStart.getDate() - periodDays);
-      comparativeEnd.setTime(comparativeStart.getTime() + (endDate.getTime() - startDate.getTime()));
+      comparativeEnd.setTime(
+        comparativeStart.getTime() + (endDate.getTime() - startDate.getTime()),
+      );
 
       const comparativeEntries = await this.entryRepository.find({
         where: {
@@ -734,9 +770,16 @@ export class LedgerService {
         currency,
       );
 
-      const comparativeTotalIncome = comparativeIncome.reduce((sum, item) => sum + parseFloat(item.balance), 0);
-      const comparativeTotalExpenses = comparativeExpenses.reduce((sum, item) => sum + parseFloat(item.balance), 0);
-      const comparativeNetProfit = comparativeTotalIncome - comparativeTotalExpenses;
+      const comparativeTotalIncome = comparativeIncome.reduce(
+        (sum, item) => sum + parseFloat(item.balance),
+        0,
+      );
+      const comparativeTotalExpenses = comparativeExpenses.reduce(
+        (sum, item) => sum + parseFloat(item.balance),
+        0,
+      );
+      const comparativeNetProfit =
+        comparativeTotalIncome - comparativeTotalExpenses;
 
       report.comparative = {
         period: `${comparativeStart.toISOString().split('T')[0]} to ${comparativeEnd.toISOString().split('T')[0]}`,
@@ -790,7 +833,9 @@ export class LedgerService {
 
     // Group accounts by type
     const assets = accounts.filter((a) => a.type === AccountType.ASSET);
-    const liabilities = accounts.filter((a) => a.type === AccountType.LIABILITY);
+    const liabilities = accounts.filter(
+      (a) => a.type === AccountType.LIABILITY,
+    );
     const equity = accounts.filter((a) => a.type === AccountType.EQUITY);
 
     // Calculate balances
@@ -810,9 +855,18 @@ export class LedgerService {
       currency,
     );
 
-    const totalAssets = assetBalances.reduce((sum, item) => sum + parseFloat(item.balance), 0);
-    const totalLiabilities = liabilityBalances.reduce((sum, item) => sum + parseFloat(item.balance), 0);
-    const totalEquity = equityBalances.reduce((sum, item) => sum + parseFloat(item.balance), 0);
+    const totalAssets = assetBalances.reduce(
+      (sum, item) => sum + parseFloat(item.balance),
+      0,
+    );
+    const totalLiabilities = liabilityBalances.reduce(
+      (sum, item) => sum + parseFloat(item.balance),
+      0,
+    );
+    const totalEquity = equityBalances.reduce(
+      (sum, item) => sum + parseFloat(item.balance),
+      0,
+    );
 
     const report: any = {
       reportType: 'balance_sheet',
@@ -832,7 +886,9 @@ export class LedgerService {
         total: totalEquity.toFixed(2),
       },
       totalLiabilitiesAndEquity: (totalLiabilities + totalEquity).toFixed(2),
-      balance: (Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01).toString(), // Should balance
+      balance: (
+        Math.abs(totalAssets - (totalLiabilities + totalEquity)) < 0.01
+      ).toString(), // Should balance
     };
 
     // Add comparative if requested
@@ -865,9 +921,18 @@ export class LedgerService {
         currency,
       );
 
-      const comparativeTotalAssets = comparativeAssetBalances.reduce((sum, item) => sum + parseFloat(item.balance), 0);
-      const comparativeTotalLiabilities = comparativeLiabilityBalances.reduce((sum, item) => sum + parseFloat(item.balance), 0);
-      const comparativeTotalEquity = comparativeEquityBalances.reduce((sum, item) => sum + parseFloat(item.balance), 0);
+      const comparativeTotalAssets = comparativeAssetBalances.reduce(
+        (sum, item) => sum + parseFloat(item.balance),
+        0,
+      );
+      const comparativeTotalLiabilities = comparativeLiabilityBalances.reduce(
+        (sum, item) => sum + parseFloat(item.balance),
+        0,
+      );
+      const comparativeTotalEquity = comparativeEquityBalances.reduce(
+        (sum, item) => sum + parseFloat(item.balance),
+        0,
+      );
 
       report.comparative = {
         asOfDate: comparativeDate.toISOString(),
@@ -885,7 +950,9 @@ export class LedgerService {
         },
         variance: {
           assets: (totalAssets - comparativeTotalAssets).toFixed(2),
-          liabilities: (totalLiabilities - comparativeTotalLiabilities).toFixed(2),
+          liabilities: (totalLiabilities - comparativeTotalLiabilities).toFixed(
+            2,
+          ),
           equity: (totalEquity - comparativeTotalEquity).toFixed(2),
         },
       };
@@ -980,7 +1047,10 @@ export class LedgerService {
 
     const financingCash = this.calculateCashflowFromEntries(
       entries,
-      [...liabilityAccounts.map((a) => a.id), ...equityAccounts.map((a) => a.id)],
+      [
+        ...liabilityAccounts.map((a) => a.id),
+        ...equityAccounts.map((a) => a.id),
+      ],
       cashAccountIds,
       currency,
     );
@@ -1037,7 +1107,10 @@ export class LedgerService {
     accountIds: string[],
     currency: string,
   ): Array<{ accountCode: string; accountName: string; balance: string }> {
-    const balances = new Map<string, { code: string; name: string; debit: number; credit: number }>();
+    const balances = new Map<
+      string,
+      { code: string; name: string; debit: number; credit: number }
+    >();
 
     entries.forEach((entry) => {
       entry.lines.forEach((line) => {
@@ -1097,7 +1170,10 @@ export class LedgerService {
 
       if (hasRelatedAccount && hasCashAccount) {
         entry.lines.forEach((line) => {
-          if (cashAccountIds.includes(line.accountId) && line.currency === currency) {
+          if (
+            cashAccountIds.includes(line.accountId) &&
+            line.currency === currency
+          ) {
             if (line.direction === LineDirection.DEBIT) {
               cashFlow += parseFloat(line.amountNative);
             } else {
@@ -1143,9 +1219,7 @@ export class LedgerService {
 
     const saved = await this.reconciliationRepository.save(reconciliation);
 
-    this.logger.log(
-      `Created reconciliation: ${saved.id} for org ${dto.orgId}`,
-    );
+    this.logger.log(`Created reconciliation: ${saved.id} for org ${dto.orgId}`);
     this.eventEmitter.emit('reconciliation.created', {
       reconciliationId: saved.id,
       orgId: dto.orgId,
@@ -1354,7 +1428,9 @@ export class LedgerService {
     for (const entry of unmatchedEntries) {
       const totalAmount = entry.lines.reduce((sum, line) => {
         const amount = parseFloat(line.amountNative);
-        return sum + (line.direction === LineDirection.DEBIT ? amount : -amount);
+        return (
+          sum + (line.direction === LineDirection.DEBIT ? amount : -amount)
+        );
       }, 0);
 
       if (Math.abs(totalAmount) > 0.0001) {

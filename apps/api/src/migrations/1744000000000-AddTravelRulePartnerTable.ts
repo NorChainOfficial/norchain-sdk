@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddTravelRulePartnerTable1744000000000 implements MigrationInterface {
+export class AddTravelRulePartnerTable1744000000000
+  implements MigrationInterface
+{
   name = 'AddTravelRulePartnerTable1744000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -41,4 +43,3 @@ export class AddTravelRulePartnerTable1744000000000 implements MigrationInterfac
     `);
   }
 }
-

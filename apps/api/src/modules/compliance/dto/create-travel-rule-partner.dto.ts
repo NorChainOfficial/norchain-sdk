@@ -7,7 +7,10 @@ import {
   IsArray,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PartnerType, PartnerStatus } from '../entities/travel-rule-partner.entity';
+import {
+  PartnerType,
+  PartnerStatus,
+} from '../entities/travel-rule-partner.entity';
 
 export class CreateTravelRulePartnerDto {
   @ApiProperty({
@@ -84,4 +87,3 @@ export class CreateTravelRulePartnerDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

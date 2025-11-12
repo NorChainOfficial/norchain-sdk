@@ -100,4 +100,3 @@ export class CreateCouponDto {
   @IsBoolean()
   appliesToProducts?: boolean;
 }
-

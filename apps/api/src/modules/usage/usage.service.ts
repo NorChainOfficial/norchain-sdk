@@ -115,7 +115,8 @@ export class UsageService {
     count: number,
     tier: string = 'free',
   ): string {
-    const pricing = PRICING_TIERS[tier as keyof typeof PRICING_TIERS] || PRICING_TIERS.free;
+    const pricing =
+      PRICING_TIERS[tier as keyof typeof PRICING_TIERS] || PRICING_TIERS.free;
 
     let unitCost = '0';
     switch (type) {
@@ -242,14 +243,10 @@ export class UsageService {
       | Array<{ apiKeyId: string; calls: number; cost: string }>
       | undefined;
     if (dto.apiKeyId) {
-      const byApiKeyMap = new Map<
-        string,
-        { calls: number; cost: number }
-      >();
+      const byApiKeyMap = new Map<string, { calls: number; cost: number }>();
       usage.forEach((u) => {
         if (u.apiKeyId) {
-          const existing =
-            byApiKeyMap.get(u.apiKeyId) || { calls: 0, cost: 0 };
+          const existing = byApiKeyMap.get(u.apiKeyId) || { calls: 0, cost: 0 };
           byApiKeyMap.set(u.apiKeyId, {
             calls: existing.calls + u.count,
             cost: existing.cost + parseFloat(u.cost),
@@ -356,7 +353,8 @@ export class UsageService {
 
     // Determine tier (simplified - in production, get from user subscription)
     const tier = 'free'; // TODO: Get from user subscription
-    const pricing = PRICING_TIERS[tier as keyof typeof PRICING_TIERS] || PRICING_TIERS.free;
+    const pricing =
+      PRICING_TIERS[tier as keyof typeof PRICING_TIERS] || PRICING_TIERS.free;
     const baseCost = parseFloat(pricing.baseCost);
     const usageCost = totals.totalCost;
 
@@ -442,7 +440,8 @@ export class UsageService {
 
     // Get tier limit (simplified)
     const tier = 'free';
-    const pricing = PRICING_TIERS[tier as keyof typeof PRICING_TIERS] || PRICING_TIERS.free;
+    const pricing =
+      PRICING_TIERS[tier as keyof typeof PRICING_TIERS] || PRICING_TIERS.free;
     const limit = pricing.monthlyLimit;
 
     return {
@@ -455,4 +454,3 @@ export class UsageService {
     };
   }
 }
-

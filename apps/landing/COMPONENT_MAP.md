@@ -5,7 +5,7 @@
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  HEADER (Fixed Top)                                     │
-│  - Logo + Xaheen                                        │
+│  - Logo + NorChain                                        │
 │  - Navigation: Explorer, DEX, Bridge, Staking, Docs     │
 │  - Launch App CTA                                       │
 │  File: components/Header.tsx (116 lines)                │
@@ -13,7 +13,7 @@
                           ↓
 ┌─────────────────────────────────────────────────────────┐
 │  HERO SECTION (Above Fold)                              │
-│  - Xaheen Logo (white rounded square)                   │
+│  - NorChain Logo (white rounded square)                   │
 │  - "Blockchain. Fast. Affordable. For Good."            │
 │  - Subtitle with charity message                        │
 │  - Live Stats Bar (4 metrics)                           │
@@ -51,7 +51,7 @@
 ┌─────────────────────────────────────────────────────────┐
 │  WHY XAHEEN? (Comparison Table)                         │
 │  ┌──────────────┬────────┬─────────┬────────┐          │
-│  │   Feature    │ Xaheen │Ethereum │Polygon │          │
+│  │   Feature    │ NorChain │Ethereum │Polygon │          │
 │  ├──────────────┼────────┼─────────┼────────┤          │
 │  │ Block Time   │   3s   │   12s   │   2s   │          │
 │  │ Gas Fees     │<$0.001 │ $5-50   │$0.01-05│          │
@@ -61,7 +61,7 @@
 │  │ Charity      │✅ 5%   │   ❌    │   ❌   │          │
 │  │ Carbon       │✅Offset│  ✅ PoS │ ✅ PoS │          │
 │  └──────────────┴────────┴─────────┴────────┘          │
-│  File: components/WhyXaheen.tsx (69 lines)              │
+│  File: components/WhyNorChain.tsx (69 lines)              │
 └─────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -113,7 +113,7 @@
 ┌─────────────────────────────────────────────────────────┐
 │  FAQ (5 Categories, 15+ Questions)                      │
 │  1️⃣ General (3 questions)                               │
-│     ▸ What is Xaheen Chain?                             │
+│     ▸ What is NorChain Chain?                             │
 │     ▸ How different from Ethereum?                      │
 │     ▸ Is it decentralized?                              │
 │                                                          │
@@ -153,7 +153,7 @@
 │  │Governance│Bug Bounty│   Blog   │  Terms   │         │
 │  └──────────┴──────────┴──────────┴──────────┘         │
 │                                                          │
-│  © 2025 Xaheen | Privacy | Terms | Cookies              │
+│  © 2025 NorChain | Privacy | Terms | Cookies              │
 │  Chain ID: 65001 | RPC: rpc.xaheen.org | Symbol: XHT    │
 │  File: components/Footer.tsx (141 lines)                │
 └─────────────────────────────────────────────────────────┘
@@ -191,9 +191,9 @@ app/page.tsx (Main Page)
 │   │   └── RPC Call → eth_blockNumber
 │   └── Network Info Card
 │
-├── WhyXaheen.tsx
+├── WhyNorChain.tsx
 │   └── Comparison Table
-│       ├── Xaheen Column (highlighted)
+│       ├── NorChain Column (highlighted)
 │       ├── Ethereum Column
 │       └── Polygon Column
 │
@@ -283,7 +283,7 @@ Blockchain RPC (https://rpc.xaheen.org)
 | Hero | 277 | 3s | MetaMask + Stats |
 | Features | 56 | Static | Value props |
 | NetworkStats | 136 | 3s | Live metrics |
-| WhyXaheen | 69 | Static | Comparison |
+| WhyNorChain | 69 | Static | Comparison |
 | CharityImpact | 144 | 5s | Social impact |
 | TechnologyStack | 106 | Static | Technical |
 | Roadmap | 150 | Static | Timeline |
@@ -323,7 +323,7 @@ NETWORK STATS
 COMPARISON TABLE
 ├── Background: White
 ├── Header: Blue-600 gradient
-├── Xaheen column: Blue-50 background
+├── NorChain column: Blue-50 background
 └── Text: Gray-900
 
 CHARITY IMPACT
@@ -381,7 +381,7 @@ SECONDARY CTAs:
 5. Investor Deck (Hero) → Downloads PDF
 6. Read Docs (Multiple) → docs.xaheen.org
 7. Join Discord (FAQ + Community)
-8. Download Whitepaper (Why Xaheen)
+8. Download Whitepaper (Why NorChain)
 9. View on GitHub (Community)
 10. Subscribe Newsletter (Community)
 ```

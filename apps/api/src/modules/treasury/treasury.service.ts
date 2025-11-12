@@ -6,8 +6,16 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RevenueDistribution, DistributionType, DistributionStatus } from './entities/revenue-distribution.entity';
-import { StakingReward, RewardType, RewardStatus } from './entities/staking-reward.entity';
+import {
+  RevenueDistribution,
+  DistributionType,
+  DistributionStatus,
+} from './entities/revenue-distribution.entity';
+import {
+  StakingReward,
+  RewardType,
+  RewardStatus,
+} from './entities/staking-reward.entity';
 import { DistributeRevenueDto } from './dto/distribute-revenue.dto';
 import { CreateStakingRewardDto } from './dto/create-staking-reward.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -37,7 +45,9 @@ export class TreasuryService {
   /**
    * Distribute revenue according to configured percentages
    */
-  async distributeRevenue(dto: DistributeRevenueDto): Promise<RevenueDistribution[]> {
+  async distributeRevenue(
+    dto: DistributeRevenueDto,
+  ): Promise<RevenueDistribution[]> {
     const totalRevenue = parseFloat(dto.totalRevenue);
     if (totalRevenue <= 0) {
       throw new BadRequestException('Total revenue must be greater than 0');
@@ -45,28 +55,54 @@ export class TreasuryService {
 
     // Use custom percentages if provided, otherwise use defaults
     const percentages = {
-      validatorRewards: dto.distributionPercentages?.validatorRewards ?? this.DEFAULT_DISTRIBUTION.validatorRewards,
-      developerGrants: dto.distributionPercentages?.developerGrants ?? this.DEFAULT_DISTRIBUTION.developerGrants,
-      aiFund: dto.distributionPercentages?.aiFund ?? this.DEFAULT_DISTRIBUTION.aiFund,
-      charityEsg: dto.distributionPercentages?.charityEsg ?? this.DEFAULT_DISTRIBUTION.charityEsg,
-      treasuryReserve: dto.distributionPercentages?.treasuryReserve ?? this.DEFAULT_DISTRIBUTION.treasuryReserve,
+      validatorRewards:
+        dto.distributionPercentages?.validatorRewards ??
+        this.DEFAULT_DISTRIBUTION.validatorRewards,
+      developerGrants:
+        dto.distributionPercentages?.developerGrants ??
+        this.DEFAULT_DISTRIBUTION.developerGrants,
+      aiFund:
+        dto.distributionPercentages?.aiFund ?? this.DEFAULT_DISTRIBUTION.aiFund,
+      charityEsg:
+        dto.distributionPercentages?.charityEsg ??
+        this.DEFAULT_DISTRIBUTION.charityEsg,
+      treasuryReserve:
+        dto.distributionPercentages?.treasuryReserve ??
+        this.DEFAULT_DISTRIBUTION.treasuryReserve,
     };
 
     // Validate percentages sum to 100%
-    const totalPercentage = Object.values(percentages).reduce((sum, p) => sum + p, 0);
+    const totalPercentage = Object.values(percentages).reduce(
+      (sum, p) => sum + p,
+      0,
+    );
     if (Math.abs(totalPercentage - 100.0) > 0.01) {
-      throw new BadRequestException(`Distribution percentages must sum to 100% (got ${totalPercentage}%)`);
+      throw new BadRequestException(
+        `Distribution percentages must sum to 100% (got ${totalPercentage}%)`,
+      );
     }
 
     const distributions: RevenueDistribution[] = [];
 
     // Create distribution records
     const distributionTypes = [
-      { type: DistributionType.VALIDATOR_REWARDS, percentage: percentages.validatorRewards },
-      { type: DistributionType.DEVELOPER_GRANTS, percentage: percentages.developerGrants },
+      {
+        type: DistributionType.VALIDATOR_REWARDS,
+        percentage: percentages.validatorRewards,
+      },
+      {
+        type: DistributionType.DEVELOPER_GRANTS,
+        percentage: percentages.developerGrants,
+      },
       { type: DistributionType.AI_FUND, percentage: percentages.aiFund },
-      { type: DistributionType.CHARITY_ESG, percentage: percentages.charityEsg },
-      { type: DistributionType.TREASURY_RESERVE, percentage: percentages.treasuryReserve },
+      {
+        type: DistributionType.CHARITY_ESG,
+        percentage: percentages.charityEsg,
+      },
+      {
+        type: DistributionType.TREASURY_RESERVE,
+        percentage: percentages.treasuryReserve,
+      },
     ];
 
     for (const { type, percentage } of distributionTypes) {
@@ -123,22 +159,31 @@ export class TreasuryService {
   /**
    * Create staking reward
    */
-  async createStakingReward(dto: CreateStakingRewardDto): Promise<StakingReward> {
+  async createStakingReward(
+    dto: CreateStakingRewardDto,
+  ): Promise<StakingReward> {
     // Validate addresses based on reward type
     if (
-      (dto.type === RewardType.VALIDATOR_STAKING || dto.type === RewardType.DELEGATOR_STAKING) &&
+      (dto.type === RewardType.VALIDATOR_STAKING ||
+        dto.type === RewardType.DELEGATOR_STAKING) &&
       !dto.validatorAddress
     ) {
-      throw new BadRequestException('Validator address required for validator/delegator rewards');
+      throw new BadRequestException(
+        'Validator address required for validator/delegator rewards',
+      );
     }
 
     if (dto.type === RewardType.DELEGATOR_STAKING && !dto.delegatorAddress) {
-      throw new BadRequestException('Delegator address required for delegator rewards');
+      throw new BadRequestException(
+        'Delegator address required for delegator rewards',
+      );
     }
 
     const reward = this.stakingRewardRepository.create({
       ...dto,
-      claimableUntil: dto.claimableUntil ? new Date(dto.claimableUntil) : undefined,
+      claimableUntil: dto.claimableUntil
+        ? new Date(dto.claimableUntil)
+        : undefined,
       status: RewardStatus.PENDING,
     });
 
@@ -161,7 +206,10 @@ export class TreasuryService {
   /**
    * Claim staking reward
    */
-  async claimReward(rewardId: string, recipientAddress: string): Promise<StakingReward> {
+  async claimReward(
+    rewardId: string,
+    recipientAddress: string,
+  ): Promise<StakingReward> {
     const reward = await this.stakingRewardRepository.findOne({
       where: { id: rewardId },
     });
@@ -245,18 +293,20 @@ export class TreasuryService {
   async getClaimableRewards(address: string): Promise<StakingReward[]> {
     const now = new Date();
 
-    return this.stakingRewardRepository.find({
-      where: [
-        { delegatorAddress: address, status: RewardStatus.PENDING },
-        { validatorAddress: address, status: RewardStatus.PENDING },
-      ],
-      order: { createdAt: 'DESC' },
-    }).then((rewards) =>
-      rewards.filter(
-        (reward) =>
-          !reward.claimableUntil || new Date(reward.claimableUntil) >= now,
-      ),
-    );
+    return this.stakingRewardRepository
+      .find({
+        where: [
+          { delegatorAddress: address, status: RewardStatus.PENDING },
+          { validatorAddress: address, status: RewardStatus.PENDING },
+        ],
+        order: { createdAt: 'DESC' },
+      })
+      .then((rewards) =>
+        rewards.filter(
+          (reward) =>
+            !reward.claimableUntil || new Date(reward.claimableUntil) >= now,
+        ),
+      );
   }
 
   /**
@@ -307,4 +357,3 @@ export class TreasuryService {
     };
   }
 }
-

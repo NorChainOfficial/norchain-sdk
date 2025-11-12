@@ -1,4 +1,10 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex, TableForeignKey } from 'typeorm';
+import {
+  MigrationInterface,
+  QueryRunner,
+  Table,
+  TableIndex,
+  TableForeignKey,
+} from 'typeorm';
 
 export class AddUsageTables1740000000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -37,7 +43,12 @@ export class AddUsageTables1740000000000 implements MigrationInterface {
           {
             name: 'type',
             type: 'enum',
-            enum: ['api_call', 'rpc_call', 'streaming_connection', 'webhook_delivery'],
+            enum: [
+              'api_call',
+              'rpc_call',
+              'streaming_connection',
+              'webhook_delivery',
+            ],
             default: "'api_call'",
           },
           {
@@ -256,4 +267,3 @@ export class AddUsageTables1740000000000 implements MigrationInterface {
     await queryRunner.dropTable('api_usage');
   }
 }
-

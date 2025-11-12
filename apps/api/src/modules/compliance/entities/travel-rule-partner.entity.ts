@@ -42,16 +42,31 @@ export class TravelRulePartner {
   @Column({ type: 'varchar', length: 10, nullable: true })
   jurisdiction?: string; // ISO country code
 
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'api_endpoint' })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    name: 'api_endpoint',
+  })
   apiEndpoint?: string; // API endpoint for Travel Rule communication
 
   @Column({ type: 'varchar', length: 255, nullable: true, name: 'public_key' })
   publicKey?: string; // Public key for encrypted communication
 
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'contact_email' })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    name: 'contact_email',
+  })
   contactEmail?: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: true, name: 'contact_phone' })
+  @Column({
+    type: 'varchar',
+    length: 50,
+    nullable: true,
+    name: 'contact_phone',
+  })
   contactPhone?: string;
 
   @Column({
@@ -70,7 +85,13 @@ export class TravelRulePartner {
   @Column({ type: 'int', default: 0, name: 'transactions_count' })
   transactionsCount: number; // Number of Travel Rule transactions processed
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, nullable: true, name: 'success_rate' })
+  @Column({
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+    name: 'success_rate',
+  })
   successRate?: number; // Success rate percentage
 
   @CreateDateColumn({ name: 'created_at' })
@@ -79,4 +100,3 @@ export class TravelRulePartner {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

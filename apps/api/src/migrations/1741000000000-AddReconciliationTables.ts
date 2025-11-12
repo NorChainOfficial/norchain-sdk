@@ -1,6 +1,8 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class AddReconciliationTables1741000000000 implements MigrationInterface {
+export class AddReconciliationTables1741000000000
+  implements MigrationInterface
+{
   name = 'AddReconciliationTables1741000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -66,4 +68,3 @@ export class AddReconciliationTables1741000000000 implements MigrationInterface 
     `);
   }
 }
-

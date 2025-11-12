@@ -2,7 +2,7 @@
 
 ## ✅ BUILD SUCCESSFUL!
 
-Your Xaheen Chain landing page has been successfully built and is ready for deployment!
+Your NorChain Chain landing page has been successfully built and is ready for deployment!
 
 ---
 
@@ -13,7 +13,7 @@ Your Xaheen Chain landing page has been successfully built and is ready for depl
 2. ✅ **Hero** - MetaMask integration + live stats
 3. ✅ **Features** - 4 key value propositions
 4. ✅ **Network Stats** - Real-time blockchain data
-5. ✅ **Why Xaheen** - Comparison table
+5. ✅ **Why NorChain** - Comparison table
 6. ✅ **Charity Impact** - Live donation counter
 7. ✅ **Technology Stack** - Technical overview
 8. ✅ **Roadmap** - Timeline Q4 2024 - Q4 2025
@@ -87,7 +87,7 @@ File: `components/Hero.tsx` (line 37-51)
 
 ```typescript
 chainId: '0xFDE9',           // 65001 in hex
-chainName: 'Xaheen Chain',
+chainName: 'NorChain Chain',
 rpcUrls: ['https://rpc.xaheen.org'],
 blockExplorerUrls: ['https://explorer.xaheen.org']
 ```
@@ -151,8 +151,8 @@ const faqs = [
     category: 'General',
     questions: [
       {
-        q: 'What is Xaheen Chain?',
-        a: 'Xaheen is an EVM-compatible...',
+        q: 'What is NorChain Chain?',
+        a: 'NorChain is an EVM-compatible...',
       },
       // ... more questions
     ]
@@ -186,7 +186,7 @@ Using Next.js default system fonts for optimal performance.
 ### Test the Integration
 
 1. Open http://localhost:3011
-2. Click "Add Xaheen to MetaMask" button
+2. Click "Add NorChain to MetaMask" button
 3. Approve in MetaMask popup
 4. Verify network added successfully
 
@@ -384,7 +384,7 @@ Always deploy with HTTPS enabled:
 
 ## ✨ Success!
 
-Your Xaheen Chain landing page is **ready for production**!
+Your NorChain Chain landing page is **ready for production**!
 
 **Build Status:** ✅ SUCCESS  
 **Components:** 11/11 Complete  
@@ -403,4 +403,4 @@ vercel --prod
 
 ---
 
-**Built with ❤️ for the Xaheen community**
+**Built with ❤️ for the NorChain community**

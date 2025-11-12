@@ -92,16 +92,17 @@ export class TreasuryController {
     status: 200,
     description: 'Reward claimed successfully',
   })
-  @ApiResponse({ status: 400, description: 'Reward already claimed or expired' })
+  @ApiResponse({
+    status: 400,
+    description: 'Reward already claimed or expired',
+  })
   async claimReward(
     @Param('id', ParseUUIDPipe) rewardId: string,
     @Body() dto: ClaimRewardDto,
     @Request() req: any,
   ) {
     const recipientAddress =
-      dto.recipientAddress ||
-      req.user.address?.toLowerCase() ||
-      req.user.id;
+      dto.recipientAddress || req.user.address?.toLowerCase() || req.user.id;
     return this.treasuryService.claimReward(rewardId, recipientAddress);
   }
 
@@ -167,4 +168,3 @@ export class TreasuryController {
     return this.treasuryService.getPeriodRewardsSummary(period);
   }
 }
-

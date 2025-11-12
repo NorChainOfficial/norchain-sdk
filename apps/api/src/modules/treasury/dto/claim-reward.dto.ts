@@ -1,7 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ClaimRewardDto {
@@ -18,4 +15,3 @@ export class ClaimRewardDto {
   @IsString()
   recipientAddress?: string;
 }
-

@@ -71,7 +71,13 @@ export class Coupon {
   @Column({ type: 'timestamp', nullable: true, name: 'valid_until' })
   validUntil?: Date;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, name: 'minimum_amount' })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    name: 'minimum_amount',
+  })
   minimumAmount?: string; // Minimum purchase amount in NOR
 
   @Column({ type: 'boolean', default: false, name: 'applies_to_subscriptions' })
@@ -86,4 +92,3 @@ export class Coupon {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

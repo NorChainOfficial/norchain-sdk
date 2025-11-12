@@ -379,8 +379,7 @@ export class LedgerController {
   @Idempotent()
   @ApiOperation({
     summary: 'Match a transaction',
-    description:
-      'Manually match a ledger entry with an external transaction',
+    description: 'Manually match a ledger entry with an external transaction',
   })
   @ApiHeader({
     name: 'Idempotency-Key',

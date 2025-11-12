@@ -86,4 +86,3 @@ export class UsageBilling {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

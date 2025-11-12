@@ -32,4 +32,3 @@ export class AddGroupMemberTable1742000000000 implements MigrationInterface {
     `);
   }
 }
-

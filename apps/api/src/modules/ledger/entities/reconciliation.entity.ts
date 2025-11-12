@@ -61,19 +61,49 @@ export class Reconciliation {
   })
   status: ReconciliationStatus;
 
-  @Column({ type: 'decimal', precision: 36, scale: 18, default: '0', name: 'opening_balance' })
+  @Column({
+    type: 'decimal',
+    precision: 36,
+    scale: 18,
+    default: '0',
+    name: 'opening_balance',
+  })
   openingBalance: string;
 
-  @Column({ type: 'decimal', precision: 36, scale: 18, default: '0', name: 'closing_balance' })
+  @Column({
+    type: 'decimal',
+    precision: 36,
+    scale: 18,
+    default: '0',
+    name: 'closing_balance',
+  })
   closingBalance: string;
 
-  @Column({ type: 'decimal', precision: 36, scale: 18, default: '0', name: 'ledger_total' })
+  @Column({
+    type: 'decimal',
+    precision: 36,
+    scale: 18,
+    default: '0',
+    name: 'ledger_total',
+  })
   ledgerTotal: string; // Sum of ledger movements
 
-  @Column({ type: 'decimal', precision: 36, scale: 18, default: '0', name: 'external_total' })
+  @Column({
+    type: 'decimal',
+    precision: 36,
+    scale: 18,
+    default: '0',
+    name: 'external_total',
+  })
   externalTotal: string; // Sum of external transactions
 
-  @Column({ type: 'decimal', precision: 36, scale: 18, default: '0', name: 'difference' })
+  @Column({
+    type: 'decimal',
+    precision: 36,
+    scale: 18,
+    default: '0',
+    name: 'difference',
+  })
   difference: string; // ledgerTotal - externalTotal
 
   @Column({ type: 'int', default: 0, name: 'matched_count' })
@@ -97,4 +127,3 @@ export class Reconciliation {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

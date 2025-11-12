@@ -1,7 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-} from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateGroupDto {
@@ -26,4 +23,3 @@ export class UpdateGroupDto {
   @IsOptional()
   metadata?: Record<string, any>;
 }
-

@@ -34,7 +34,12 @@ export class ReconciliationMatch {
   @Column({ type: 'uuid', nullable: true, name: 'ledger_entry_id' })
   ledgerEntryId?: string; // Journal entry ID
 
-  @Column({ type: 'varchar', length: 255, nullable: true, name: 'external_transaction_id' })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+    name: 'external_transaction_id',
+  })
   externalTransactionId?: string; // External transaction reference
 
   @Column({ type: 'decimal', precision: 36, scale: 18 })
@@ -50,7 +55,13 @@ export class ReconciliationMatch {
   })
   matchType: MatchType;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true, name: 'confidence_score' })
+  @Column({
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: true,
+    name: 'confidence_score',
+  })
   confidenceScore?: number; // 0-100 for fuzzy matches
 
   @Column({ type: 'jsonb', nullable: true })
@@ -59,4 +70,3 @@ export class ReconciliationMatch {
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 }
-

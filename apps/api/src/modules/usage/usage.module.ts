@@ -16,4 +16,3 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
   exports: [UsageService],
 })
 export class UsageModule {}
-

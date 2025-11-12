@@ -73,4 +73,3 @@ export class RevenueDistribution {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

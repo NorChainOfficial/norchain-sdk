@@ -292,7 +292,11 @@ export class MessagingController {
     @Param('memberDid') memberDid: string,
   ) {
     const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
-    await this.messagingService.removeGroupMember(conversationId, memberDid, userDid);
+    await this.messagingService.removeGroupMember(
+      conversationId,
+      memberDid,
+      userDid,
+    );
     return { success: true };
   }
 
@@ -317,7 +321,12 @@ export class MessagingController {
     @Query('role') role: GroupMemberRole,
   ) {
     const userDid = `did:pkh:eip155:65001:${req.user.address?.toLowerCase() || req.user.id}`;
-    return this.messagingService.updateMemberRole(conversationId, memberDid, role, userDid);
+    return this.messagingService.updateMemberRole(
+      conversationId,
+      memberDid,
+      role,
+      userDid,
+    );
   }
 
   @Get('groups/:id/members')

@@ -1,9 +1,4 @@
-import {
-  IsString,
-  IsOptional,
-  IsDateString,
-  IsEnum,
-} from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsEnum } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export enum ReportType {
@@ -57,7 +52,8 @@ export class GetFinancialReportDto {
   endDate?: string;
 
   @ApiPropertyOptional({
-    description: 'Period identifier (e.g., "2025-01" for monthly, "2025-Q1" for quarterly, "2025" for yearly)',
+    description:
+      'Period identifier (e.g., "2025-01" for monthly, "2025-Q1" for quarterly, "2025" for yearly)',
   })
   @IsOptional()
   @IsString()
@@ -78,4 +74,3 @@ export class GetFinancialReportDto {
   @IsString()
   currency?: string;
 }
-

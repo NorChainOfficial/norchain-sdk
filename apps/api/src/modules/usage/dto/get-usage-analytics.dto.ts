@@ -41,4 +41,3 @@ export class GetUsageAnalyticsDto {
   @IsEnum(BillingPeriod)
   groupBy?: BillingPeriod;
 }
-

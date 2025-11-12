@@ -6,6 +6,8 @@ import { LedgerAccount } from './entities/ledger-account.entity';
 import { JournalEntry, JournalEntryStatus } from './entities/journal-entry.entity';
 import { JournalLine } from './entities/journal-line.entity';
 import { PeriodClosure } from './entities/period-closure.entity';
+import { Reconciliation } from './entities/reconciliation.entity';
+import { ReconciliationMatch } from './entities/reconciliation-match.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BadRequestException, NotFoundException, ConflictException } from '@nestjs/common';
 import { AccountStatus, AccountType } from './entities/ledger-account.entity';
@@ -63,6 +65,24 @@ describe('LedgerService', () => {
     save: jest.fn(),
   };
 
+  const mockReconciliationRepository = {
+    findOne: jest.fn(),
+    find: jest.fn(),
+    findAndCount: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    remove: jest.fn(),
+    delete: jest.fn(),
+  };
+
+  const mockReconciliationMatchRepository = {
+    findOne: jest.fn(),
+    find: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    remove: jest.fn(),
+  };
+
   const mockTransaction = {
     create: jest.fn(),
     save: jest.fn(),
@@ -95,6 +115,14 @@ describe('LedgerService', () => {
         {
           provide: getRepositoryToken(PeriodClosure),
           useValue: mockClosureRepository,
+        },
+        {
+          provide: getRepositoryToken(Reconciliation),
+          useValue: mockReconciliationRepository,
+        },
+        {
+          provide: getRepositoryToken(ReconciliationMatch),
+          useValue: mockReconciliationMatchRepository,
         },
         {
           provide: DataSource,

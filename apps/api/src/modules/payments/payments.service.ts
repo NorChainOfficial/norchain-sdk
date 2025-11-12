@@ -1114,10 +1114,7 @@ export class PaymentsService {
   /**
    * Create a coupon
    */
-  async createCoupon(
-    dto: CreateCouponDto,
-    userId: string,
-  ): Promise<Coupon> {
+  async createCoupon(dto: CreateCouponDto, userId: string): Promise<Coupon> {
     // Check if coupon code already exists for this org
     const existing = await this.couponRepository.findOne({
       where: { code: dto.code.toUpperCase(), orgId: dto.orgId },
@@ -1151,10 +1148,7 @@ export class PaymentsService {
   /**
    * Get coupons for an organization
    */
-  async getCoupons(
-    orgId: string,
-    status?: CouponStatus,
-  ): Promise<Coupon[]> {
+  async getCoupons(orgId: string, status?: CouponStatus): Promise<Coupon[]> {
     const where: any = { orgId };
     if (status) {
       where.status = status;
@@ -1261,7 +1255,8 @@ export class PaymentsService {
       if (percentage < 0 || percentage > 100) {
         throw new BadRequestException('Invalid discount percentage');
       }
-      discountAmountWei = (amountWei * BigInt(Math.floor(percentage * 100))) / BigInt(10000);
+      discountAmountWei =
+        (amountWei * BigInt(Math.floor(percentage * 100))) / BigInt(10000);
     } else {
       // Fixed amount - discountValue is in NOR
       discountAmountWei = ethers.parseEther(coupon.discountValue);

@@ -22,7 +22,11 @@ import { TravelRulePrecheckDto } from './dto/travel-rule-precheck.dto';
 import { UpdateCaseDto } from './dto/update-case.dto';
 import { AddCaseNoteDto } from './dto/add-case-note.dto';
 import { CreateTravelRulePartnerDto } from './dto/create-travel-rule-partner.dto';
-import { TravelRulePartner, PartnerStatus, PartnerType } from './entities/travel-rule-partner.entity';
+import {
+  TravelRulePartner,
+  PartnerStatus,
+  PartnerType,
+} from './entities/travel-rule-partner.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
@@ -276,7 +280,10 @@ export class ComplianceService {
 
     if (dto.status !== undefined) {
       case_.status = dto.status;
-      if (dto.status === CaseStatus.RESOLVED || dto.status === CaseStatus.CLOSED) {
+      if (
+        dto.status === CaseStatus.RESOLVED ||
+        dto.status === CaseStatus.CLOSED
+      ) {
         case_.resolvedAt = new Date();
       }
     }
@@ -357,7 +364,9 @@ export class ComplianceService {
     });
 
     if (existing) {
-      throw new BadRequestException(`Partner with name ${dto.name} already exists`);
+      throw new BadRequestException(
+        `Partner with name ${dto.name} already exists`,
+      );
     }
 
     const partner = this.travelRulePartnerRepository.create({
@@ -413,12 +422,13 @@ export class ComplianceService {
       where.jurisdiction = jurisdiction;
     }
 
-    const [partners, total] = await this.travelRulePartnerRepository.findAndCount({
-      where,
-      order: { createdAt: 'DESC' },
-      take: limit,
-      skip: offset,
-    });
+    const [partners, total] =
+      await this.travelRulePartnerRepository.findAndCount({
+        where,
+        order: { createdAt: 'DESC' },
+        take: limit,
+        skip: offset,
+      });
 
     return { partners, total };
   }
