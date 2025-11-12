@@ -3,48 +3,30 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getBlockchainService } from '@/lib/blockchain-service';
-import { dexService } from '@/lib/dex-service';
 
 export const SearchBar = (): JSX.Element => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [gasPrice, setGasPrice] = useState<string>('0');
   const [latestBlock, setLatestBlock] = useState<number>(0);
-  const [xhtPrice, setXhtPrice] = useState<number>(0);
-  const [priceChange, setPriceChange] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  // Fetch live blockchain stats and DEX price
+  // Fetch live blockchain stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setIsUpdating(true);
         const service = getBlockchainService();
-        const [gas, stats, price, priceChange24h] = await Promise.all([
+        const [gas, stats] = await Promise.all([
           service.getGasPrice(),
           service.getBlockchainStats(),
-          dexService.getNORPrice(),
-          dexService.get24hPriceChange(),
         ]);
 
         // Animate value changes
         setTimeout(() => {
           setGasPrice(gas);
           setLatestBlock(stats.latestBlock);
-
-          // Use real DEX price data
-          if (price?.priceInUSD) {
-            setXhtPrice(price.priceInUSD);
-          } else if (price?.priceInUSDT) {
-            // Use USDT price as USD equivalent
-            setXhtPrice(price.priceInUSDT);
-          }
-
-          if (priceChange24h !== null) {
-            setPriceChange(priceChange24h);
-          }
-
           setLoading(false);
           setIsUpdating(false);
         }, 300);
@@ -120,17 +102,6 @@ export const SearchBar = (): JSX.Element => {
 
           {/* Live Stats */}
           <div className="hidden lg:flex items-center gap-4">
-            {/* NOR Price */}
-            <div className={`flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg transition-all duration-300 ${isUpdating ? 'scale-105 border-indigo-500/50' : ''}`}>
-              <span className="text-slate-400 text-xs font-medium">NOR:</span>
-              <span className={`text-sm font-bold transition-all duration-300 ${priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                ${xhtPrice.toFixed(4)}
-              </span>
-              <span className={`text-xs font-semibold transition-all duration-300 ${priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {priceChange >= 0 ? '↑' : '↓'}{Math.abs(priceChange).toFixed(1)}%
-              </span>
-            </div>
-
             {/* Gas Price */}
             <div className={`flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-slate-700 rounded-lg transition-all duration-300 ${isUpdating ? 'scale-105 border-orange-500/50' : ''}`}>
               <svg className={`w-4 h-4 text-orange-400 transition-transform duration-300 ${isUpdating ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">

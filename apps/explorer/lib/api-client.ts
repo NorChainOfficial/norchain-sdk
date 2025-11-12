@@ -196,4 +196,18 @@ export const apiClient = {
     const result = await response.json();
     return result.data || result;
   },
+
+  getTokenHolders: async (address: string, { page = 1, per_page = 20 }: { page?: number; per_page?: number } = {}) => {
+    const response = await fetch(`${API_BASE_URL}/tokens/${address}/holders?page=${page}&per_page=${per_page}`);
+    if (!response.ok) throw new Error('Failed to fetch token holders');
+    const result = await response.json();
+    return result.data || result;
+  },
+
+  getTokenTransfers: async (address: string, { page = 1, per_page = 20 }: { page?: number; per_page?: number } = {}) => {
+    const response = await fetch(`${API_BASE_URL}/tokens/${address}/transfers?page=${page}&per_page=${per_page}`);
+    if (!response.ok) throw new Error('Failed to fetch token transfers');
+    const result = await response.json();
+    return result.data || result.transfers || result;
+  },
 };

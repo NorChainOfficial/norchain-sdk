@@ -1,4 +1,4 @@
-# NorChain Monorepo
+# NorChain
 
 **Core NorChain blockchain infrastructure in a single repository**
 

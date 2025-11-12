@@ -9,6 +9,10 @@ import Link from 'next/link';
 import { formatXAHEEN, truncateHash, isContractAddress } from '@/lib/utils';
 import { ContractBadge } from '@/components/ui/ContractBadge';
 import { CopyButton } from '@/components/ui/CopyButton';
+import { TokenHoldings } from '@/components/accounts/TokenHoldings';
+import { InternalTransactions } from '@/components/accounts/InternalTransactions';
+import { BalanceHistoryChart } from '@/components/accounts/BalanceHistoryChart';
+import { RiskScore } from '@/components/accounts/RiskScore';
 
 type TabType = 'overview' | 'transactions' | 'tokens' | 'contract';
 
@@ -59,8 +63,11 @@ export default function AddressDetailPage(): JSX.Element {
   const tabs: { id: TabType; label: string; count?: number }[] = [
     { id: 'overview', label: 'Overview' },
     { id: 'transactions', label: 'Transactions', count: account?.tx_count || 0 },
-    { id: 'tokens', label: 'Tokens', count: 1 }, // For now, just XAHEEN
+    { id: 'tokens', label: 'Tokens', count: 1 }, // Native token + ERC-20 tokens
   ];
+
+  // Add internal transactions tab if available
+  const hasInternalTxs = false; // TODO: Check if address has internal transactions
 
   if (isContract) {
     tabs.push({ id: 'contract', label: 'Contract' });
@@ -137,17 +144,36 @@ export default function AddressDetailPage(): JSX.Element {
 
           {/* Tab Content */}
           <div className="p-6">
-            {activeTab === 'overview' && <OverviewTab account={account} isLoading={accountLoading} />}
-            {activeTab === 'transactions' && (
-              <TransactionsTab
-                transactions={txData?.data || []}
-                isLoading={txLoading}
-                pagination={txData?.meta}
-                currentPage={txPage}
-                onPageChange={setTxPage}
+            {activeTab === 'overview' && (
+              <OverviewTabEnhanced
+                address={address}
+                account={account}
+                isLoading={accountLoading}
               />
             )}
-            {activeTab === 'tokens' && <TokensTab account={account} isLoading={accountLoading} />}
+            {activeTab === 'transactions' && (
+              <div className="space-y-6">
+                <TransactionsTab
+                  transactions={txData?.data || []}
+                  isLoading={txLoading}
+                  pagination={txData?.meta}
+                  currentPage={txPage}
+                  onPageChange={setTxPage}
+                />
+                {/* Internal Transactions Section */}
+                <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Internal Transactions</h3>
+                  <InternalTransactions address={address} />
+                </div>
+              </div>
+            )}
+            {activeTab === 'tokens' && (
+              <TokensTabEnhanced
+                address={address}
+                account={account}
+                isLoading={accountLoading}
+              />
+            )}
             {activeTab === 'contract' && isContract && <ContractTab address={address} />}
           </div>
         </div>
@@ -307,15 +333,23 @@ function TransactionsTab({ transactions, isLoading, pagination, currentPage, onP
   );
 }
 
-// Tokens Tab Component
-function TokensTab({ account, isLoading }: { readonly account?: Account; readonly isLoading: boolean }): JSX.Element {
+// Enhanced Overview Tab Component
+function OverviewTabEnhanced({
+  address,
+  account,
+  isLoading,
+}: {
+  readonly address: string;
+  readonly account?: Account;
+  readonly isLoading: boolean;
+}): JSX.Element {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="animate-pulse p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-3"></div>
-            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="animate-pulse flex justify-between py-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
           </div>
         ))}
       </div>
@@ -323,52 +357,68 @@ function TokensTab({ account, isLoading }: { readonly account?: Account; readonl
   }
 
   if (!account) {
+    return <div className="text-center text-gray-500 dark:text-gray-400 py-8">Account not found</div>;
+  }
+
+  const details = [
+    { label: 'Balance', value: `${formatXAHEEN(account.balance)} NOR`, highlight: true },
+    { label: 'Transaction Count', value: account.tx_count?.toString() || '0' },
+    { label: 'Account Type', value: account.type || 'standard' },
+    { label: 'First Seen', value: account.first_seen_at ? new Date(account.first_seen_at).toLocaleString() : 'Unknown' },
+    { label: 'Last Active', value: account.last_active_at ? new Date(account.last_active_at).toLocaleString() : 'Never' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Account Details */}
+      <div className="space-y-1">
+        {details.map((detail, index) => (
+          <div
+            key={index}
+            className="flex justify-between py-4 px-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg transition-colors"
+          >
+            <span className="text-gray-600 dark:text-gray-400 font-medium">{detail.label}</span>
+            <span className={`${detail.highlight ? 'text-blue-600 dark:text-blue-400 font-bold text-lg' : 'text-gray-900 dark:text-white'}`}>
+              {detail.value}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Risk Score */}
+      <RiskScore address={address} />
+
+      {/* Balance History */}
+      <BalanceHistoryChart address={address} />
+    </div>
+  );
+}
+
+// Enhanced Tokens Tab Component
+function TokensTabEnhanced({
+  address,
+  account,
+  isLoading,
+}: {
+  readonly address: string;
+  readonly account?: Account;
+  readonly isLoading: boolean;
+}): JSX.Element {
+  if (!account) {
     return <div className="text-center text-gray-500 dark:text-gray-400 py-8">No token data available</div>;
   }
 
-  return (
-    <div className="space-y-4">
-      {/* XAHEEN Token */}
-      <div className="p-6 border-2 border-blue-200 dark:border-blue-800 rounded-xl bg-blue-50 dark:bg-blue-900/20">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-600">
-              <span className="text-white font-bold text-lg">₿</span>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">XAHEEN</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Nor (Native Token)</p>
-            </div>
-          </div>
-          <span className="px-3 py-1 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
-            Native
-          </span>
-        </div>
-        <div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Balance</p>
-          <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-            {formatXAHEEN(account.balance)}
-            <span className="text-lg ml-2 text-gray-600 dark:text-gray-400">XAHEEN</span>
-          </p>
-        </div>
-      </div>
+  // TODO: Fetch ERC-20 token holdings from API
+  // For now, just show native token
+  const tokenHoldings: any[] = []; // Will be populated from API
 
-      {/* Info Message */}
-      <div className="p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
-        <div className="flex items-start gap-3">
-          <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
-          <div>
-            <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">Token Information</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              XAHEEN is the native token of the Nor Chain with 26 decimal places.
-              Additional ERC-20 style tokens will be displayed here when the token standard is implemented.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+  return (
+    <TokenHoldings
+      address={address}
+      nativeBalance={account.balance || '0'}
+      tokenHoldings={tokenHoldings}
+      isLoading={isLoading}
+    />
   );
 }
 

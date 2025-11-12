@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getBlockchainService, type TokenInfo } from '@/lib/blockchain-service';
+import { TokenHolders } from '@/components/tokens/TokenHolders';
+import { TokenTransfers } from '@/components/tokens/TokenTransfers';
+import { TokenPrice } from '@/components/tokens/TokenPrice';
 
 // Known token addresses on NorChain
 // Only ERC-20 tokens should be added here
@@ -263,48 +266,85 @@ export default function TokensPage(): JSX.Element {
         </div>
       )}
 
-      {/* First Token Details Card (if tokens exist) */}
+      {/* Enhanced Token Details (if tokens exist) */}
       {!loading && tokens.length > 0 && (
-        <div className="mt-8 bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 p-8">
-          <div className="flex items-start gap-6">
-            <div className="h-16 w-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-2xl">
-                {tokens[0].symbol.substring(0, 2).toUpperCase()}
-              </span>
-            </div>
-            <div className="flex-1">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {tokens[0].name} ({tokens[0].symbol})
-              </h2>
-              <p className="text-gray-400 mb-4">
-                {tokens[0].symbol} token on NorChain - Live data from blockchain.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="p-4 bg-slate-700/50 rounded-lg">
-                  <div className="text-gray-400 text-sm mb-1">Contract</div>
-                  <Link
-                    href={`/address/${tokens[0].address}`}
-                    className="text-blue-400 hover:text-blue-300 font-mono text-sm"
-                  >
-                    {tokens[0].address.substring(0, 6)}...{tokens[0].address.substring(38)}
-                  </Link>
-                </div>
-                <div className="p-4 bg-slate-700/50 rounded-lg">
-                  <div className="text-gray-400 text-sm mb-1">Total Supply</div>
-                  <div className="text-white font-semibold">
-                    {parseFloat(tokens[0].totalSupply).toLocaleString(undefined, {
-                      maximumFractionDigits: 0,
-                    })}
+        <div className="mt-8 space-y-6">
+          {/* Token Overview Card */}
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-slate-700 p-8">
+            <div className="flex items-start gap-6">
+              <div className="h-16 w-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-2xl">
+                  {tokens[0].symbol.substring(0, 2).toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {tokens[0].name} ({tokens[0].symbol})
+                </h2>
+                <p className="text-gray-400 mb-4">
+                  {tokens[0].symbol} token on NorChain - Live data from blockchain.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="p-4 bg-slate-700/50 rounded-lg">
+                    <div className="text-gray-400 text-sm mb-1">Contract</div>
+                    <Link
+                      href={`/contracts/${tokens[0].address}`}
+                      className="text-blue-400 hover:text-blue-300 font-mono text-sm"
+                    >
+                      {tokens[0].address.substring(0, 6)}...{tokens[0].address.substring(38)}
+                    </Link>
+                  </div>
+                  <div className="p-4 bg-slate-700/50 rounded-lg">
+                    <div className="text-gray-400 text-sm mb-1">Total Supply</div>
+                    <div className="text-white font-semibold">
+                      {parseFloat(tokens[0].totalSupply).toLocaleString(undefined, {
+                        maximumFractionDigits: 0,
+                      })}
+                    </div>
+                  </div>
+                  <div className="p-4 bg-slate-700/50 rounded-lg">
+                    <div className="text-gray-400 text-sm mb-1">Decimals</div>
+                    <div className="text-white font-semibold">{tokens[0].decimals}</div>
+                  </div>
+                  <div className="p-4 bg-slate-700/50 rounded-lg">
+                    <div className="text-gray-400 text-sm mb-1">Type</div>
+                    <div className="text-white font-semibold">ERC-20</div>
                   </div>
                 </div>
-                <div className="p-4 bg-slate-700/50 rounded-lg">
-                  <div className="text-gray-400 text-sm mb-1">Decimals</div>
-                  <div className="text-white font-semibold">{tokens[0].decimals}</div>
-                </div>
-                <div className="p-4 bg-slate-700/50 rounded-lg">
-                  <div className="text-gray-400 text-sm mb-1">Type</div>
-                  <div className="text-white font-semibold">ERC-20</div>
-                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Token Details Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Price Information */}
+            <div className="lg:col-span-1">
+              <TokenPrice
+                tokenAddress={tokens[0].address}
+                symbol={tokens[0].symbol}
+                totalSupply={tokens[0].totalSupply}
+                decimals={tokens[0].decimals}
+              />
+            </div>
+
+            {/* Holders and Transfers */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Token Holders */}
+              <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
+                <TokenHolders
+                  tokenAddress={tokens[0].address}
+                  totalSupply={tokens[0].totalSupply}
+                  decimals={tokens[0].decimals}
+                />
+              </div>
+
+              {/* Token Transfers */}
+              <div className="bg-slate-800 rounded-lg border border-slate-700 p-6">
+                <TokenTransfers
+                  tokenAddress={tokens[0].address}
+                  decimals={tokens[0].decimals}
+                  symbol={tokens[0].symbol}
+                />
               </div>
             </div>
           </div>

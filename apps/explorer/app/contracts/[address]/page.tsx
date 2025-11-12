@@ -23,6 +23,9 @@ import {
   LightningBoltIcon,
   ClockIcon
 } from '@/components/icons/Icons';
+import { ContractVerificationForm } from '@/components/contracts/ContractVerificationForm';
+import { AbiViewer } from '@/components/contracts/AbiViewer';
+import { SourceCodeViewer } from '@/components/contracts/SourceCodeViewer';
 
 interface ContractDetails {
   readonly address: string;
@@ -32,6 +35,12 @@ interface ContractDetails {
   readonly isToken: boolean;
   readonly tokenInfo: TokenInfo | null;
   readonly transactionCount?: number;
+  readonly isVerified?: boolean;
+  readonly sourceCode?: string;
+  readonly contractName?: string;
+  readonly compilerVersion?: string;
+  readonly license?: string;
+  readonly abi?: any;
 }
 
 export default function ContractDetailPage(): JSX.Element {
@@ -41,7 +50,7 @@ export default function ContractDetailPage(): JSX.Element {
   const [contract, setContract] = useState<ContractDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'code' | 'read' | 'write' | 'events' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'code' | 'read' | 'write' | 'events' | 'analytics' | 'verify'>('overview');
   const [walletConnected, setWalletConnected] = useState(false);
   const [userAddress, setUserAddress] = useState<string>('');
 
@@ -86,6 +95,17 @@ export default function ContractDetailPage(): JSX.Element {
         let tokenInfo: TokenInfo | null = null;
         let isToken = false;
 
+        // Try to fetch contract details from API (verification status, ABI, source code)
+        let contractDetails: any = null;
+        try {
+          const contractResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/v1/contracts/${address}`);
+          if (contractResponse.ok) {
+            contractDetails = await contractResponse.json();
+          }
+        } catch (apiError) {
+          console.log('Could not fetch contract details from API:', apiError);
+        }
+
         if (isContract) {
           try {
             tokenInfo = await service.getTokenInfo(address);
@@ -108,6 +128,12 @@ export default function ContractDetailPage(): JSX.Element {
           isToken,
           tokenInfo,
           transactionCount,
+          isVerified: contractDetails?.isVerified || false,
+          sourceCode: contractDetails?.sourceCode,
+          contractName: contractDetails?.contractName,
+          compilerVersion: contractDetails?.compilerVersion,
+          license: contractDetails?.license,
+          abi: contractDetails?.abi,
         });
       } catch (err: any) {
         // Silently ignore ENS errors (network doesn't support ENS)
@@ -243,9 +269,15 @@ export default function ContractDetailPage(): JSX.Element {
                       <BadgeIcon className="w-3 h-3" /> ERC-20
                     </span>
                   )}
-                  <span className="px-3 py-1 text-xs font-semibold rounded-lg border bg-green-600/20 border-green-500/30 text-green-400 flex items-center gap-1">
-                    <CheckCircleIcon className="w-3 h-3" /> VERIFIED
-                  </span>
+                  {contract.isVerified ? (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-lg border bg-green-600/20 border-green-500/30 text-green-400 flex items-center gap-1">
+                      <CheckCircleIcon className="w-3 h-3" /> VERIFIED
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-lg border bg-yellow-600/20 border-yellow-500/30 text-yellow-400 flex items-center gap-1">
+                      <ShieldIcon className="w-3 h-3" /> NOT VERIFIED
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2 mb-4">
@@ -409,6 +441,16 @@ export default function ContractDetailPage(): JSX.Element {
                   >
                     <TrendingUpIcon className="w-4 h-4 inline mr-1" /> Analytics
                   </button>
+                  <button
+                    onClick={() => setActiveTab('verify')}
+                    className={`px-6 py-4 font-medium transition-all whitespace-nowrap ${
+                      activeTab === 'verify'
+                        ? 'bg-blue-600 text-white border-b-2 border-blue-400'
+                        : 'text-gray-400 hover:text-white hover:bg-slate-700'
+                    }`}
+                  >
+                    <ShieldIcon className="w-4 h-4 inline mr-1" /> Verify Contract
+                  </button>
                 </>
               )}
             </div>
@@ -472,29 +514,53 @@ export default function ContractDetailPage(): JSX.Element {
 
             {/* Contract Code Tab */}
             {activeTab === 'code' && contract.isContract && (
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">Contract Bytecode</h3>
-                  <button
-                    onClick={() => navigator.clipboard.writeText(contract.code)}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2"
-                  >
-                    <ClipboardIcon className="w-4 h-4" /> Copy Bytecode
-                  </button>
-                </div>
-                <div className="p-4 bg-slate-900 rounded-lg overflow-x-auto border border-slate-700">
-                  <code className="text-xs text-green-400 font-mono break-all whitespace-pre-wrap">
-                    {contract.code}
-                  </code>
-                </div>
-                <div className="mt-4 grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-slate-700/50 rounded-lg">
-                    <p className="text-gray-400 text-sm mb-1">Bytecode Size</p>
-                    <p className="text-white font-semibold">{(contract.code.length / 2).toLocaleString()} bytes</p>
+              <div className="space-y-6">
+                {/* Source Code Viewer (if verified) */}
+                {contract.isVerified !== undefined && contract.isVerified ? (
+                  <SourceCodeViewer
+                    sourceCode={contract.sourceCode || ''}
+                    contractName={contract.contractName}
+                    compilerVersion={contract.compilerVersion}
+                    license={contract.license}
+                  />
+                ) : (
+                  <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-lg p-4 mb-4">
+                    <p className="text-yellow-300 text-sm">
+                      This contract is not verified. Verify it to view the source code.
+                    </p>
                   </div>
-                  <div className="p-4 bg-slate-700/50 rounded-lg">
-                    <p className="text-gray-400 text-sm mb-1">Opcodes</p>
-                    <p className="text-white font-semibold">{Math.floor(contract.code.length / 4)} operations</p>
+                )}
+
+                {/* ABI Viewer (if available) */}
+                {contract.abi && (
+                  <AbiViewer abi={contract.abi} contractAddress={contract.address} />
+                )}
+
+                {/* Bytecode Viewer */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-white">Contract Bytecode</h3>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(contract.code)}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2"
+                    >
+                      <ClipboardIcon className="w-4 h-4" /> Copy Bytecode
+                    </button>
+                  </div>
+                  <div className="p-4 bg-slate-900 rounded-lg overflow-x-auto border border-slate-700">
+                    <code className="text-xs text-green-400 font-mono break-all whitespace-pre-wrap">
+                      {contract.code}
+                    </code>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-4">
+                    <div className="p-4 bg-slate-700/50 rounded-lg">
+                      <p className="text-gray-400 text-sm mb-1">Bytecode Size</p>
+                      <p className="text-white font-semibold">{(contract.code.length / 2).toLocaleString()} bytes</p>
+                    </div>
+                    <div className="p-4 bg-slate-700/50 rounded-lg">
+                      <p className="text-gray-400 text-sm mb-1">Opcodes</p>
+                      <p className="text-white font-semibold">{Math.floor(contract.code.length / 4)} operations</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -504,83 +570,92 @@ export default function ContractDetailPage(): JSX.Element {
             {activeTab === 'read' && contract.isContract && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Read Contract Information</h3>
-                <div className="space-y-4">
-                  {contract.isToken && contract.tokenInfo && (
-                    <>
-                      <div className="p-4 bg-slate-700/50 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-white font-semibold">1. name()</p>
-                          <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                {contract.abi ? (
+                  <div className="mb-6">
+                    <AbiViewer abi={contract.abi} contractAddress={contract.address} />
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {contract.isToken && contract.tokenInfo && (
+                      <>
+                        <div className="p-4 bg-slate-700/50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white font-semibold">1. name()</p>
+                            <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                          </div>
+                          <p className="text-gray-400 text-sm mb-2">Returns the token name</p>
+                          <div className="bg-slate-900 p-3 rounded">
+                            <p className="text-green-400 font-mono text-sm">{contract.tokenInfo.name}</p>
+                          </div>
                         </div>
-                        <p className="text-gray-400 text-sm mb-2">Returns the token name</p>
-                        <div className="bg-slate-900 p-3 rounded">
-                          <p className="text-green-400 font-mono text-sm">{contract.tokenInfo.name}</p>
-                        </div>
-                      </div>
 
-                      <div className="p-4 bg-slate-700/50 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-white font-semibold">2. symbol()</p>
-                          <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                        <div className="p-4 bg-slate-700/50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white font-semibold">2. symbol()</p>
+                            <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                          </div>
+                          <p className="text-gray-400 text-sm mb-2">Returns the token symbol</p>
+                          <div className="bg-slate-900 p-3 rounded">
+                            <p className="text-green-400 font-mono text-sm">{contract.tokenInfo.symbol}</p>
+                          </div>
                         </div>
-                        <p className="text-gray-400 text-sm mb-2">Returns the token symbol</p>
-                        <div className="bg-slate-900 p-3 rounded">
-                          <p className="text-green-400 font-mono text-sm">{contract.tokenInfo.symbol}</p>
-                        </div>
-                      </div>
 
-                      <div className="p-4 bg-slate-700/50 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-white font-semibold">3. decimals()</p>
-                          <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                        <div className="p-4 bg-slate-700/50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white font-semibold">3. decimals()</p>
+                            <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                          </div>
+                          <p className="text-gray-400 text-sm mb-2">Returns the number of decimals</p>
+                          <div className="bg-slate-900 p-3 rounded">
+                            <p className="text-green-400 font-mono text-sm">{contract.tokenInfo.decimals}</p>
+                          </div>
                         </div>
-                        <p className="text-gray-400 text-sm mb-2">Returns the number of decimals</p>
-                        <div className="bg-slate-900 p-3 rounded">
-                          <p className="text-green-400 font-mono text-sm">{contract.tokenInfo.decimals}</p>
-                        </div>
-                      </div>
 
-                      <div className="p-4 bg-slate-700/50 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-white font-semibold">4. totalSupply()</p>
-                          <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                        <div className="p-4 bg-slate-700/50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white font-semibold">4. totalSupply()</p>
+                            <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                          </div>
+                          <p className="text-gray-400 text-sm mb-2">Returns the total token supply</p>
+                          <div className="bg-slate-900 p-3 rounded">
+                            <p className="text-green-400 font-mono text-sm">
+                              {parseFloat(contract.tokenInfo.totalSupply).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                            </p>
+                            <p className="text-gray-500 text-xs mt-1">
+                              {formatSupply(contract.tokenInfo.totalSupply)} {contract.tokenInfo.symbol}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-gray-400 text-sm mb-2">Returns the total token supply</p>
-                        <div className="bg-slate-900 p-3 rounded">
-                          <p className="text-green-400 font-mono text-sm">
-                            {parseFloat(contract.tokenInfo.totalSupply).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                          </p>
-                          <p className="text-gray-500 text-xs mt-1">
-                            {formatSupply(contract.tokenInfo.totalSupply)} {contract.tokenInfo.symbol}
-                          </p>
-                        </div>
-                      </div>
 
-                      <div className="p-4 bg-slate-700/50 rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-white font-semibold">5. balanceOf(address)</p>
-                          <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                        <div className="p-4 bg-slate-700/50 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <p className="text-white font-semibold">5. balanceOf(address)</p>
+                            <span className="text-xs text-gray-400 px-2 py-1 bg-slate-800 rounded">view</span>
+                          </div>
+                          <p className="text-gray-400 text-sm mb-2">Check token balance of an address</p>
+                          <input
+                            type="text"
+                            placeholder="0x... address"
+                            className="w-full h-12 px-4 bg-slate-900 border border-slate-700 rounded-lg text-white mb-2"
+                          />
+                          <button className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                            Query
+                          </button>
                         </div>
-                        <p className="text-gray-400 text-sm mb-2">Check token balance of an address</p>
-                        <input
-                          type="text"
-                          placeholder="0x... address"
-                          className="w-full h-12 px-4 bg-slate-900 border border-slate-700 rounded-lg text-white mb-2"
-                        />
-                        <button className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                          Query
-                        </button>
+                      </>
+                    )}
+                    {!contract.isToken && (
+                      <div className="p-6 bg-blue-900/20 border border-blue-500/30 rounded-lg text-center">
+                        <p className="text-blue-300 flex items-center gap-2 justify-center">
+                          <BookIcon className="w-5 h-5" /> Read functions will appear here once the contract ABI is available
+                        </p>
+                        <p className="text-blue-400/80 text-sm mt-2">
+                          Verify the contract to view its ABI and interact with read functions.
+                        </p>
                       </div>
-                    </>
-                  )}
-                  {!contract.isToken && (
-                    <div className="p-6 bg-blue-900/20 border border-blue-500/30 rounded-lg text-center">
-                      <p className="text-blue-300 flex items-center gap-2 justify-center">
-                        <BookIcon className="w-5 h-5" /> Read functions will appear here once the contract ABI is available
-                      </p>
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
@@ -670,14 +745,54 @@ export default function ContractDetailPage(): JSX.Element {
             {activeTab === 'events' && contract.isContract && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-4">Contract Events</h3>
-                <div className="space-y-4">
-                  <div className="p-6 bg-slate-700/50 rounded-lg text-center">
-                    <p className="text-gray-400 flex items-center justify-center gap-2">
-                      <BroadcastIcon className="w-5 h-5" /> Event logs will appear here as they are emitted
-                    </p>
-                    <p className="text-gray-500 text-sm mt-2">Connect to see real-time contract events</p>
+                {contract.abi ? (
+                  <div className="space-y-4">
+                    {/* Show events from ABI */}
+                    {contract.abi
+                      .filter((item: any) => item.type === 'event')
+                      .map((event: any, index: number) => (
+                        <div key={index} className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <code className="text-purple-400 font-mono text-sm font-semibold">
+                              {event.name}({event.inputs?.map((input: any) => input.type).join(', ') || ''})
+                            </code>
+                            <span className="px-2 py-1 text-xs bg-purple-500/20 text-purple-400 rounded">event</span>
+                          </div>
+                          {event.inputs && event.inputs.length > 0 && (
+                            <div className="mt-2 space-y-1">
+                              {event.inputs.map((input: any, inputIndex: number) => (
+                                <div key={inputIndex} className="text-sm text-gray-400">
+                                  <span className="font-mono">{input.type}</span>
+                                  {input.name && <span className="ml-2">{input.name}</span>}
+                                  {input.indexed && (
+                                    <span className="ml-2 px-1.5 py-0.5 text-xs bg-purple-500/20 text-purple-400 rounded">
+                                      indexed
+                                    </span>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    {contract.abi.filter((item: any) => item.type === 'event').length === 0 && (
+                      <div className="p-6 bg-slate-700/50 rounded-lg text-center">
+                        <p className="text-gray-400">No events defined in contract ABI</p>
+                      </div>
+                    )}
                   </div>
-                </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="p-6 bg-slate-700/50 rounded-lg text-center">
+                      <p className="text-gray-400 flex items-center justify-center gap-2">
+                        <BroadcastIcon className="w-5 h-5" /> Event logs will appear here as they are emitted
+                      </p>
+                      <p className="text-gray-500 text-sm mt-2">
+                        Verify the contract to view its event definitions and see event logs
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -715,6 +830,19 @@ export default function ContractDetailPage(): JSX.Element {
                     <p className="text-xs text-gray-500 mt-1">Days since deployment</p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Verify Contract Tab */}
+            {activeTab === 'verify' && contract.isContract && (
+              <div>
+                <ContractVerificationForm
+                  contractAddress={contract.address}
+                  onVerificationComplete={() => {
+                    // Refresh contract data after verification
+                    window.location.reload();
+                  }}
+                />
               </div>
             )}
           </div>
