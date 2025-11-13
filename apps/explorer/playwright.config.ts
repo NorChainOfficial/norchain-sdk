@@ -36,6 +36,9 @@ export default defineConfig({
 
     // Navigation timeout
     navigationTimeout: 30000,
+
+    // Ignore HTTPS errors for local testing
+    ignoreHTTPSErrors: true,
   },
 
   // Configure projects for major browsers

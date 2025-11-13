@@ -19,6 +19,9 @@
     "nex:dev": "npm run dev --workspace=@norchain/nex-exchange",
     "nex:build": "npm run build --workspace=@norchain/nex-exchange",
     "nex:check": "npm run check --workspace=@norchain/nex-exchange",
+    "norstudio:dev": "npm run dev --workspace=@norchain/norstudio",
+    "norstudio:build": "npm run build --workspace=@norchain/norstudio",
+    "norstudio:test": "npm run test --workspace=@norchain/norstudio",
     "docs:dev": "npm run dev --workspace=@norchain/docs",
     "docs:build": "npm run build --workspace=@norchain/docs",
     "docs:start": "npm run start --workspace=@norchain/docs"

@@ -31,7 +31,10 @@ COPY package*.json ./
 # Install production dependencies only
 # Use --legacy-peer-deps to handle peer dependency conflicts
 # Don't omit dev dependencies - some are needed for runtime (like apollo-server-express)
-RUN if [ -f package-lock.json ]; then npm ci --legacy-peer-deps || npm install --legacy-peer-deps; else npm install --legacy-peer-deps; fi && npm cache clean --force
+# Ensure @apollo/server is installed (required by @nestjs/apollo)
+RUN if [ -f package-lock.json ]; then npm ci --legacy-peer-deps || npm install --legacy-peer-deps; else npm install --legacy-peer-deps; fi && \
+    npm list @apollo/server || npm install @apollo/server@4.12.2 --legacy-peer-deps && \
+    npm cache clean --force
 
 # Copy built application
 COPY --from=builder /app/dist ./dist
