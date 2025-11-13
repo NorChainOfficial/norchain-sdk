@@ -1,63 +1,26 @@
-# Dependencies
+# Docker ignore for root directory
 node_modules
 npm-debug.log
-yarn-error.log
-pnpm-lock.yaml
-package-lock.json
-
-# Build outputs
-.next
-dist
-build
-out
-coverage
-
-# Environment files
 .env
 .env.local
 .env.*.local
-
-# IDE
+.git
+.gitignore
+README.md
+*.md
 .vscode
 .idea
+*.log
+dist
+build
+.next
+out
+coverage
+.DS_Store
 *.swp
 *.swo
 *~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Git
-.git
-.gitignore
-.gitattributes
-
-# Documentation
-*.md
-!README.md
-docs
-
-# Tests
-tests
-test
-*.test.ts
-*.test.tsx
-*.spec.ts
-*.spec.tsx
-
-# CI/CD
-.github
-.gitlab-ci.yml
-.travis.yml
-
-# Docker
+.docker
 docker-compose*.yml
 Dockerfile*
 .dockerignore
-
-# Misc
-*.log
-.cache
-.temp
-

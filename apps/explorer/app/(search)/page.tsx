@@ -1,10 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { UniversalSearch } from '@/components/search/UniversalSearch';
-import { formatAddress, formatHash, formatNumber } from '@/lib/api-client';
+import { formatAddress, formatHash } from '@/lib/api-client';
+
+// Route segment config - force dynamic rendering
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface SearchResult {
   type: 'block' | 'transaction' | 'account' | 'contract' | 'token';
@@ -14,15 +18,15 @@ interface SearchResult {
   data?: any;
 }
 
-export default function SearchPage(): JSX.Element {
+function SearchContent(): JSX.Element {
   const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const query = searchParams?.get('q') || '';
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState(query);
 
   useEffect(() => {
-    if (query) {
+    if (query && typeof window !== 'undefined') {
       performSearch(query);
     }
   }, [query]);
@@ -77,7 +81,7 @@ export default function SearchPage(): JSX.Element {
           description: 'View transaction details and events',
         });
       } else {
-        // Text search - full-text search API endpoint will be implemented for advanced search capabilities
+        // Text search
         searchResults.push({
           type: 'token',
           value: trimmedQuery,
@@ -97,7 +101,6 @@ export default function SearchPage(): JSX.Element {
 
   const handleSearch = (result: SearchResult) => {
     setSearchQuery(result.value);
-    // Navigation is handled by UniversalSearch component
   };
 
   const getResultUrl = (result: SearchResult): string => {
@@ -141,7 +144,6 @@ export default function SearchPage(): JSX.Element {
 
   return (
     <div className="max-w-[1400px] mx-auto px-6 py-8">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-4">Search</h1>
         <div className="max-w-2xl">
@@ -152,7 +154,6 @@ export default function SearchPage(): JSX.Element {
         </div>
       </div>
 
-      {/* Search Results */}
       {query && (
         <div>
           <div className="mb-6">
@@ -207,9 +208,7 @@ export default function SearchPage(): JSX.Element {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <p className="text-lg text-gray-400 mb-2">No results found</p>
-              <p className="text-sm text-gray-500">
-                Try searching by:
-              </p>
+              <p className="text-sm text-gray-500">Try searching by:</p>
               <ul className="mt-4 text-sm text-gray-400 space-y-1">
                 <li>• Block height (e.g., 12345)</li>
                 <li>• Transaction hash (0x...)</li>
@@ -221,7 +220,6 @@ export default function SearchPage(): JSX.Element {
         </div>
       )}
 
-      {/* Search Tips */}
       {!query && (
         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="p-6 bg-slate-800 rounded-lg border border-slate-700">
@@ -261,3 +259,17 @@ export default function SearchPage(): JSX.Element {
   );
 }
 
+export default function SearchPage(): JSX.Element {
+  return (
+    <Suspense fallback={
+      <div className="max-w-[1400px] mx-auto px-6 py-8">
+        <div className="animate-pulse">
+          <div className="h-10 bg-slate-800 rounded-lg w-64 mb-8"></div>
+          <div className="h-12 bg-slate-800 rounded-lg w-full mb-8"></div>
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
+  );
+}

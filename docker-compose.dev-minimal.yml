@@ -1,0 +1,140 @@
+# Minimal Docker Compose for Development
+# Only includes essential services to reduce resource usage
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    container_name: norchain-postgres
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+    environment:
+      POSTGRES_DB: ${DB_NAME:-norchain_explorer}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - norchain-network
+    shm_size: 32mb
+    command: >
+      postgres
+      -c shared_buffers=64MB
+      -c effective_cache_size=128MB
+      -c maintenance_work_mem=32MB
+      -c work_mem=2MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: norchain-redis
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.1'
+        reservations:
+          memory: 64M
+          cpus: '0.05'
+    ports:
+      - "${REDIS_PORT:-6380}:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - norchain-network
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 100mb
+      --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # Unified API (minimal resources)
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: norchain-api
+    ports:
+      - "${API_PORT:-4000}:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+          cpus: '0.5'
+        reservations:
+          memory: 192M
+          cpus: '0.25'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_NAME=${DB_NAME:-norchain_explorer}
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-norchain_explorer}
+      - SUPABASE_URL=
+      - SUPABASE_ANON_KEY=
+      - SUPABASE_SERVICE_KEY=
+      - SUPABASE_DB_URL=
+      - USE_SUPABASE=false
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - RPC_URL=${RPC_URL:-https://rpc.norchain.org}
+      - CHAIN_ID=${CHAIN_ID:-65001}
+      - CORS_ORIGIN=http://localhost:${EXPLORER_APP_PORT:-4002}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - norchain-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/v1/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD:-.}/.docker/postgres-data
+  redis-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD:-.}/.docker/redis-data
+
+networks:
+  norchain-network:
+    driver: bridge
+

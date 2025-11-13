@@ -71,14 +71,18 @@ export default function HomePage(): JSX.Element {
             build, test, and deploy smart contracts on NorChain.
           </p>
           <div className="flex items-center justify-center space-x-4">
-            <Button size="lg" className="h-14 px-8">
-              <Plus className="h-5 w-5 mr-2" />
-              New Project
-            </Button>
-            <Button size="lg" variant="outline" className="h-14 px-8">
-              <FolderOpen className="h-5 w-5 mr-2" />
-              Open Project
-            </Button>
+            <Link href="/studio/sample-erc20">
+              <Button size="lg" className="h-14 px-8">
+                <Plus className="h-5 w-5 mr-2" />
+                New Project
+              </Button>
+            </Link>
+            <Link href="/studio/sample-erc20">
+              <Button size="lg" variant="outline" className="h-14 px-8">
+                <FolderOpen className="h-5 w-5 mr-2" />
+                Open Project
+              </Button>
+            </Link>
           </div>
         </div>
 

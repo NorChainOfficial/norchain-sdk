@@ -11,6 +11,16 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
+  // Experimental features for better Docker support
+  experimental: {
+    outputFileTracingExcludes: {
+      '*': [
+        'node_modules/@swc/core-linux-x64-gnu',
+        'node_modules/@swc/core-linux-x64-musl',
+      ],
+    },
+  },
+
   // Disable telemetry in Docker
   ...(!process.env.NEXT_TELEMETRY_DISABLED && {
     webpack: (config) => {

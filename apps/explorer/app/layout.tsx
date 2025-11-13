@@ -11,9 +11,9 @@ export const metadata: Metadata = {
   title: 'Nor Chain Explorer',
   description: 'Real-time blockchain explorer and analytics for Nor Chain',
   icons: {
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
   },
 }
 

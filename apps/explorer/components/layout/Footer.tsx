@@ -11,8 +11,8 @@ export const Footer = (): JSX.Element => {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center space-x-3 mb-4">
-              <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-green-500 rounded-lg flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-xl">N</span>
+              <div className="h-10 w-10 flex items-center justify-center shadow-lg">
+                <img src="/favicon.png" alt="NorChain Logo" className="h-10 w-10 rounded-lg" />
               </div>
               <div>
                 <div className="text-white font-bold text-lg">NorChain Explorer</div>

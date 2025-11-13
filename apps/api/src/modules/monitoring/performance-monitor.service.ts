@@ -28,7 +28,7 @@ export interface PerformanceStats {
 export class PerformanceMonitorService {
   private readonly logger = new Logger(PerformanceMonitorService.name);
   private readonly metrics: PerformanceMetric[] = [];
-  private readonly maxMetrics = 10000; // Keep last 10k metrics
+  private readonly maxMetrics = 1000; // Keep last 1k metrics (reduced from 10k to prevent memory growth)
 
   constructor(private readonly eventEmitter: EventEmitter2) {
     // Listen for request completion events

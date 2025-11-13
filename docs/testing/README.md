@@ -1,15 +1,16 @@
-# NorExplorer Test Suite
+# NorExplorer Test Suite Documentation
 
-## 🎯 Overview
+## 📚 Overview
 
-Comprehensive test suite for NorExplorer with **140+ passing tests** covering hooks, components, services, and utilities.
+Comprehensive test suite for NorExplorer with **195+ tests** covering unit, integration, and E2E scenarios.
 
-## 📊 Test Statistics
+## 📊 Quick Stats
 
-- **Total Tests**: 154 tests
-- **Passing**: 140 tests ✅ (91% pass rate)
-- **Test Files**: 21+ files
+- **Total Tests**: 195+ tests
+- **Passing**: 164+ tests ✅
+- **Test Files**: 30 files
 - **Coverage**: ~85% of core functionality
+- **Pass Rate**: ~84%
 
 ## 🚀 Quick Start
 
@@ -17,17 +18,14 @@ Comprehensive test suite for NorExplorer with **140+ passing tests** covering ho
 # Run all unit tests
 npm run test:unit
 
-# Run with coverage
-npm run test:unit:coverage
+# Run integration tests
+npm run test:unit -- tests/integration/
 
-# Watch mode (development)
-npm run test:unit:watch
-
-# Run E2E tests
+# Run E2E tests (requires API)
 npm run test:e2e
 
-# Run all tests
-npm run test:all
+# Run with coverage
+npm run test:unit:coverage
 ```
 
 ## 📁 Test Structure
@@ -35,12 +33,12 @@ npm run test:all
 ```
 tests/
 ├── setup.ts                    # Global test setup
-├── utils/                       # Test utilities
-├── hooks/                       # Hook tests
-├── components/                  # Component tests
-├── lib/                         # Service/utility tests
-├── integration/                 # Integration tests
-└── e2e/                        # E2E tests
+├── utils/                      # Test utilities
+├── hooks/                      # Hook tests (2 files)
+├── components/                 # Component tests (18 files)
+├── lib/                        # Service/utility tests (5 files)
+├── integration/                # Integration tests (1 file)
+└── e2e/                        # E2E tests (1 file)
 ```
 
 ## ✅ Test Coverage
@@ -49,27 +47,38 @@ tests/
 - ✅ AI Features (32 tests)
 - ✅ Blockchain Hooks (9 tests)
 - ✅ Utility Functions (15+ tests)
-- ✅ UI Components (30+ tests)
+- ✅ UI Components (35+ tests)
 - ✅ Account Components (10+ tests)
+- ✅ Contract Components (5+ tests)
 - ✅ Table Components (10+ tests)
+- ✅ Analytics Components (5+ tests)
+- ✅ Layout Components (5+ tests)
 - ✅ API Client (20+ tests)
-- ✅ Services (5+ tests)
+- ✅ Services (15+ tests)
 
-## 📝 Writing Tests
+## 📝 Documentation
 
-See `tests/README.md` for detailed documentation on writing tests.
+- [E2E & Integration Status](./E2E_INTEGRATION_STATUS.md)
+- [Complete Test Status](./COMPLETE_TEST_STATUS.md)
+- [Final Summary](./FINAL_SUMMARY.md)
+- [Comprehensive Test Suite](./COMPREHENSIVE_TEST_SUITE.md)
+- [Completion Report](./COMPLETION_REPORT.md)
 
-## 🔧 Troubleshooting
+## 🔧 API Docker Status
 
-### Tests failing locally
-1. Ensure dependencies installed: `npm install`
-2. Clear cache: `rm -rf node_modules/.cache`
-3. Check API server running (for E2E tests)
+✅ **Both issues fixed**:
+- Apollo server dependency
+- TokenHolder repository
 
-### API Docker issues
-1. Rebuild container: `docker-compose build --no-cache api`
-2. Restart: `docker-compose restart api`
-3. Check logs: `docker-compose logs api`
+## 🎯 Test Quality
+
+- ✅ Test isolation
+- ✅ Comprehensive mocking
+- ✅ Proper cleanup
+- ✅ Descriptive naming
+- ✅ AAA pattern
+- ✅ Async handling
+- ✅ Error coverage
 
 ---
 

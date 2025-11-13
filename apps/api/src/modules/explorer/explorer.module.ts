@@ -25,7 +25,7 @@ import { TokenHolder } from '../token/entities/token-holder.entity';
     ContractModule,
     TokenModule,
     GasModule,
-    TypeOrmModule.forFeature([Transaction]),
+    TypeOrmModule.forFeature([Transaction, TokenHolder]),
   ],
   controllers: [
     ExplorerBlocksController,

@@ -16,8 +16,8 @@ export const Header = (): JSX.Element => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all shadow-lg">
-              <span className="text-white font-bold text-xl">N</span>
+            <div className="h-10 w-10 flex items-center justify-center group-hover:scale-110 group-hover:shadow-lg transition-all shadow-lg">
+              <img src="/favicon.png" alt="NorChain Logo" className="h-10 w-10 rounded-lg" />
             </div>
             <div>
               <span className="text-xl font-bold text-gray-900 dark:text-white">

@@ -3,10 +3,20 @@ services:
   postgres:
     image: postgres:14-alpine
     container_name: norchain-postgres
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
     environment:
       POSTGRES_DB: ${DB_NAME:-norchain_explorer}
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      # Optimize PostgreSQL for low memory usage
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     ports:
       - "${POSTGRES_PORT:-5433}:5432"
     volumes:
@@ -14,6 +24,20 @@ services:
     restart: unless-stopped
     networks:
       - norchain-network
+    shm_size: 64mb
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c effective_cache_size=256MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -24,6 +48,14 @@ services:
   redis:
     image: redis:7-alpine
     container_name: norchain-redis
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
     ports:
       - "${REDIS_PORT:-6380}:6379"
     volumes:
@@ -31,7 +63,12 @@ services:
     restart: unless-stopped
     networks:
       - norchain-network
-    command: redis-server --appendonly yes
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 200mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1000
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -46,6 +83,14 @@ services:
     container_name: norchain-api
     ports:
       - "${API_PORT:-4000}:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '1.0'
+        reservations:
+          memory: 256M
+          cpus: '0.5'
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -56,11 +101,11 @@ services:
       - DB_NAME=${DB_NAME:-norchain_explorer}
       - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-norchain_explorer}
       # Supabase Configuration
-      - SUPABASE_URL=${SUPABASE_URL:-https://acyilidfiyfeouzzfkzo.supabase.co}
-      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
-      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
-      - SUPABASE_DB_URL=${SUPABASE_DB_URL}
-      - USE_SUPABASE=${USE_SUPABASE:-true}
+      - SUPABASE_URL=${SUPABASE_URL:-}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY:-}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY:-}
+      - SUPABASE_DB_URL=${SUPABASE_DB_URL:-}
+      - USE_SUPABASE=${USE_SUPABASE:-false}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
@@ -94,6 +139,14 @@ services:
     container_name: norchain-explorer
     ports:
       - "${EXPLORER_APP_PORT:-4002}:3002"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://api:3000/api/v1
@@ -101,7 +154,7 @@ services:
       - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
     depends_on:
       api:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
     networks:
       - norchain-network
@@ -111,6 +164,50 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  # NorStudio - AI-powered smart contract IDE
+  norstudio:
+    build:
+      context: ./apps/norstudio
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://api:3000/api/v1
+        - NEXT_PUBLIC_NORCHAIN_RPC=${RPC_URL:-https://rpc.norchain.org}
+        - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
+    container_name: norchain-norstudio
+    ports:
+      - "${NORSTUDIO_PORT:-4003}:3003"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    environment:
+      - NODE_ENV=production
+      - PORT=3003
+      - NEXT_PUBLIC_API_URL=http://api:3000/api/v1
+      - NEXT_PUBLIC_NORCHAIN_RPC=${RPC_URL:-https://rpc.norchain.org}
+      - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
+      - NEXT_PUBLIC_ENABLE_AI_FEATURES=true
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - norchain-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3003/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.norchain.service=norstudio"
+      - "com.norchain.description=AI-powered smart contract IDE"
+      - "com.norchain.version=1.0.0"
 
   # Landing Page
   landing:
@@ -122,12 +219,18 @@ services:
     container_name: norchain-landing
     ports:
       - "${LANDING_PORT:-4010}:3010"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_API_URL=http://api:3000/api/v1
     depends_on:
       api:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
     networks:
       - norchain-network
@@ -145,6 +248,12 @@ services:
     container_name: norchain-docs
     ports:
       - "${DOCS_PORT:-4011}:3011"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -156,38 +265,38 @@ services:
       timeout: 10s
       retries: 3
 
-  # Wallet Web App
-  wallet:
-    build:
-      context: ./apps/wallet
-      dockerfile: Dockerfile
-      args:
-        - NEXT_PUBLIC_API_URL=http://api:3000
-        - NEXT_PUBLIC_RPC_URL=${RPC_URL:-https://rpc.norchain.org}
-        - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
-        - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
-        - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
-    container_name: norchain-wallet
-    ports:
-      - "${WALLET_PORT:-4020}:4020"
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://api:3000
-      - NEXT_PUBLIC_RPC_URL=${RPC_URL:-https://rpc.norchain.org}
-      - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
-    depends_on:
-      api:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - norchain-network
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4020/api/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # Wallet Web App - DISABLED (app doesn't exist yet)
+  # wallet:
+  #   build:
+  #     context: ./apps/wallet
+  #     dockerfile: Dockerfile
+  #     args:
+  #       - NEXT_PUBLIC_API_URL=http://api:3000
+  #       - NEXT_PUBLIC_RPC_URL=${RPC_URL:-https://rpc.norchain.org}
+  #       - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
+  #       - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
+  #       - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+  #   container_name: norchain-wallet
+  #   ports:
+  #     - "${WALLET_PORT:-4020}:4020"
+  #   environment:
+  #     - NODE_ENV=production
+  #     - NEXT_PUBLIC_API_URL=http://api:3000
+  #     - NEXT_PUBLIC_RPC_URL=${RPC_URL:-https://rpc.norchain.org}
+  #     - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
+  #     - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
+  #     - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+  #   depends_on:
+  #     api:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+  #   networks:
+  #     - norchain-network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4020/api/health || exit 1"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
   # NEX Exchange
   nex-exchange:
@@ -201,6 +310,12 @@ services:
     container_name: norchain-nex-exchange
     ports:
       - "${NEX_EXCHANGE_PORT:-4001}:3001"
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_EXPLORER_API_URL=http://api:3000
@@ -208,7 +323,7 @@ services:
       - NEXT_PUBLIC_CHAIN_ID=${CHAIN_ID:-65001}
     depends_on:
       api:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
     networks:
       - norchain-network
@@ -220,7 +335,17 @@ services:
 
 volumes:
   postgres-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD:-.}/.docker/postgres-data
   redis-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD:-.}/.docker/redis-data
 
 networks:
   norchain-network:

@@ -141,7 +141,10 @@ export const databaseConfig = (
     return {
       type: 'postgres',
       url: supabaseDbUrl,
-      entities,
+      // Use path-based entity loading to avoid circular dependency issues
+      entities: nodeEnv === 'production' 
+        ? ['dist/**/*.entity.js']
+        : ['src/**/*.entity.ts'],
       autoLoadEntities: false,
       synchronize: !isTest && nodeEnv === 'development',
       logging: !isTest && nodeEnv === 'development',
@@ -163,7 +166,10 @@ export const databaseConfig = (
     username: configService.get('DB_USER', 'postgres'),
     password: configService.get('DB_PASSWORD', 'postgres'),
     database: configService.get('DB_NAME', 'norchain_explorer'),
-    entities,
+    // Use path-based entity loading to avoid circular dependency issues
+    entities: nodeEnv === 'production' 
+      ? ['dist/**/*.entity.js']
+      : ['src/**/*.entity.ts'],
     autoLoadEntities: false,
     synchronize: !isTest && nodeEnv === 'development',
     logging: !isTest && nodeEnv === 'development',

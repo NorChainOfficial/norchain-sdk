@@ -7,8 +7,8 @@ const withNextra = nextra({
 
 export default withNextra({
   reactStrictMode: true,
-  // Enable static export for deployment
-  output: 'export',
+  // Enable standalone output for Docker (can be changed to 'export' for static hosting)
+  output: 'standalone',
   images: {
     unoptimized: true,
   },

@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Enable static export for deployment
-  output: 'export',
+  // Enable standalone output for Docker (can be changed to 'export' for static hosting)
+  output: 'standalone',
   trailingSlash: true,
   
   // Image optimization needs to be disabled for static export

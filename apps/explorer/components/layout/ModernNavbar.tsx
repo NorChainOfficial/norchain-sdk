@@ -23,8 +23,8 @@ export const ModernNavbar = (): JSX.Element => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-green-500 rounded-lg flex items-center justify-center shadow-lg group-hover:shadow-blue-500/50 transition-all">
-              <span className="text-xl font-bold text-white">N</span>
+            <div className="w-10 h-10 flex items-center justify-center shadow-lg group-hover:shadow-blue-500/50 transition-all">
+              <img src="/favicon.png" alt="NorChain Logo" className="w-10 h-10 rounded-lg" />
             </div>
             <div className="hidden sm:block">
               <span className="text-xl font-bold text-white">NorChain Explorer</span>

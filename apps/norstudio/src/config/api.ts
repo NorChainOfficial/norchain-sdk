@@ -1,125 +1,294 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || `${API_URL}/api/v1`
+/**
+ * API Configuration for NorStudio
+ *
+ * Provides centralized API configuration, endpoint definitions,
+ * and HTTP client utilities for communicating with the backend.
+ */
 
+/**
+ * API Configuration object
+ */
 export const API_CONFIG = {
-  baseUrl: API_URL,
-  baseApiUrl: API_BASE_URL,
+  /**
+   * Base API URL - configured via environment variable
+   * Falls back to localhost:4000 for development
+   */
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000',
+
+  /**
+   * API version prefix
+   */
+  version: 'v1',
+
+  /**
+   * Request timeout in milliseconds
+   */
+  timeout: 30000, // 30 seconds
+
+  /**
+   * Retry configuration
+   */
+  retry: {
+    maxRetries: 3,
+    retryDelay: 1000, // 1 second
+    retryOn: [408, 429, 500, 502, 503, 504], // HTTP status codes to retry
+  },
+
+  /**
+   * API Endpoints
+   */
   endpoints: {
-    // Contract endpoints
-    contracts: {
-      compile: `${API_BASE_URL}/contracts/compile`,
-      deploy: `${API_BASE_URL}/contracts/deploy`,
-      verify: `${API_BASE_URL}/contracts/verify`,
-      getAbi: `${API_BASE_URL}/contracts/getabi`,
-      getSource: `${API_BASE_URL}/contracts/getsourcecode`,
-    },
-    // AI endpoints
     ai: {
-      chat: `${API_BASE_URL}/ai/chat`,
-      auditContract: `${API_BASE_URL}/ai/audit-contract`,
-      analyzeTransaction: `${API_BASE_URL}/ai/analyze-transaction`,
-      generateContract: `${API_BASE_URL}/ai/generate-contract`,
-      explainCode: `${API_BASE_URL}/ai/explain-code`,
-      suggestTests: `${API_BASE_URL}/ai/suggest-tests`,
+      chat: '/api/ai/chat',
+      generateContract: '/api/ai/generate-contract',
+      explainCode: '/api/ai/explain-code',
+      auditContract: '/api/ai/audit-contract',
+      suggestTests: '/api/ai/suggest-tests',
+      optimizeGas: '/api/ai/optimize-gas',
     },
-    // Project endpoints
-    projects: {
-      list: `${API_BASE_URL}/projects`,
-      create: `${API_BASE_URL}/projects`,
-      get: (id: string) => `${API_BASE_URL}/projects/${id}`,
-      update: (id: string) => `${API_BASE_URL}/projects/${id}`,
-      delete: (id: string) => `${API_BASE_URL}/projects/${id}`,
+    compiler: {
+      compile: '/api/compiler/compile',
+      versions: '/api/compiler/versions',
     },
-    // Template endpoints
-    templates: {
-      list: `${API_BASE_URL}/templates`,
-      get: (id: string) => `${API_BASE_URL}/templates/${id}`,
-    },
-    // Transaction endpoints
-    transactions: {
-      send: `${API_BASE_URL}/transactions/send`,
-      getInfo: (hash: string) => `${API_BASE_URL}/transactions/${hash}`,
-    },
-    // Account endpoints
-    accounts: {
-      getBalance: (address: string) => `${API_BASE_URL}/accounts/${address}/balance`,
-      getNonce: (address: string) => `${API_BASE_URL}/accounts/${address}/nonce`,
+    contracts: {
+      verify: '/api/contracts/verify',
+      interact: '/api/contracts/interact',
     },
   },
 } as const
 
-export interface ApiError {
-  readonly message: string
-  readonly code?: string
-  readonly status?: number
-}
-
-export interface ApiResponse<T> {
-  readonly success: boolean
-  readonly data?: T
-  readonly error?: ApiError
-}
-
 /**
- * Make an API request with proper error handling
+ * API Error class for structured error handling
  */
-export async function apiRequest<T>(
-  endpoint: string,
-  options?: RequestInit
-): Promise<T> {
-  try {
-    const response = await fetch(endpoint, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({
-        message: response.statusText,
-      }))
-      throw new Error(errorData.message || `API request failed: ${response.status}`)
-    }
-
-    return response.json()
-  } catch (error) {
-    console.error('API request error:', error)
-    throw error
+export class APIError extends Error {
+  constructor(
+    message: string,
+    public readonly statusCode?: number,
+    public readonly code?: string,
+    public readonly details?: any
+  ) {
+    super(message)
+    this.name = 'APIError'
   }
 }
 
 /**
- * GET request helper
+ * Request configuration interface
  */
-export async function apiGet<T>(endpoint: string): Promise<T> {
-  return apiRequest<T>(endpoint, { method: 'GET' })
+export interface RequestConfig {
+  readonly headers?: Record<string, string>
+  readonly timeout?: number
+  readonly retry?: boolean
+  readonly signal?: AbortSignal
 }
 
 /**
- * POST request helper
+ * API Response wrapper
  */
-export async function apiPost<T>(endpoint: string, data?: any): Promise<T> {
-  return apiRequest<T>(endpoint, {
-    method: 'POST',
-    body: data ? JSON.stringify(data) : undefined,
-  })
+export interface APIResponse<T> {
+  readonly success: boolean
+  readonly data: T
+  readonly error?: {
+    readonly message: string
+    readonly code?: string
+    readonly details?: any
+  }
+  readonly timestamp: string
 }
 
 /**
- * PUT request helper
+ * Sleep utility for retry delays
  */
-export async function apiPut<T>(endpoint: string, data?: any): Promise<T> {
-  return apiRequest<T>(endpoint, {
-    method: 'PUT',
-    body: data ? JSON.stringify(data) : undefined,
-  })
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms))
+
+/**
+ * Make HTTP request with retry logic
+ */
+async function makeRequest<T>(
+  url: string,
+  options: RequestInit,
+  config: RequestConfig = {}
+): Promise<T> {
+  const { retry = true, timeout = API_CONFIG.timeout } = config
+  const maxRetries = retry ? API_CONFIG.retry.maxRetries : 0
+
+  let lastError: Error | null = null
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      // Create abort controller for timeout
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), timeout)
+
+      // Make the request
+      const response = await fetch(url, {
+        ...options,
+        signal: config.signal || controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          ...options.headers,
+          ...config.headers,
+        },
+      })
+
+      clearTimeout(timeoutId)
+
+      // Handle non-OK responses
+      if (!response.ok) {
+        // Check if we should retry this status code
+        if (
+          retry &&
+          attempt < maxRetries &&
+          API_CONFIG.retry.retryOn.includes(response.status)
+        ) {
+          await sleep(API_CONFIG.retry.retryDelay * (attempt + 1))
+          continue
+        }
+
+        // Parse error response
+        let errorData: any
+        try {
+          errorData = await response.json()
+        } catch {
+          errorData = { message: response.statusText }
+        }
+
+        throw new APIError(
+          errorData.message || 'Request failed',
+          response.status,
+          errorData.code,
+          errorData.details
+        )
+      }
+
+      // Parse successful response
+      const data = await response.json()
+      return data
+    } catch (error) {
+      lastError = error as Error
+
+      // Don't retry on abort or network errors (unless explicitly configured)
+      if (
+        error instanceof Error &&
+        (error.name === 'AbortError' || !retry || attempt >= maxRetries)
+      ) {
+        break
+      }
+
+      // Wait before retrying
+      await sleep(API_CONFIG.retry.retryDelay * (attempt + 1))
+    }
+  }
+
+  // All retries exhausted
+  throw lastError || new APIError('Request failed after retries')
 }
 
 /**
- * DELETE request helper
+ * Perform GET request
  */
-export async function apiDelete<T>(endpoint: string): Promise<T> {
-  return apiRequest<T>(endpoint, { method: 'DELETE' })
+export async function apiGet<T>(
+  endpoint: string,
+  config?: RequestConfig
+): Promise<T> {
+  const url = `${API_CONFIG.baseURL}${endpoint}`
+  return makeRequest<T>(url, { method: 'GET' }, config)
+}
+
+/**
+ * Perform POST request
+ */
+export async function apiPost<T>(
+  endpoint: string,
+  data: any,
+  config?: RequestConfig
+): Promise<T> {
+  const url = `${API_CONFIG.baseURL}${endpoint}`
+  return makeRequest<T>(
+    url,
+    {
+      method: 'POST',
+      body: JSON.stringify(data),
+    },
+    config
+  )
+}
+
+/**
+ * Perform PUT request
+ */
+export async function apiPut<T>(
+  endpoint: string,
+  data: any,
+  config?: RequestConfig
+): Promise<T> {
+  const url = `${API_CONFIG.baseURL}${endpoint}`
+  return makeRequest<T>(
+    url,
+    {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    },
+    config
+  )
+}
+
+/**
+ * Perform DELETE request
+ */
+export async function apiDelete<T>(
+  endpoint: string,
+  config?: RequestConfig
+): Promise<T> {
+  const url = `${API_CONFIG.baseURL}${endpoint}`
+  return makeRequest<T>(url, { method: 'DELETE' }, config)
+}
+
+/**
+ * Perform PATCH request
+ */
+export async function apiPatch<T>(
+  endpoint: string,
+  data: any,
+  config?: RequestConfig
+): Promise<T> {
+  const url = `${API_CONFIG.baseURL}${endpoint}`
+  return makeRequest<T>(
+    url,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    },
+    config
+  )
+}
+
+/**
+ * Check if API is available
+ */
+export async function checkAPIHealth(): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_CONFIG.baseURL}/health`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000), // 5 second timeout
+    })
+    return response.ok
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Get API version information
+ */
+export async function getAPIVersion(): Promise<{
+  version: string
+  environment: string
+}> {
+  try {
+    return await apiGet('/version')
+  } catch {
+    return { version: 'unknown', environment: 'development' }
+  }
 }
